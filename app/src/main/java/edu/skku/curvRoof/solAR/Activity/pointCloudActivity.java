@@ -79,6 +79,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else{
                     isRecording = false;
+                    pointCloudRenderer.filterHashMap();
                     Toast.makeText(getApplicationContext(), "Stop Recording", Toast.LENGTH_SHORT).show();
                     pointCloudRenderer.cal_gathering();
                     isRecorded = true;
@@ -217,7 +218,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
 
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                pointCloudRenderer.filterHashMap();
                 pointCloudRenderer.draw_gathering(vpMatrix);
             }
 
