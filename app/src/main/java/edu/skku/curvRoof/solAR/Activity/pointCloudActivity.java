@@ -14,6 +14,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
@@ -50,6 +53,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
 
+    private Button recordBtn;
+    private boolean isRecording = false;
+    private boolean isRecorded = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +68,24 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setEGLConfigChooser(8,8,8,8,16,0);
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+        recordBtn = (Button)findViewById(R.id.recordBtn);
+        recordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRecording == false){
+                    isRecording = true;
+                    Toast.makeText(getApplicationContext(), "Start Recording", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    isRecording = false;
+                    Toast.makeText(getApplicationContext(), "Stop Recording", Toast.LENGTH_SHORT).show();
+                    pointCloudRenderer.cal_gathering();
+                    isRecorded = true;
+                }
+
+            }
+        });
 
         mUserRequestedInstall = false;
     }
@@ -172,16 +197,29 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             Camera camera = frame.getCamera();
 
             backgroundRenderer.draw(frame);
-            pointCloudRenderer.update(frame.acquirePointCloud());
+            if(isRecording){
+                pointCloudRenderer.update(frame.acquirePointCloud());
 
-            if(camera.getTrackingState() == TrackingState.TRACKING) {
-                // Fixed Work -> ARCore
-                camera.getViewMatrix(viewMatrix, 0);
-                camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+                if(camera.getTrackingState() == TrackingState.TRACKING) {
+                    // Fixed Work -> ARCore
+                    camera.getViewMatrix(viewMatrix, 0);
+                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+                }
+
+                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+                pointCloudRenderer.draw(vpMatrix);
+            }
+            else if(isRecorded){
+                if(camera.getTrackingState() == TrackingState.TRACKING) {
+                    // Fixed Work -> ARCore
+                    camera.getViewMatrix(viewMatrix, 0);
+                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+                }
+
+                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+                pointCloudRenderer.draw_gathering(vpMatrix);
             }
 
-            Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-            pointCloudRenderer.draw(vpMatrix);
 
         }catch(CameraNotAvailableException e){
             Log.d("PLUS", e.getMessage());
