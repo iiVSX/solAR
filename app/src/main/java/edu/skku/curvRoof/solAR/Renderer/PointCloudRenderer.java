@@ -124,8 +124,6 @@ public class PointCloudRenderer {
                 fullPointHashMap.get(pointIdBuffer.get(i)).add(temp);
             }
         }
-
-        filterHashMap();
     }
 
     public void draw(float[] vpMatrix) {
@@ -203,12 +201,15 @@ public class PointCloudRenderer {
             variance /= list.size();
             distance_mean /= list.size();
 
-            for (Point tmp : list) {
-                double temp = Math.pow((tmp.getX() - mean_x), 2.0) + Math.pow((tmp.getY() - mean_y), 2.0) + Math.pow((tmp.getZ() - mean_z), 2.0);
-                double z_score = (temp - distance_mean) / Math.sqrt(variance);
+            Iterator<Point> iter = list.iterator();
+            while(iter.hasNext()){
+                Point temp_point = iter.next();
+                double temp = Math.pow((temp_point.getX() - mean_x), 2.0) + Math.pow((temp_point.getY() - mean_y), 2.0) + Math.pow((temp_point.getZ() - mean_z), 2.0);
+                double z_score = Math.abs(temp - distance_mean); // Math.sqrt(variance);
+                if (z_score >= 1.5 || variance == 0 || z_score == Double.NaN) {
+                    iter.remove();
+                    Log.d("Plus", "removed");
 
-                if (z_score >= 1.5) {
-                    list.remove(tmp);
                 }
             }
 

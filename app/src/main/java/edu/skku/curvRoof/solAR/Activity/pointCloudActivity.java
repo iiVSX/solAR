@@ -217,6 +217,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
 
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+                pointCloudRenderer.filterHashMap();
                 pointCloudRenderer.draw_gathering(vpMatrix);
             }
 
