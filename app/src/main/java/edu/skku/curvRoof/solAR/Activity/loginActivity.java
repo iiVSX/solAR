@@ -1,10 +1,12 @@
 package edu.skku.curvRoof.solAR.Activity;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -61,19 +63,33 @@ public class loginActivity extends AppCompatActivity {
                 View custom_view = inflater.inflate(R.layout.dialog_register, null);
                 newAccountDialog.setView(custom_view);
 
-                EditText newEmailEt = custom_view.findViewById(R.id.newEmailEt);
-                EditText newPwdEt = custom_view.findViewById(R.id.newPwdEt);
+                final EditText newEmailEt = custom_view.findViewById(R.id.newEmailEt);
+                final EditText newPwdEt = custom_view.findViewById(R.id.newPwdEt);
 
-                String email = newEmailEt.getText().toString();
-                String password = newPwdEt.getText().toString();
-                if(!email.trim().equals("") && !password.trim().equals("")){
-                    createAccount(email, password);
-                }
-                else{
-                    newEmailEt.setText("");
-                    newPwdEt.setText("");
-                    Toast.makeText(getApplicationContext(), "Register Failed", Toast.LENGTH_SHORT).show();
-                }
+                newAccountDialog.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String email = newEmailEt.getText().toString();
+                        String password = newPwdEt.getText().toString();
+
+                        if(!email.trim().equals("") && !password.trim().equals("")){
+                            createAccount(email, password);
+                        }
+                        else{
+                            newEmailEt.setText("");
+                            newPwdEt.setText("");
+                            Toast.makeText(getApplicationContext(), "Register Failed", Toast.LENGTH_SHORT).show();
+                        }
+                        dialogInterface.dismiss();
+                    }
+                });
+                newAccountDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                newAccountDialog.show();
             }
         });
     }
@@ -90,13 +106,6 @@ public class loginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = mAuth.getCurrentUser();
-                    Intent intent = new Intent(loginActivity.this, MainActivity.class);
-                    try{
-                        intent.putExtra("ID", user.getEmail());
-                    }catch(NullPointerException e){
-                        Toast.makeText(getApplicationContext(), "Wrong Email", Toast.LENGTH_SHORT).show();
-                    }
-                    startActivity(intent);
                 }
                 else{
                     Toast.makeText(loginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
