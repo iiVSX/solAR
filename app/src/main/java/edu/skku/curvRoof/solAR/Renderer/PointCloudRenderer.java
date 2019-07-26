@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.ar.core.PointCloud;
 
 import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -48,6 +49,7 @@ public class PointCloudRenderer {
     //point cloud buffers
     private FloatBuffer pointCloud;
     private IntBuffer pointIdBuffer;
+    private FloatBuffer filtered_pointCloud;
 
     //hash Map for storing vertexes by ID
     private HashMap<Integer, ArrayList<Point>> fullPointHashMap;
@@ -178,6 +180,7 @@ public class PointCloudRenderer {
     }
 
     public void filterHashMap() {
+        ArrayList<Float> listFinalPoints = new ArrayList<Float>();   //  ArrayList<Float> for final points (order is [x,y,z,conf])
         Iterator<Integer> keys = fullPointHashMap.keySet().iterator();
         while (keys.hasNext()) {
             ArrayList<Point> list = fullPointHashMap.get(keys.next());
@@ -191,6 +194,16 @@ public class PointCloudRenderer {
             mean_x /= list.size();
             mean_y /= list.size();
 
+            if(list.size() < 5){
+                listFinalPoints.add(mean_x);
+                listFinalPoints.add(mean_y);
+                listFinalPoints.add(mean_z);
+                listFinalPoints.add(1.0f);
+
+                continue;
+            }
+
+            // calculate variance
             double distance_mean = 0.0;
             double variance = 0.0;
             for (Point tmp : list) {
@@ -201,6 +214,7 @@ public class PointCloudRenderer {
             distance_mean /= list.size();
             variance = (variance / list.size()) - distance_mean*distance_mean;
 
+            // when variance is 0
             if(variance == 0){
                 int list_size = list.size();
                 for(int i =1; i< list_size ;i++){
@@ -210,14 +224,22 @@ public class PointCloudRenderer {
                 mean_y = list.get(0).getY();
                 mean_z = list.get(0).getZ();
 
+                listFinalPoints.add(mean_x);
+                listFinalPoints.add(mean_y);
+                listFinalPoints.add(mean_z);
+                listFinalPoints.add(1.0f);
+
+                continue; // no more calculation
             }
+
+            // else
             else {
                 Iterator<Point> iter = list.iterator();
                 while (iter.hasNext()) {
                     Point temp_point = iter.next();
                     double temp = Math.pow((temp_point.getX() - mean_x), 2) + Math.pow((temp_point.getY() - mean_y), 2) + Math.pow((temp_point.getZ() - mean_z), 2);
                     double z_score = Math.abs(temp - distance_mean) / Math.sqrt(variance);
-                    if (z_score >= 1.5 || variance == 0 || z_score == Double.NaN) {
+                    if (z_score >= 1.5) {
                         iter.remove();
                         Log.d("Plus", "removed");
                     }
@@ -234,8 +256,17 @@ public class PointCloudRenderer {
                 mean_z /= list.size();
                 mean_x /= list.size();
                 mean_y /= list.size();
+
+                listFinalPoints.add(mean_x);
+                listFinalPoints.add(mean_y);
+                listFinalPoints.add(mean_z);
+                listFinalPoints.add(1.0f);
             }
         }
+        ByteBuffer bb = ByteBuffer.allocateDirect(listFinalPoints.size() * FLOAT_SIZE);
+        bb.order(ByteOrder.nativeOrder());
+        filtered_pointCloud = bb.asFloatBuffer();
+        filtered_pointCloud.position(0);
     }
 
     public void draw_gathering(float[] vpMatrix) {
