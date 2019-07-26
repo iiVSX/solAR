@@ -14,15 +14,17 @@
  */
 
 uniform mat4 u_ModelViewProjection;
-attribute vec4 u_Color;
+uniform vec4 u_Color;
+attribute vec4 a_Color;
 uniform float u_PointSize;
+uniform int bUseSolidColor;
 
 attribute vec4 a_Position;
 
 varying vec4 v_Color;
 
 void main() {
-   v_Color = u_Color;
+   v_Color = (bUseSolidColor == 0) ? a_Color : u_Color;
    gl_Position = u_ModelViewProjection * vec4(a_Position.xyz, 1.0);
    gl_PointSize = u_PointSize;
 }
