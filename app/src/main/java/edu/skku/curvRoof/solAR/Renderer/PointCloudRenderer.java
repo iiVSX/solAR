@@ -2,6 +2,7 @@ package edu.skku.curvRoof.solAR.Renderer;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.opengl.GLES32;
 import android.util.Log;
 
 import com.google.ar.core.PointCloud;
@@ -34,9 +35,11 @@ public class PointCloudRenderer {
 
     //position of variables in shader
     private int mPosition;
-    private int mColor;
+    private int mColor_u;
+    private int mColor_a;
     private int uMVPMatrixHandle;
     private int mSize;
+    private int bUseSolidColor; // when bUseSolidColor is 1, use Uniform, else use Attribute
 
     //color : r,g,b,a | vertex : x,y,z,confidence
     private static final int COORDS_PER_VERTEX = 4;
@@ -85,9 +88,11 @@ public class PointCloudRenderer {
         GLES20.glUseProgram(mProgram);
 
         mPosition = GLES20.glGetAttribLocation(mProgram, "a_Position");
-        mColor = GLES20.glGetAttribLocation(mProgram, "u_Color");
+        mColor_a = GLES20.glGetAttribLocation(mProgram, "a_Color");
+        mColor_u = GLES20.glGetUniformLocation(mProgram, "u_Color");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_ModelViewProjection");
         mSize = GLES20.glGetUniformLocation(mProgram, "u_PointSize");
+        bUseSolidColor = GLES20.glGetUniformLocation(mProgram, "bUseSolidColor");
 
         //create hash map
         fullPointHashMap = new HashMap<>();
@@ -164,19 +169,20 @@ public class PointCloudRenderer {
         colorBuffer.position(0);
 
         GLES20.glEnableVertexAttribArray(mPosition);
-        GLES20.glEnableVertexAttribArray(mColor);
+        GLES20.glEnableVertexAttribArray(mColor_a);
 
         GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
         GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1i(bUseSolidColor,0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
-        GLES20.glVertexAttribPointer(mColor, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, colorBuffer);
+        GLES20.glVertexAttribPointer(mColor_a, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, colorBuffer);
 
         GLES20.glDrawArrays(GLES20.GL_POINTS, 0, pointCloud.remaining() / 4);
+
         GLES20.glDisableVertexAttribArray(mPosition);
-        GLES20.glDisableVertexAttribArray(mColor);
+        GLES20.glDisableVertexAttribArray(mColor_a);
     }
 
     public void filterHashMap() {
@@ -285,17 +291,35 @@ public class PointCloudRenderer {
         GLES20.glUseProgram(mProgram);
 
         GLES20.glEnableVertexAttribArray(mPosition);
-        GLES20.glEnableVertexAttribArray(mColor);
+        GLES20.glEnableVertexAttribArray(mColor_a);
 
         GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_pointcloud_buffer);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
         GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1i(bUseSolidColor,0);
 
-        GLES20.glVertexAttribPointer(mColor, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_color_buffer);
+        GLES20.glVertexAttribPointer(mColor_a, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_color_buffer);
 
         GLES20.glDrawArrays(GLES20.GL_POINTS, 0, gathered_pointcloud_buffer.remaining() / 4);
         GLES20.glDisableVertexAttribArray(mPosition);
-        GLES20.glDisableVertexAttribArray(mColor);
+        GLES20.glDisableVertexAttribArray(mColor_a);
+    }
+
+    public void draw_final(float[] vpMatrix){
+        GLES20.glUseProgram(mProgram);
+
+        GLES20.glEnableVertexAttribArray(mPosition);
+
+        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, filtered_pointCloud);
+        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
+        GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1i(bUseSolidColor,1);
+
+        GLES20.glUniform4f(mColor_u, 0.0f, 0.0f, 1.0f, 1.0f);
+
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, filtered_pointCloud.remaining()/4);
+        GLES20.glDisableVertexAttribArray(mPosition);
+
     }
 
     public void cal_gathering() {
