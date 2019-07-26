@@ -204,10 +204,10 @@ public class PointCloudRenderer {
             }
 
             // calculate variance
-            double distance_mean = 0.0;
-            double variance = 0.0;
+            float distance_mean = 0.f;
+            float variance = 0.f;
             for (Point tmp : list) {
-                double temp = Math.pow((tmp.getX() - mean_x), 2.0) + Math.pow((tmp.getY() - mean_y), 2.0) + Math.pow((tmp.getZ() - mean_z), 2.0);
+                float temp = (float)(Math.pow((tmp.getX() - mean_x), 2.0) + Math.pow((tmp.getY() - mean_y), 2.0) + Math.pow((tmp.getZ() - mean_z), 2.0));
                 variance += temp;
                 distance_mean += Math.sqrt(temp);
             }
@@ -237,13 +237,14 @@ public class PointCloudRenderer {
                 Iterator<Point> iter = list.iterator();
                 while (iter.hasNext()) {
                     Point temp_point = iter.next();
-                    double temp = Math.pow((temp_point.getX() - mean_x), 2) + Math.pow((temp_point.getY() - mean_y), 2) + Math.pow((temp_point.getZ() - mean_z), 2);
-                    double z_score = Math.abs(temp - distance_mean) / Math.sqrt(variance);
-                    if (z_score >= 1.5) {
+                    float temp = (float)(Math.pow((temp_point.getX() - mean_x), 2) + Math.pow((temp_point.getY() - mean_y), 2) + Math.pow((temp_point.getZ() - mean_z), 2));
+                    float z_score = (float)(Math.abs(temp - distance_mean) / Math.sqrt(variance));
+                    if (z_score >= 1.5f) {
                         iter.remove();
-                        Log.d("Plus", "removed");
                     }
                 }
+
+                if(list.size() == 0) continue;
 
                 mean_x = 0.f;
                 mean_y = 0.f;
@@ -273,9 +274,10 @@ public class PointCloudRenderer {
         float[] tempArray = new float[listFinalPoints.size()];
         for(int i = 0 ; i < tempArray.length ; i++){
             tempArray[i] = listFinalPoints.get(i);
-        }
+    }
 
         filtered_pointCloud.put(tempArray);
+        Log.d("Plus", Arrays.toString(tempArray));
         filtered_pointCloud.position(0);
     }
 
