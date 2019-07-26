@@ -200,7 +200,7 @@ public class PointCloudRenderer {
                 listFinalPoints.add(mean_z);
                 listFinalPoints.add(1.0f);
 
-                continue;
+                continue;   // no more calculation
             }
 
             // calculate variance
@@ -263,9 +263,19 @@ public class PointCloudRenderer {
                 listFinalPoints.add(1.0f);
             }
         }
+
+        // make Floatbuffer with filtered points
         ByteBuffer bb = ByteBuffer.allocateDirect(listFinalPoints.size() * FLOAT_SIZE);
         bb.order(ByteOrder.nativeOrder());
         filtered_pointCloud = bb.asFloatBuffer();
+
+        // convert List to array(primitive)
+        float[] tempArray = new float[listFinalPoints.size()];
+        for(int i = 0 ; i < tempArray.length ; i++){
+            tempArray[i] = listFinalPoints.get(i);
+        }
+
+        filtered_pointCloud.put(tempArray);
         filtered_pointCloud.position(0);
     }
 
