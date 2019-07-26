@@ -31,6 +31,8 @@
         android:ems="10"
         android:hint="ID"
         android:inputType="textPersonName"
+        android:textColorHighlight="#FFEB3B"
+        android:textColorLink="#1F6092"
         app:layout_constraintBottom_toTopOf="@+id/loginBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,6 +46,8 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
+        android:textColorHighlight="#FFEB3B"
+        android:textColorLink="#1F6092"
         app:layout_constraintStart_toStartOf="@+id/idEt"
         app:layout_constraintTop_toBottomOf="@+id/idEt" />
 

@@ -20,7 +20,8 @@
         <activity android:name=".Activity.receiptActivity" />
         <activity android:name=".Activity.resultActivity" />
         <activity android:name=".Activity.renderingActivity" />
-        <activity android:name=".Activity.pointCloudActivity" />
+        <activity android:name=".Activity.pointCloudActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activity.loginActivity"/>
         <activity android:name=".Activity.MainActivity"/>
         <activity android:name=".Activity.startSplashActivity">

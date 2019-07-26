@@ -28,7 +28,8 @@
         android:hint="ID"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/loginBtn"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:imeOptions="flagNoExtractUi" />
 
     <EditText
         android:id="@+id/pwdEt"
@@ -40,7 +41,8 @@
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/loginBtn"
         app:layout_constraintStart_toStartOf="@+id/idEt"
-        app:layout_constraintTop_toBottomOf="@+id/idEt" />
+        app:layout_constraintTop_toBottomOf="@+id/idEt"
+        android:imeOptions="flagNoExtractUi"/>
 
     <Button
         android:id="@+id/loginBtn"
