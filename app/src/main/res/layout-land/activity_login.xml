@@ -26,10 +26,10 @@
         android:layout_marginBottom="80dp"
         android:ems="10"
         android:hint="ID"
+        android:imeOptions="flagNoExtractUi"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/loginBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:imeOptions="flagNoExtractUi" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/pwdEt"
@@ -38,20 +38,32 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:hint="Password"
+        android:imeOptions="flagNoExtractUi"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/loginBtn"
         app:layout_constraintStart_toStartOf="@+id/idEt"
-        app:layout_constraintTop_toBottomOf="@+id/idEt"
-        android:imeOptions="flagNoExtractUi"/>
+        app:layout_constraintTop_toBottomOf="@+id/idEt" />
 
     <Button
         android:id="@+id/loginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="164dp"
-        android:layout_marginBottom="88dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="89dp"
         android:text="Login"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.218"
+        app:layout_constraintStart_toEndOf="@+id/registerBtn" />
+
+    <Button
+        android:id="@+id/registerBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Register"
+        app:layout_constraintStart_toStartOf="@+id/pwdEt"
+        app:layout_constraintTop_toBottomOf="@+id/pwdEt" />
 
 </android.support.constraint.ConstraintLayout>
