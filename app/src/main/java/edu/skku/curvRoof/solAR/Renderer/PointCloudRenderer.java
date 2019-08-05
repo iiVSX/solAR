@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import android.opengl.GLES32;
 import android.util.Log;
 
+import com.google.ar.core.Camera;
 import com.google.ar.core.PointCloud;
 
 import java.io.IOException;
@@ -366,5 +367,16 @@ public class PointCloudRenderer {
         gathered_color_buffer = cbb.asFloatBuffer();
         gathered_color_buffer.put(gathered_color);
         gathered_color_buffer.position(0);
+    }
+
+    public void pickPoint(Camera camera){
+        for(int i = 0; i < filtered_pointCloud.remaining(); i += 4){
+            Point tempPoint = new Point(filtered_pointCloud.get(i),
+                                        filtered_pointCloud.get(i+1),
+                                        filtered_pointCloud.get(i+2),
+                                        filtered_pointCloud.get(i+3));
+
+
+        }
     }
 }

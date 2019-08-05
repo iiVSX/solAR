@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "131871256338-nrbbhmc31v1d8h84qfpv32kctcevjq8j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.skku.curvRoof.solAR",
+            "certificate_hash": "d16517f140d6e58e55f64b551e6abfc4fa10de42"
+          }
+        },
+        {
+          "client_id": "131871256338-v2rttkg7hrl31g1rnhle0onnmmh3hulm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.skku.curvRoof.solAR",
+            "certificate_hash": "0fb5e5c94d65c86146ca3e777a67e20e1e60a71d"
+          }
+        },
+        {
           "client_id": "131871256338-83t6hfkeoqv5fnl3q4jjl1q7p3csjmos.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
