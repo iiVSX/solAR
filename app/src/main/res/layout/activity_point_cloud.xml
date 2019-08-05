@@ -31,8 +31,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="33dp"
         android:layout_marginBottom="25dp"
+        android:text="Pick"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="pick" />
+        tools:visibility="visible" />
 
 </android.support.constraint.ConstraintLayout>

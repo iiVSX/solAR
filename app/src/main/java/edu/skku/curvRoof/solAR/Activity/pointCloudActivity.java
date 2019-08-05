@@ -55,8 +55,11 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] vpMatrix = new float[16];
 
     private Button recordBtn;
+    private Button pickBtn;
     private boolean isRecording = false;
     private boolean isRecorded = false;
+    private boolean isPicked = false;
+    private boolean pickTouched = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +74,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         recordBtn = (Button)findViewById(R.id.recordBtn);
+        pickBtn = findViewById(R.id.pickBtn);
+
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isPicked = false;
                 if(isRecording == false){
                     isRecording = true;
                     Toast.makeText(getApplicationContext(), "Start Recording", Toast.LENGTH_SHORT).show();
@@ -88,6 +94,21 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             }
         });
+
+        pickBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                if(isPicked == false){
+                    isPicked = true;
+                    pickTouched = true;
+                }
+                else{
+                    isPicked = false;
+                }
+            }
+        });
+
 
         mUserRequestedInstall = false;
     }
@@ -199,7 +220,26 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             Camera camera = frame.getCamera();
 
             backgroundRenderer.draw(frame);
-            if(isRecording){
+
+            if(pickTouched){
+                pointCloudRenderer.pickPoint(camera);
+                pickTouched = false;
+            }
+
+
+
+
+            if(isPicked){
+                if(camera.getTrackingState() == TrackingState.TRACKING) {
+                    // Fixed Work -> ARCore
+                    camera.getViewMatrix(viewMatrix, 0);
+                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+                }
+
+                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+                pointCloudRenderer.draw_seedPoint(vpMatrix);
+            }
+            else if(isRecording){
                 pointCloudRenderer.update(frame.acquirePointCloud());
 
                 if(camera.getTrackingState() == TrackingState.TRACKING) {

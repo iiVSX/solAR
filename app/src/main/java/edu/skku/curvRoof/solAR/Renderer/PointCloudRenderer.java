@@ -6,7 +6,9 @@ import android.opengl.GLES32;
 import android.util.Log;
 
 import com.google.ar.core.Camera;
+import com.google.ar.core.Frame;
 import com.google.ar.core.PointCloud;
+import com.google.ar.core.Pose;
 
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
@@ -61,6 +63,9 @@ public class PointCloudRenderer {
     //Gathered PointCloud Buffer
     private FloatBuffer gathered_pointcloud_buffer;
     private FloatBuffer gathered_color_buffer;
+
+    //Pick seed Point
+    public float[] seedPoint;
 
 
     public void createGlThread(Context context) throws IOException {
@@ -288,24 +293,6 @@ public class PointCloudRenderer {
         filtered_pointCloud.position(0);
     }
 
-    public void draw_gathering(float[] vpMatrix) {
-        GLES20.glUseProgram(mProgram);
-
-        GLES20.glEnableVertexAttribArray(mPosition);
-        GLES20.glEnableVertexAttribArray(mColor_a);
-
-        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_pointcloud_buffer);
-        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glUniform1f(mSize, 15.0f);
-        GLES20.glUniform1i(bUseSolidColor,0);
-
-        GLES20.glVertexAttribPointer(mColor_a, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_color_buffer);
-
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, gathered_pointcloud_buffer.remaining() / 4);
-        GLES20.glDisableVertexAttribArray(mPosition);
-        GLES20.glDisableVertexAttribArray(mColor_a);
-    }
-
     public void draw_final(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
 
@@ -370,13 +357,56 @@ public class PointCloudRenderer {
     }
 
     public void pickPoint(Camera camera){
+        float thresholdDistance = 0.01f; // 10cm = 0.1m * 0.1m = 0.01f
+        seedPoint = new float[]{0, 0, 0, Float.MAX_VALUE};
+
+        Pose CameraPose = camera.getPose();
+        float[] camera_position =  CameraPose.getTranslation();
+        float[] camera_zdir = CameraPose.getZAxis();
+
         for(int i = 0; i < filtered_pointCloud.remaining(); i += 4){
-            Point tempPoint = new Point(filtered_pointCloud.get(i),
-                                        filtered_pointCloud.get(i+1),
-                                        filtered_pointCloud.get(i+2),
-                                        filtered_pointCloud.get(i+3));
+            float[] point = { // camera Position is Origin
+                    filtered_pointCloud.get(i) - camera_position[0],
+                    filtered_pointCloud.get(i + 1) - camera_position[1],
+                    filtered_pointCloud.get(i + 2) - camera_position[2],
+            };
 
+            float distanceSq = (point[0] * point[0] + point[1] * point[1] + point[2] * point[2]);// length between camera and point
+            float innerProduct = camera_zdir[0] * point[0] + camera_zdir[1] * point[1] + camera_zdir[2] * point[2];
+            distanceSq = distanceSq - (innerProduct * innerProduct);  //c^2 - a^2 = b^2
 
+            // determine candidate points
+            if(distanceSq < thresholdDistance && innerProduct < seedPoint[3]){
+                seedPoint[0] = filtered_pointCloud.get(i);
+                seedPoint[1] = filtered_pointCloud.get(i+1);
+                seedPoint[2] = filtered_pointCloud.get(i+2);
+            }
         }
+
+        Log.d("pickSeed", seedPoint.toString());
+    }
+
+    public void draw_seedPoint(float[] vpMatrix){
+        GLES20.glUseProgram(mProgram);
+
+
+
+        GLES20.glEnableVertexAttribArray(mPosition);
+
+        ByteBuffer bb = ByteBuffer.allocateDirect(COORDS_PER_VERTEX * FLOAT_SIZE);
+        bb.order(ByteOrder.nativeOrder());
+        FloatBuffer seedBuffer = bb.asFloatBuffer();
+        seedBuffer.put(seedPoint);
+        seedBuffer.position(0);
+
+        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, seedBuffer);
+        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
+        GLES20.glUniform1f(mSize, 30.0f);
+        GLES20.glUniform1i(bUseSolidColor,1);
+
+        GLES20.glUniform4f(mColor_u, 1.0f, 0.0f, 0.0f, 1.0f);
+
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, seedBuffer.remaining()/4);
+        GLES20.glDisableVertexAttribArray(mPosition);
     }
 }
