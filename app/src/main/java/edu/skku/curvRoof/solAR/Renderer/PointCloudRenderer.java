@@ -288,24 +288,6 @@ public class PointCloudRenderer {
         filtered_pointCloud.position(0);
     }
 
-    public void draw_gathering(float[] vpMatrix) {
-        GLES20.glUseProgram(mProgram);
-
-        GLES20.glEnableVertexAttribArray(mPosition);
-        GLES20.glEnableVertexAttribArray(mColor_a);
-
-        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_pointcloud_buffer);
-        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glUniform1f(mSize, 15.0f);
-        GLES20.glUniform1i(bUseSolidColor,0);
-
-        GLES20.glVertexAttribPointer(mColor_a, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, gathered_color_buffer);
-
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, gathered_pointcloud_buffer.remaining() / 4);
-        GLES20.glDisableVertexAttribArray(mPosition);
-        GLES20.glDisableVertexAttribArray(mColor_a);
-    }
-
     public void draw_final(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
 

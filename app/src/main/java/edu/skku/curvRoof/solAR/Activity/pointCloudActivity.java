@@ -54,6 +54,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
 
+    private Button pickBtn;
     private Button recordBtn;
     private boolean isRecording = false;
     private boolean isRecorded = false;
@@ -71,6 +72,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         recordBtn = (Button)findViewById(R.id.recordBtn);
+        pickBtn = (Button)findViewById(R.id.pickBtn);
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +87,13 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     pointCloudRenderer.cal_gathering();
                     isRecorded = true;
                 }
+
+            }
+        });
+
+        pickBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });
