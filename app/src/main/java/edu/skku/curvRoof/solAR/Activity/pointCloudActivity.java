@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -35,6 +36,7 @@ import javax.microedition.khronos.opengles.GL10;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
+import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -239,6 +241,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     }
 
     public void getLocation(){
-
+        GpsUtil gpsTracker = new GpsUtil(getApplicationContext());
+        Location location = gpsTracker.getLocation();
+        Toast.makeText(getApplicationContext(), String.valueOf(location.getLatitude())+"\n"+String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT).show();
     }
 }
