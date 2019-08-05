@@ -237,4 +237,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             finish();
         }
     }
+
+    public void getLocation(){
+
+    }
 }
