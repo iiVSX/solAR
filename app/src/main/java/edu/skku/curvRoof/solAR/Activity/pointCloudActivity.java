@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -35,6 +36,7 @@ import javax.microedition.khronos.opengles.GL10;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
+import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -54,8 +56,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
 
-    private Button recordBtn;
     private Button pickBtn;
+    private Button recordBtn;
     private boolean isRecording = false;
     private boolean isRecorded = false;
     private boolean isPicked = false;
@@ -74,8 +76,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         recordBtn = (Button)findViewById(R.id.recordBtn);
-        pickBtn = findViewById(R.id.pickBtn);
-
+        pickBtn = (Button)findViewById(R.id.pickBtn);
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,5 +268,11 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             Log.d("PLUS", e.getMessage());
             finish();
         }
+    }
+
+    public void getLocation(){
+        GpsUtil gpsTracker = new GpsUtil(getApplicationContext());
+        Location location = gpsTracker.getLocation();
+        Toast.makeText(getApplicationContext(), String.valueOf(location.getLatitude())+"\n"+String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT).show();
     }
 }
