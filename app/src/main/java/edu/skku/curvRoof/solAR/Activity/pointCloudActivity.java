@@ -3,8 +3,9 @@ package edu.skku.curvRoof.solAR.Activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -45,6 +46,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private GLSurfaceView glSurfaceView = null;
     private Session session;
 
+    //AR Core and Viewport change variables
     private boolean mUserRequestedInstall = false;
     private boolean mViewportChanged = false;
     private int mViewportWidth = -1;
@@ -52,16 +54,20 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     private final int PERMISSION_REQUEST_CODE = 0;
 
+    //mvpMatrix
     private float[] viewMatrix = new float[16];
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
 
+    //Recording gathered points, and pick start point for Region Growing
     private Button pickBtn;
     private Button recordBtn;
     private boolean isRecording = false;
     private boolean isRecorded = false;
     private boolean isPicked = false;
     private boolean pickTouched = false;
+
+    private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,20 +116,21 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
 
-
         mUserRequestedInstall = false;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.fromParts("package", this.getPackageName(), null));
-                startActivity(intent);
+        for(String permission : permissions){
+            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+                if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.fromParts("package", this.getPackageName(), null));
+                    startActivity(intent);
+                }
+                finish();
             }
-            finish();
         }
     }
 
@@ -146,10 +153,13 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     protected void onResume() {
         super.onResume();
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
-            return;
+        for(String permission : REQUIRED_PERMISSSIONS){
+            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSSIONS, PERMISSION_REQUEST_CODE);
+                return;
+            }
         }
+
         if(session == null){
             try{
                 switch(ArCoreApk.getInstance().requestInstall(this,!mUserRequestedInstall)){
@@ -224,11 +234,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             if(pickTouched){
                 pointCloudRenderer.pickPoint(camera);
+                GpsUtil gpsTracker = new GpsUtil(this);
+                double longitude = gpsTracker.getLatitude();
+                double latitude = gpsTracker.getLongitude();
+                Log.d("PLUS", String.valueOf(longitude)+"\n"+String.valueOf(latitude));
                 pickTouched = false;
             }
-
-
-
 
             if(isPicked){
                 if(camera.getTrackingState() == TrackingState.TRACKING) {
@@ -262,17 +273,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
                 pointCloudRenderer.draw_final(vpMatrix);
             }
-
-
         }catch(CameraNotAvailableException e){
             Log.d("PLUS", e.getMessage());
             finish();
         }
-    }
-
-    public void getLocation(){
-        GpsUtil gpsTracker = new GpsUtil(getApplicationContext());
-        Location location = gpsTracker.getLocation();
-        Toast.makeText(getApplicationContext(), String.valueOf(location.getLatitude())+"\n"+String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT).show();
     }
 }

@@ -11,78 +11,81 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 public class GpsUtil extends Service implements LocationListener {
-
-    private double latitude, longitude;
-    private Location location;
     private Context context;
-    private LocationManager locationManager;
-    private boolean isGPSEnabled, isNetworkEnabled;
+    private double latitude, longitude;
+    private LocationManager lm;
+    private boolean isGPSEnabled;
+    private boolean isNetworkEnabled;
+    private long MIN_TIME = 1000 * 60, MIN_DISTANCE = 10;
+    private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
-    private static final long MIN_TIME = 1000 * 60;
-    private static final long MIN_DIS = 1;
 
-
-    public GpsUtil(Context context){
+    public GpsUtil(Context context) {
         this.context = context;
         getLocation();
     }
 
-    public Location getLocation(){
+
+    public void getLocation(){
         try{
-            locationManager = (LocationManager)context.getSystemService(LOCATION_SERVICE);
+            lm = (LocationManager)context.getSystemService(LOCATION_SERVICE);
 
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if(!isNetworkEnabled && !isGPSEnabled){
-                Toast.makeText(getApplicationContext(), "Location Disabled", Toast.LENGTH_SHORT).show();
+            if(!isGPSEnabled && !isNetworkEnabled){
+                for(String permission : REQUIRED_PERMISSSIONS){
+                    if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+                        Toast.makeText(context, "PERMISSION NEEDED", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+            else if(isNetworkEnabled){
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+                if(lm != null){
+                    Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if(location != null){
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                    }
+                }
             }
             else{
-                if(ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(getApplicationContext(), "Location Permission Denied", Toast.LENGTH_SHORT);
-                    return null;
-                }
-
-                if(isNetworkEnabled){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DIS, this);
-                    if(locationManager != null){
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if(location != null){
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                }
-                else if(isGPSEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIS, this);
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+                if(lm != null){
+                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if(location != null){
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
                     }
                 }
             }
+
         }catch(Exception e){
             e.printStackTrace();
         }
-        return location;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public double getLongitude(){
+        return longitude;
+    }
+
+    public double getLatitude(){
+        return latitude;
     }
 
     @Override
     public void onLocationChanged(Location location) {
-
+        if(location != null) {
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        }
     }
 
     @Override
@@ -98,5 +101,11 @@ public class GpsUtil extends Service implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }
