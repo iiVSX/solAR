@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -67,6 +69,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private boolean isPicked = false;
     private boolean pickTouched = false;
 
+    Handler mHandler = null; // handler for GPS tracker to toast on MainActivity
+
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
     @Override
@@ -80,6 +84,21 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setEGLConfigChooser(8,8,8,8,16,0);
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+        mHandler = new Handler();
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                GpsUtil gpsTracker = new GpsUtil(pointCloudActivity.this);
+                double longitude = gpsTracker.getLatitude();
+                double latitude = gpsTracker.getLongitude();
+                Toast.makeText(getApplicationContext(), String.valueOf(longitude)+"\n"+String.valueOf(latitude), Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+        });
+        t.start();
 
         recordBtn = (Button)findViewById(R.id.recordBtn);
         pickBtn = (Button)findViewById(R.id.pickBtn);
@@ -156,7 +175,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         for(String permission : REQUIRED_PERMISSSIONS){
             if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSSIONS, PERMISSION_REQUEST_CODE);
-                return;
             }
         }
 
@@ -234,10 +252,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             if(pickTouched){
                 pointCloudRenderer.pickPoint(camera);
-                GpsUtil gpsTracker = new GpsUtil(this);
-                double longitude = gpsTracker.getLatitude();
-                double latitude = gpsTracker.getLongitude();
-                Log.d("PLUS", String.valueOf(longitude)+"\n"+String.valueOf(latitude));
                 pickTouched = false;
             }
 
@@ -274,7 +288,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 pointCloudRenderer.draw_final(vpMatrix);
             }
         }catch(CameraNotAvailableException e){
-            Log.d("PLUS", e.getMessage());
             finish();
         }
     }
