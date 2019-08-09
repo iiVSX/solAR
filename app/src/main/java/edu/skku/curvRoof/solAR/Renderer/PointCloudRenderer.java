@@ -59,14 +59,16 @@ public class PointCloudRenderer {
 
     //hash Map for storing vertexes by ID
     private HashMap<Integer, ArrayList<Point>> fullPointHashMap;
+    private HashMap<Integer, Point> filteredPointHashMap;
 
     //Gathered PointCloud Buffer
     private FloatBuffer gathered_pointcloud_buffer;
     private FloatBuffer gathered_color_buffer;
 
     //Pick seed Point
-    public float[] seedPoint;
-
+    private float[] seedPoint;
+    private FloatBuffer seedBuffer;
+    private int seedPointID;
 
     public void createGlThread(Context context) throws IOException {
 
@@ -102,6 +104,7 @@ public class PointCloudRenderer {
 
         //create hash map
         fullPointHashMap = new HashMap<>();
+        filteredPointHashMap = new HashMap<>();
     }
 
     public void update(PointCloud cloud) {
@@ -195,7 +198,8 @@ public class PointCloudRenderer {
         ArrayList<Float> listFinalPoints = new ArrayList<Float>();   //  ArrayList<Float> for final points (order is [x,y,z,conf])
         Iterator<Integer> keys = fullPointHashMap.keySet().iterator();
         while (keys.hasNext()) {
-            ArrayList<Point> list = fullPointHashMap.get(keys.next());
+            int index = keys.next();
+            ArrayList<Point> list = fullPointHashMap.get(index);
             float mean_x = 0.f, mean_y = 0.f, mean_z = 0.f;
             for (Point tmp : list) {
                 mean_x += tmp.getX();
@@ -211,7 +215,7 @@ public class PointCloudRenderer {
                 listFinalPoints.add(mean_y);
                 listFinalPoints.add(mean_z);
                 listFinalPoints.add(1.0f);
-
+                filteredPointHashMap.put(index, new Point(mean_x, mean_y, mean_z, 1.0f));
                 continue;   // no more calculation
             }
 
@@ -240,6 +244,8 @@ public class PointCloudRenderer {
                 listFinalPoints.add(mean_y);
                 listFinalPoints.add(mean_z);
                 listFinalPoints.add(1.0f);
+
+                filteredPointHashMap.put(index, new Point(mean_x, mean_y, mean_z, 1.0f));
 
                 continue; // no more calculation
             }
@@ -274,6 +280,8 @@ public class PointCloudRenderer {
                 listFinalPoints.add(mean_y);
                 listFinalPoints.add(mean_z);
                 listFinalPoints.add(1.0f);
+
+                filteredPointHashMap.put(index, new Point(mean_x, mean_y, mean_z, 1.0f));
             }
         }
 
@@ -289,7 +297,6 @@ public class PointCloudRenderer {
     }
 
         filtered_pointCloud.put(tempArray);
-        Log.d("Plus", Arrays.toString(tempArray));
         filtered_pointCloud.position(0);
     }
 
@@ -364,38 +371,32 @@ public class PointCloudRenderer {
         float[] camera_position =  CameraPose.getTranslation();
         float[] camera_zdir = CameraPose.getZAxis();
 
-        for(int i = 0; i < filtered_pointCloud.remaining(); i += 4){
-            float[] point = { // camera Position is Origin
-                    filtered_pointCloud.get(i) - camera_position[0],
-                    filtered_pointCloud.get(i + 1) - camera_position[1],
-                    filtered_pointCloud.get(i + 2) - camera_position[2],
-            };
+        for(Integer index : filteredPointHashMap.keySet()){
+            Point tmp = filteredPointHashMap.get(index);
+            Point product = new Point(tmp.getX() - camera_position[0], tmp.getY() - camera_position[1], tmp.getZ() - camera_position[2], 1.0f);
 
-            float distanceSq = (point[0] * point[0] + point[1] * point[1] + point[2] * point[2]);// length between camera and point
-            float innerProduct = camera_zdir[0] * point[0] + camera_zdir[1] * point[1] + camera_zdir[2] * point[2];
+            float distanceSq = (float)(Math.pow(product.getX(),2) + Math.pow(product.getY(),2) + Math.pow(product.getZ(),2));// length between camera and point
+            float innerProduct = camera_zdir[0] * product.getX() + camera_zdir[1] * product.getY() + camera_zdir[2] * product.getZ();
             distanceSq = distanceSq - (innerProduct * innerProduct);  //c^2 - a^2 = b^2
 
             // determine candidate points
             if(distanceSq < thresholdDistance && innerProduct < seedPoint[3]){
-                seedPoint[0] = filtered_pointCloud.get(i);
-                seedPoint[1] = filtered_pointCloud.get(i+1);
-                seedPoint[2] = filtered_pointCloud.get(i+2);
+                seedPoint[0] = tmp.getX();
+                seedPoint[1] = tmp.getY();
+                seedPoint[2] = tmp.getZ();
+                seedPointID = index;
             }
         }
-
         Log.d("pickSeed", seedPoint.toString());
     }
 
     public void draw_seedPoint(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
-
-
-
         GLES20.glEnableVertexAttribArray(mPosition);
 
         ByteBuffer bb = ByteBuffer.allocateDirect(COORDS_PER_VERTEX * FLOAT_SIZE);
         bb.order(ByteOrder.nativeOrder());
-        FloatBuffer seedBuffer = bb.asFloatBuffer();
+        seedBuffer = bb.asFloatBuffer();
         seedBuffer.put(seedPoint);
         seedBuffer.position(0);
 
@@ -408,5 +409,13 @@ public class PointCloudRenderer {
 
         GLES20.glDrawArrays(GLES20.GL_POINTS, 0, seedBuffer.remaining()/4);
         GLES20.glDisableVertexAttribArray(mPosition);
+    }
+
+    public FloatBuffer getFiltered_pointCloud(){
+        return filtered_pointCloud;
+    }
+
+    public int getSeedPoint(){
+        return seedPointID;
     }
 }

@@ -23,6 +23,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.curvsurf.fsweb.FindSurfaceRequester;
+import com.curvsurf.fsweb.ReqForm;
+import com.curvsurf.fsweb.RespForm;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -32,6 +35,7 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -71,8 +75,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     Handler mHandler = null; // handler for GPS tracker to toast on MainActivity
 
-    private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
+    private static final String REQUEST_URL = "http://192.168.123.50:8080/FindSurfaceWeb/ReqFS.do"; // Plane searching server address
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +133,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(isPicked == false){
                     isPicked = true;
                     pickTouched = true;
+                    getPlane();
                 }
                 else{
                     isPicked = false;
@@ -290,5 +296,41 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }catch(CameraNotAvailableException e){
             finish();
         }
+    }
+
+    public void getPlane(){
+        // Ready Point Cloud
+        FloatBuffer points = pointCloudRenderer.getFiltered_pointCloud();
+
+        // Ready Request Form
+        ReqForm rf = new ReqForm();
+
+        rf.pointCount  = points.capacity() / 3;
+        rf.pointStride = 0;
+
+        rf.seedIndex = pointCloudRenderer.getSeedPoint();
+        rf.accuracy  = 0.02f;
+        rf.meanDist  = 0.05f;
+        rf.touchR    = 0.1f;
+
+        rf.findType  = 1; // 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
+        rf.radExp    = 5;
+        rf.latExt    = 7;
+        rf.option    = 0;
+
+        FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
+
+        // Request Find Surface
+        try{
+            RespForm resp = fsr.request(rf, points);
+            if(resp != null) {
+                if( resp.fsResult == 1 ) { // fsResult: 0 - Not Found, 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
+                    RespForm.PlaneParam param = resp.getParamAsPlane();
+                }
+            }
+        }catch (Exception e){
+
+        }
+
     }
 }
