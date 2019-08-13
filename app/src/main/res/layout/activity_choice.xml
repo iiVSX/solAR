@@ -25,8 +25,9 @@
             android:layout_width="200dp"
             android:layout_height="133dp"
             android:layout_weight="5"
-            android:background="#2196F3"
-            android:src="@drawable/solar_logo" />
+            android:background="#00FFFFFF"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_09_rooficon" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,8 +42,9 @@
             android:layout_width="200dp"
             android:layout_height="128dp"
             android:layout_weight="5"
-            android:background="#CDDC39"
-            android:src="@drawable/solar_logo" />
+            android:background="#00FFFFFF"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_10_rooftopicon" />
 
         <TextView
             android:layout_width="wrap_content"
