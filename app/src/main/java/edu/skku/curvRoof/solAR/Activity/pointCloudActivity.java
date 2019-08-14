@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -78,6 +79,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     private static final String REQUEST_URL = "http://192.168.123.50:8080/FindSurfaceWeb/ReqFS.do"; // Plane searching server address
+    private planeFinder myPlaneFinder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +135,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(isPicked == false){
                     isPicked = true;
                     pickTouched = true;
-                    getPlane();
+                    if(myPlaneFinder != null){
+                        myPlaneFinder.execute();
+                    }
                 }
                 else{
                     isPicked = false;
@@ -141,6 +145,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
 
+        myPlaneFinder = new planeFinder();
         mUserRequestedInstall = false;
     }
 
@@ -298,39 +303,56 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
     }
 
-    public void getPlane(){
-        // Ready Point Cloud
-        FloatBuffer points = pointCloudRenderer.getFiltered_pointCloud();
+    public class planeFinder extends AsyncTask<Object, RespForm.PlaneParam, RespForm.PlaneParam> {
+        @Override
+        protected RespForm.PlaneParam doInBackground(Object[] objects) {
+            // Ready Point Cloud
+            FloatBuffer points = pointCloudRenderer.getFiltered_pointCloud();
 
-        // Ready Request Form
-        ReqForm rf = new ReqForm();
+            // Ready Request Form
+            ReqForm rf = new ReqForm();
 
-        rf.pointCount  = points.capacity() / 3;
-        rf.pointStride = 0;
+            rf.pointCount  = points.capacity() / 3;
+            rf.pointStride = 0;
 
-        rf.seedIndex = pointCloudRenderer.getSeedPoint();
-        rf.accuracy  = 0.02f;
-        rf.meanDist  = 0.05f;
-        rf.touchR    = 0.1f;
+            rf.seedIndex = pointCloudRenderer.getSeedPoint();
+            rf.accuracy  = 0.02f;
+            rf.meanDist  = 0.05f;
+            rf.touchR    = 0.1f;
 
-        rf.findType  = 1; // 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
-        rf.radExp    = 5;
-        rf.latExt    = 7;
-        rf.option    = 0;
+            rf.findType  = 1; // 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
+            rf.radExp    = 5;
+            rf.latExt    = 7;
+            rf.option    = 0;
 
-        FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
+            FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
 
-        // Request Find Surface
-        try{
-            RespForm resp = fsr.request(rf, points);
-            if(resp != null) {
-                if( resp.fsResult == 1 ) { // fsResult: 0 - Not Found, 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
-                    RespForm.PlaneParam param = resp.getParamAsPlane();
+            // Request Find Surface
+            try{
+                RespForm resp = fsr.request(rf, points);
+                if(resp != null) {
+                    if( resp.fsResult == 1 ) { // fsResult: 0 - Not Found, 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
+                        RespForm.PlaneParam param = resp.getParamAsPlane();
+                        return param;
+                    }
+                    else{
+
+                    }
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        }catch (Exception e){
-
+            return null;
         }
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(RespForm.PlaneParam o) {
+            super.onPostExecute(o);
+        }
     }
 }
