@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Activity.MainActivity">
 
+
     <TextView
         android:id="@+id/idTv"
         android:layout_width="wrap_content"
@@ -14,36 +15,225 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:textSize="40dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.397" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:id="@+id/linearLayout3"
+        android:layout_width="407dp"
+        android:layout_height="588dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/measureBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:text="Measure" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="측정하기"
-            android:textSize="20dp" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:backgroundTint="#00FFFFFF"
+                android:clickable="true"
+                android:foreground="@drawable/ic_20_elec" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:text="기존 전기요금 등록"
+                    android:textColor="#003366"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/nanumgothicbold"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="최근 3개월 전기요금을 등록합니다."
+                    android:fontFamily="@font/nanumgothic"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton2"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:clickable="true"
+                android:foreground="@drawable/ic_07_filtering" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:text="설치 조건 설정"
+                    android:textColor="#003366"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/nanumgothicbold"/>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="최소 절감 전기요금, 최대 예산 등을 설정할 수 있습니다."
+                    android:fontFamily="@font/nanumgothic"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/measureBtn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:clickable="true"
+                android:foreground="@drawable/ic_08_roofscale" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:text="설치 면적 측정"
+                    android:textColor="#003366"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/nanumgothicbold"/>
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="설치 위치를 유형별로 선택하며, 면적을 측정합니다."
+                    android:fontFamily="@font/nanumgothic"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton4"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:clickable="true"
+                android:foreground="@drawable/ic_12_estimate" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:text="견적 의뢰"
+                    android:textColor="#003366"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/nanumgothicbold"/>
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="시뮬레이션을 기반으로 업체에게 견적을 의뢰합니다."
+                    android:fontFamily="@font/nanumgothic"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton5"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:clickable="true"
+                android:foreground="@drawable/ic_15_userinfo"
+                app:srcCompat="@mipmap/ic_launcher_round" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:text="마이페이지"
+                    android:textColor="#003366"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/nanumgothicbold"/>
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="업체를 선정하고, 진행 중인 설치 작업을 확인합니다.
+                   개인 정보를 수정 혹은 등록할 수 있습니다."
+                    android:fontFamily="@font/nanumgothic"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 

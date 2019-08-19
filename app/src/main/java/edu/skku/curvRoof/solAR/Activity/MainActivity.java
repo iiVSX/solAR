@@ -1,6 +1,7 @@
 package edu.skku.curvRoof.solAR.Activity;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +13,7 @@ import edu.skku.curvRoof.solAR.R;
 public class MainActivity extends AppCompatActivity {
     private String ID;
     private String func;
-    private Button measureBtn;
+    private FloatingActionButton measureBtn;
     private TextView idTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Intent fromIntent = getIntent();
         ID = fromIntent.getStringExtra("ID");
 
-        measureBtn = (Button)findViewById(R.id.measureBtn);
+        measureBtn = (FloatingActionButton)findViewById(R.id.measureBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
         idTv.setText(ID+"님");
