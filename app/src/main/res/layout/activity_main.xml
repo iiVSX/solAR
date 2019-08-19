@@ -9,15 +9,17 @@
 
     <TextView
         android:id="@+id/idTv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:textSize="40dp"
+        android:fontFamily="@font/nanumgothicbold"
+        android:textColor="#003366"
+        android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/floatingActionButton3"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -202,6 +204,7 @@
                 android:id="@+id/floatingActionButton5"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_gravity="center"
                 android:background="#00FFFFFF"
                 android:clickable="true"
                 android:foreground="@drawable/ic_15_userinfo"
@@ -217,24 +220,38 @@
                     android:layout_width="350dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
+                    android:fontFamily="@font/nanumgothicbold"
                     android:text="마이페이지"
                     android:textColor="#003366"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/nanumgothicbold"/>
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/textView10"
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
+                    android:fontFamily="@font/nanumgothic"
                     android:text="업체를 선정하고, 진행 중인 설치 작업을 확인합니다.
-                   개인 정보를 수정 혹은 등록할 수 있습니다."
-                    android:fontFamily="@font/nanumgothic"/>
+                   개인 정보를 수정 혹은 등록할 수 있습니다." />
 
             </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton3"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:foreground="@drawable/ic_01_menubackground"
+        app:backgroundTint="#00FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
