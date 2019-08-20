@@ -1,15 +1,7 @@
 package edu.skku.curvRoof.solAR.Model;
 
-import android.content.Context;
-import android.opengl.GLES20;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-
-import edu.skku.curvRoof.solAR.Utils.ShaderUtil;
+import com.google.ar.core.Camera;
+import com.google.ar.core.Pose;
 
 public class Plane {
     private float[] ll,lr,ul,ur;
@@ -17,7 +9,7 @@ public class Plane {
 
     private float[] planeVertex;
 
-    public Plane(float[] ll, float[] lr, float[] ur, float[] ul){
+    public Plane(float[] ll, float[] lr, float[] ur, float[] ul){           //Plane 사용전 항상 checkNormal 을 해주세요
 
         // Duplicate 4 points
         this.ll = ll;
@@ -87,5 +79,20 @@ public class Plane {
         this.normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
         this.normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
         this.normal[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+    }
+
+    public boolean checkNormal(Camera camera){
+        Pose pose = camera.getPose();
+        float[] z_dir = pose.getZAxis();
+
+        if(z_dir[0] * normal[0] + z_dir[1] * normal[1] + z_dir[2] * normal[2] >= 0){
+            return true;
+        }
+        else{
+            normal[0] = -normal[0];
+            normal[1] = -normal[1];
+            normal[2] = -normal[2];
+            return false;
+        }
     }
 }
