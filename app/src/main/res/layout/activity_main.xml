@@ -82,7 +82,7 @@
 
                 <TextView
                     android:id="@+id/textView"
-                    android:layout_width="350dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:fontFamily="@font/nanumgothicbold"
@@ -125,7 +125,7 @@
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="350dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:fontFamily="@font/nanumgothicbold"
@@ -168,7 +168,7 @@
 
                 <TextView
                     android:id="@+id/textView5"
-                    android:layout_width="350dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:fontFamily="@font/nanumgothicbold"
@@ -211,7 +211,7 @@
 
                 <TextView
                     android:id="@+id/textView7"
-                    android:layout_width="350dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:fontFamily="@font/nanumgothicbold"
@@ -255,7 +255,7 @@
 
                 <TextView
                     android:id="@+id/textView9"
-                    android:layout_width="350dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
                     android:fontFamily="@font/nanumgothicbold"
