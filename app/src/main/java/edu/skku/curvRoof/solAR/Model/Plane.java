@@ -48,19 +48,15 @@ public class Plane {
 
     public void setLl(float[] ll) {
         this.ll = ll;
-        this.calNormal();
     }
     public void setLr(float[] lr) {
         this.lr = lr;
-        this.calNormal();
     }
     public void setUl(float[] ul) {
         this.ul = ul;
-        this.calNormal();
     }
     public void setUr(float[] ur) {
         this.ur = ur;
-        this.calNormal();
     }
 
     protected void calNormal(){

@@ -67,7 +67,7 @@ public class PlaneRenderer {
 
         GLES20.glUniform4f(mColor_u, 0.0f, 0.0f, 1.0f, 1.0f);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexBuffer.remaining()/4);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexBuffer.remaining()/3);
         GLES20.glDisableVertexAttribArray(mPosition);
 
     }
