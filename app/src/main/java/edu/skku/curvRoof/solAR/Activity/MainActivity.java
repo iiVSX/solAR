@@ -13,8 +13,8 @@ import edu.skku.curvRoof.solAR.R;
 public class MainActivity extends AppCompatActivity {
     private String ID;
     private String func;
-    private FloatingActionButton measureBtn;
-    private Button measureBtn2;
+    private FloatingActionButton measureBtn, askBtn;
+    private Button measureBtn2, askBtn2;
     private TextView idTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         measureBtn = (FloatingActionButton)findViewById(R.id.measureFab);
         measureBtn2=(Button)findViewById(R.id.measureBtn);
+        askBtn = (FloatingActionButton)findViewById(R.id.askFab);
+        askBtn2 = (Button)findViewById(R.id.askBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
         idTv.setText(ID+"님 반갑습니다!");
@@ -36,11 +38,16 @@ public class MainActivity extends AppCompatActivity {
                 switch (v.getId()) {
                     case R.id.measureFab:
                     case R.id.measureBtn:
-                        Intent intent = new Intent(MainActivity.this, choiceActivity.class);
-                        intent.putExtra("type", "measure");
-                        startActivity(intent);
+                        Intent measure_intent = new Intent(MainActivity.this, choiceActivity.class);
+                        measure_intent.putExtra("type", "measure");
+                        startActivity(measure_intent);
                         break;
-
+                    case R.id.askFab:
+                    case R.id.askBtn:
+                        Intent ask_intent = new Intent(MainActivity.this, companyListActivity.class);
+                        ask_intent.putExtra("type", "company_list");
+                        startActivity(ask_intent);
+                        break;
                     default:
                         break;
 
