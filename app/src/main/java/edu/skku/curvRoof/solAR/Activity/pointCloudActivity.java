@@ -99,9 +99,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void run() {
                 Looper.prepare();
                 GpsUtil gpsTracker = new GpsUtil(pointCloudActivity.this);
-                double longitude = gpsTracker.getLatitude();
-                double latitude = gpsTracker.getLongitude();
-                Toast.makeText(getApplicationContext(), String.valueOf(longitude)+"\n"+String.valueOf(latitude), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), gpsTracker.getAddress(), Toast.LENGTH_SHORT).show();
                 Looper.loop();
             }
         });

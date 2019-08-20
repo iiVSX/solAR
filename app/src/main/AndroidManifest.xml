@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_logoicon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:hardwareAccelerated="true">
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true">
         <activity android:name=".Activity.choiceActivity"/>
         <activity android:name=".Activity.companyListActivity" />
         <activity android:name=".Activity.receiptActivity" />
