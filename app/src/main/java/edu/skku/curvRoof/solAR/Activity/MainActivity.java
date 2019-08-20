@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     private String ID;
     private String func;
     private FloatingActionButton measureBtn;
+    private Button measureBtn2;
     private TextView idTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,19 +24,33 @@ public class MainActivity extends AppCompatActivity {
         Intent fromIntent = getIntent();
         ID = fromIntent.getStringExtra("ID");
 
-        measureBtn = (FloatingActionButton) findViewById(R.id.measureBtn);
+        measureBtn = (FloatingActionButton)findViewById(R.id.measureFab);
+        measureBtn2=(Button)findViewById(R.id.measureBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
         idTv.setText(ID+"님 반갑습니다!");
 
-        measureBtn.setOnClickListener(new View.OnClickListener() {
+        Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, choiceActivity.class);
-                intent.putExtra("type", "measure");
-                startActivity(intent);
+                switch (v.getId()) {
+                    case R.id.measureFab:
+                    case R.id.measureBtn:
+                        Intent intent = new Intent(MainActivity.this, choiceActivity.class);
+                        intent.putExtra("type", "measure");
+                        startActivity(intent);
+                        break;
+
+                    default:
+                        break;
+
+                }
             }
-        });
+        };
+
+        measureBtn.setOnClickListener(onClickListener);
+        measureBtn2.setOnClickListener(onClickListener);
 
     }
+
 }
