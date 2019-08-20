@@ -1,8 +1,10 @@
 package edu.skku.curvRoof.solAR.Activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +27,9 @@ public class loginActivity extends AppCompatActivity {
     private Button loginBtn, registerBtn;
     private EditText idEt, pwdEt;
     private FirebaseAuth mAuth;
+    private SharedPreferences loginPref;
+    private Intent intent;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,17 @@ public class loginActivity extends AppCompatActivity {
         idEt = (EditText)findViewById(R.id.idEt);
         pwdEt = (EditText)findViewById(R.id.pwdEt);
         registerBtn = (Button)findViewById(R.id.registerBtn);
+
+        intent = new Intent(loginActivity.this, MainActivity.class);
+
+        loginPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = loginPref.edit();
+        String defaultVal = loginPref.getString("login", null);
+        if(defaultVal != null){
+            intent.putExtra("ID", defaultVal);
+            startActivity(intent);
+            finish();
+        }
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,13 +136,17 @@ public class loginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = mAuth.getCurrentUser();
-                    Intent intent = new Intent(loginActivity.this, MainActivity.class);
                     try{
-                        intent.putExtra("ID", user.getEmail());
+                        String ID = user.getEmail();
+                        intent.putExtra("ID", ID);
+                        editor.putString("login", ID);
+                        editor.commit();
+
                     }catch(NullPointerException e){
                         Toast.makeText(getApplicationContext(), "Wrong Email", Toast.LENGTH_SHORT).show();
                     }
                     startActivity(intent);
+                    finish();
                 }
                 else{
                     Toast.makeText(loginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
