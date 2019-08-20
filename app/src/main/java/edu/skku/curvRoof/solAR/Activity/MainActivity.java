@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Intent fromIntent = getIntent();
         ID = fromIntent.getStringExtra("ID");
 
-        measureBtn = (FloatingActionButton)findViewById(R.id.measureBtn);
+        measureBtn = (FloatingActionButton) findViewById(R.id.measureBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
         idTv.setText(ID+"님 반갑습니다!");
