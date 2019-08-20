@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         Intent fromIntent = getIntent();
         ID = fromIntent.getStringExtra("ID");
 
-        measureBtn = (FloatingActionButton)findViewById(R.id.measureBtn);
-        measureBtn2=(Button)findViewById(R.id.textView5);
+        measureBtn = (FloatingActionButton)findViewById(R.id.measureFab);
+        measureBtn2=(Button)findViewById(R.id.measureBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
         idTv.setText(ID+"님 반갑습니다!");
@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
+                    case R.id.measureFab:
                     case R.id.measureBtn:
-                    case R.id.textView5:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
                         intent.putExtra("type", "measure");
                         startActivity(intent);
