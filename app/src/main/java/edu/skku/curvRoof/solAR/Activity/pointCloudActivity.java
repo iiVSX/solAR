@@ -42,7 +42,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import edu.skku.curvRoof.solAR.R;
+import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
+import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
@@ -80,6 +82,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     private static final String REQUEST_URL = "http://192.168.123.50:8080/FindSurfaceWeb/ReqFS.do"; // Plane searching server address
     private planeFinder myPlaneFinder;
+    private PlaneRenderer planeRenderer = new PlaneRenderer();
+    private Plane myPlane;
+    private boolean normalValid = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,6 +233,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         try{
             backgroundRenderer.createOnGlThread(this);
             pointCloudRenderer.createGlThread(this);
+            planeRenderer.createGlThread(this);
+
         }catch (IOException e){
             e.getMessage();
         }
@@ -272,7 +280,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
 
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                pointCloudRenderer.draw_seedPoint(vpMatrix);
+                if(normalValid == false){
+                    pointCloudRenderer.draw_seedPoint(vpMatrix);
+                    if(myPlane != null){
+                        planeRenderer.bufferUpdate(myPlane);
+                        myPlane.checkNormal(camera);
+                        normalValid = true;
+                    }
+                }
+                else{
+                    planeRenderer.draw(vpMatrix);
+                }
             }
             else if(isRecording){
                 pointCloudRenderer.update(frame.acquirePointCloud());
@@ -351,6 +369,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         @Override
         protected void onPostExecute(RespForm.PlaneParam o) {
             super.onPostExecute(o);
+            try{
+                myPlane = new Plane(o.ll, o.lr, o.ur, o.ul);
+            }catch (Exception e){
+                Log.d("Plane", e.getMessage());
+            }
+
         }
     }
 }
