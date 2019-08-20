@@ -12,7 +12,7 @@ import java.util.HashMap;
 import edu.skku.curvRoof.solAR.Utils.ShaderUtil;
 
 public class Plane {
-    private Point ll,lr,ul,ur;
+    private float[] ll,lr,ul,ur;
     private float[] normal = new float[3];
 
     private float[] planeVertex;
@@ -33,7 +33,7 @@ public class Plane {
 
     private FloatBuffer vertexBuffer;
 
-    public Plane(Point ll, Point lr, Point ur, Point ul){
+    public Plane(float[] ll, float[] lr, float[] ur, float[] ul){
 
         // Duplicate 4 points
         this.ll = ll;
@@ -42,46 +42,45 @@ public class Plane {
         this.ur = ur;
 
         planeVertex = new float[] {
-                ll.getX(), ll.getY(), ll.getZ(),
-                lr.getX(), lr.getY(), lr.getZ(),
-                ul.getX(), ul.getY(), ul.getZ(),
+                ll[0], ll[1], ll[2],
+                lr[0], lr[1], lr[2],
+                ul[0], ul[1], ul[2],
 
-                ul.getX(), ul.getY(), ul.getZ(),
-                lr.getX(), lr.getY(), lr.getZ(),
-                ur.getX(), ur.getY(), ur.getZ(),
-
+                ul[0], ul[1], ul[2],
+                lr[0], lr[1], lr[2],
+                ur[0], ur[1], ur[2],
         };
 
         this.calNormal();
     }
 
-    public Point getLl() {
+    public float[] getLl() {
         return ll;
     }
-    public Point getLr() {
+    public float[] getLr() {
         return lr;
     }
-    public Point getUl() {
+    public float[] getUl() {
         return ul;
     }
-    public Point getUr() {
+    public float[] getUr() {
         return ur;
     }
     public float[] getNormal() {return normal;}
 
-    public void setLl(Point ll) {
+    public void setLl(float[] ll) {
         this.ll = ll;
         this.calNormal();
     }
-    public void setLr(Point lr) {
+    public void setLr(float[] lr) {
         this.lr = lr;
         this.calNormal();
     }
-    public void setUl(Point ul) {
+    public void setUl(float[] ul) {
         this.ul = ul;
         this.calNormal();
     }
-    public void setUr(Point ur) {
+    public void setUr(float[] ur) {
         this.ur = ur;
         this.calNormal();
     }
@@ -91,13 +90,13 @@ public class Plane {
         float[] vec1 = new float[3];
         float[] vec2 = new float[3];
 
-        vec1[0] = lr.getX() - ll.getX();
-        vec1[1] = lr.getY() - ll.getY();
-        vec1[2] = lr.getZ() - ll.getZ();
+        vec1[0] = lr[0] - ll[0];
+        vec1[1] = lr[1] - ll[1];
+        vec1[2] = lr[2] - ll[2];
 
-        vec2[0] = ul.getX() - ll.getX();
-        vec2[1] = ul.getY() - ll.getY();
-        vec2[2] = ul.getZ() - ll.getZ();
+        vec2[0] = ul[0] - ll[0];
+        vec2[1] = ul[1] - ll[1];
+        vec2[2] = ul[2] - ll[2];
 
         this.normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
         this.normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
@@ -106,13 +105,13 @@ public class Plane {
 
     public void bufferUpdate(){
         planeVertex = new float[] {
-                ll.getX(), ll.getY(), ll.getZ(),
-                lr.getX(), lr.getY(), lr.getZ(),
-                ul.getX(), ul.getY(), ul.getZ(),
+                ll[0], ll[1], ll[2],
+                lr[0], lr[1], lr[2],
+                ul[0], ul[1], ul[2],
 
-                ul.getX(), ul.getY(), ul.getZ(),
-                lr.getX(), lr.getY(), lr.getZ(),
-                ur.getX(), ur.getY(), ur.getZ(),
+                ul[0], ul[1], ul[2],
+                lr[0], lr[1], lr[2],
+                ur[0], ur[1], ur[2],
 
         };
 
