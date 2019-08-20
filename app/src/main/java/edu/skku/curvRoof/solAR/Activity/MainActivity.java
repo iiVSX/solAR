@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         measureBtn = (FloatingActionButton)findViewById(R.id.measureBtn);
         idTv = (TextView)findViewById(R.id.idTv);
 
-        idTv.setText(ID+"님");
+        idTv.setText(ID+"님 반갑습니다!");
 
         measureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
