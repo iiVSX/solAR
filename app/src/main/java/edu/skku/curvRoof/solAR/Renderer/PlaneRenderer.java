@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Utils.ShaderUtil;
@@ -27,7 +28,17 @@ public class PlaneRenderer {
     private static final int FLOAT_SIZE = 4;
 
     private FloatBuffer vertexBuffer;
-    private float[] planeVertex = new float[18];
+    private ShortBuffer drawListBuffer;
+    private FloatBuffer colorBuffer;
+
+    private float[] planeVertex = new float[12];
+    private short drawOrder[] = { 0, 1, 2, 0, 2, 3 };
+    private float[] colors = new float[]{
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1,0f,
+            0.0f, 1.0f, 1.0f, 1.0f,
+            1,0f, 0.0f, 1.0f, 1.0f
+    };
 
     public void bufferUpdate(Plane plane){
         planeVertex = plane.getPlaneVertex();
@@ -37,6 +48,18 @@ public class PlaneRenderer {
         vertexBuffer = bb.asFloatBuffer();
         vertexBuffer.put(planeVertex);
         vertexBuffer.position(0);
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2); // (# of coordinate values * 2 bytes per short)
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
+
+        ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * FLOAT_SIZE);
+        cbb.order(ByteOrder.nativeOrder());
+        colorBuffer = cbb.asFloatBuffer();
+        colorBuffer.put(colors);
+        colorBuffer.position(0);
     }
 
     public void createGlThread(Context context) throws IOException {
@@ -52,7 +75,7 @@ public class PlaneRenderer {
         GLES20.glUseProgram(mProgram);
 
         mPosition = GLES20.glGetAttribLocation(mProgram, "vPosition");
-        mColor_u = GLES20.glGetUniformLocation(mProgram, "u_Color");
+        mColor_u = GLES20.glGetAttribLocation(mProgram, "u_Color");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
     }
@@ -60,15 +83,20 @@ public class PlaneRenderer {
     public void draw(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
 
+        GLES20.glVertexAttribPointer(mPosition, 3, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, vertexBuffer);
         GLES20.glEnableVertexAttribArray(mPosition);
 
-        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, vertexBuffer);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
+        GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
-        GLES20.glUniform4f(mColor_u, 0.0f, 0.0f, 1.0f, 1.0f);
+        GLES20.glVertexAttribPointer(mColor_u, FLOAT_SIZE, GLES20.GL_FLOAT, false, 16, colorBuffer);
+        GLES20.glEnableVertexAttribArray(mColor_u);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexBuffer.remaining()/3);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+
         GLES20.glDisableVertexAttribArray(mPosition);
+        GLES20.glEnableVertexAttribArray(mColor_u);
+        GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
     }
 }

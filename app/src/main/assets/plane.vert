@@ -1,6 +1,6 @@
 attribute vec4 vPosition;
 uniform mat4 uMVPMatrix;
-uniform vec4 u_Color;
+attribute vec4 u_Color;
 varying vec4 v_Color;
 
 void main(){

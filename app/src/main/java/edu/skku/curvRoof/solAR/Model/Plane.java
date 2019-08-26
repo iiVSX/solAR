@@ -18,11 +18,8 @@ public class Plane {
         this.ur = ur;
 
         planeVertex = new float[] {
+                ul[0], ul[1], ul[2],
                 ll[0], ll[1], ll[2],
-                lr[0], lr[1], lr[2],
-                ul[0], ul[1], ul[2],
-
-                ul[0], ul[1], ul[2],
                 lr[0], lr[1], lr[2],
                 ur[0], ur[1], ur[2],
         };
