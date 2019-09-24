@@ -22,8 +22,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.curvsurf.fsweb.FindSurfaceRequester;
-import com.curvsurf.fsweb.ReqForm;
-import com.curvsurf.fsweb.RespForm;
+import com.curvsurf.fsweb.RequestForm;
+import com.curvsurf.fsweb.ResponseForm;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -83,7 +83,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
-    private static final String REQUEST_URL = "http://192.168.123.50:8080/FindSurfaceWeb/ReqFS.do"; // Plane searching server address
+    private static final String REQUEST_URL = "http://developers.curvsurf.com/FindSurface/plane"; // Plane searching server address
     private planeFinder myPlaneFinder;
     private PlaneRenderer planeRenderer = new PlaneRenderer();
     private Plane myPlane;
@@ -326,42 +326,32 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
     }
 
-    public class planeFinder extends AsyncTask<Object, RespForm.PlaneParam, RespForm.PlaneParam> {
+    public class planeFinder extends AsyncTask<Object, ResponseForm.PlaneParam, ResponseForm.PlaneParam> {
         @Override
-        protected RespForm.PlaneParam doInBackground(Object[] objects) {
+        protected ResponseForm.PlaneParam doInBackground(Object[] objects) {
             // Ready Point Cloud
             FloatBuffer points = pointCloudRenderer.getFiltered_pointCloud();
 
             // Ready Request Form
-            ReqForm rf = new ReqForm();
+            RequestForm rf = new RequestForm();
 
-            rf.pointCount  = points.capacity() / 3;
-            rf.pointStride = 0;
-
-            rf.seedIndex = pointCloudRenderer.getSeedPoint();
-            rf.accuracy  = 0.02f;
-            rf.meanDist  = 0.05f;
-            rf.touchR    = 0.1f;
-
-            rf.findType  = 1; // 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
-            rf.radExp    = 5;
-            rf.latExt    = 7;
-            rf.option    = 0;
+            rf.setPointBufferDescription(points.capacity() / 3, 0, 0); //pointcount, pointstride, pointoffset
+            rf.setPointDataDescription(0.02f, 0.05f); //accuracy, meanDistance
+            rf.setTargetROI(pointCloudRenderer.getSeedPoint(), 0.1f);//seedIndex,touchRadius
+            rf.setAlgorithmParameter(RequestForm.SearchLevel.RADICAL, RequestForm.SearchLevel.NORMAL);//LatExt, RadExp
 
             FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
             requestStatus = 1;
             // Request Find Surface
             try{
-                RespForm resp = fsr.request(rf, points);
-                if(resp != null) {
-                    if( resp.fsResult == 1 ) { // fsResult: 0 - Not Found, 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
-                        RespForm.PlaneParam param = resp.getParamAsPlane();
+                ResponseForm resp = fsr.request(rf, points);
+                if(resp != null && resp.isSuccess()) {
+                        ResponseForm.PlaneParam param = resp.getParamAsPlane();
                         requestStatus = 2;
                         return param;
-                    }
-                    else{
-                        requestStatus = 4;
-                    }
+                }
+                else{
+                    requestStatus = 4;
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -375,7 +365,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
 
         @Override
-        protected void onPostExecute(RespForm.PlaneParam o) {
+        protected void onPostExecute(ResponseForm.PlaneParam o) {
             super.onPostExecute(o);
             Log.d("requestStatus", String.valueOf(requestStatus));
             try{
