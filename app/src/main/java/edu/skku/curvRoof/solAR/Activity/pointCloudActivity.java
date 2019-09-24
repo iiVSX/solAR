@@ -3,9 +3,6 @@ package edu.skku.curvRoof.solAR.Activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -75,6 +72,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private boolean isRecorded = false;
     private boolean isPicked = false;
     private boolean pickTouched = false;
+    private static int requestStatus = 0;                  // 0 : not requested
+                                                    // 1 : requested
+                                                    // 2 : plane found
+                                                    // 3 : plane found(Toast alarmed)
+                                                    // 4 : not found
+                                                    // 5 : not found(Toast alarmed)
 
     Handler mHandler = null; // handler for GPS tracker to toast on MainActivity
 
@@ -98,7 +101,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
-        mHandler = new Handler();
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -110,6 +112,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
         t.start();
+
 
         recordBtn = (Button)findViewById(R.id.recordBtn);
         pickBtn = (Button)findViewById(R.id.pickBtn);
@@ -140,6 +143,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     isPicked = true;
                     pickTouched = true;
                     if(myPlaneFinder != null){
+                        if(myPlaneFinder.getStatus() == AsyncTask.Status.FINISHED || myPlaneFinder.getStatus() == AsyncTask.Status.RUNNING){
+                            myPlaneFinder.cancel(true);
+                            myPlaneFinder = new planeFinder();
+                        }
                         myPlaneFinder.execute();
                     }
                 }
@@ -342,17 +349,18 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             rf.option    = 0;
 
             FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
-
+            requestStatus = 1;
             // Request Find Surface
             try{
                 RespForm resp = fsr.request(rf, points);
                 if(resp != null) {
                     if( resp.fsResult == 1 ) { // fsResult: 0 - Not Found, 1 - Plane, 2 - Sphere, 3 - Cylinder, 4 - Cone, 5 - Torus
                         RespForm.PlaneParam param = resp.getParamAsPlane();
+                        requestStatus = 2;
                         return param;
                     }
                     else{
-
+                        requestStatus = 4;
                     }
                 }
             }catch (Exception e){
@@ -369,6 +377,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         @Override
         protected void onPostExecute(RespForm.PlaneParam o) {
             super.onPostExecute(o);
+            Log.d("requestStatus", String.valueOf(requestStatus));
             try{
                 myPlane = new Plane(o.ll, o.lr, o.ur, o.ul);
             }catch (Exception e){

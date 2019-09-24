@@ -14,9 +14,11 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:backgroundTint="#003366"
         android:clickable="true"
-        android:foreground="@drawable/ic_01_menubackground"
-        app:backgroundTint="#00FFFFFF"
+        android:foreground="@drawable/ic_01_menu"
+        android:src="@android:color/transparent"
+        app:backgroundTint="#00FF0000"
         app:layout_constraintBottom_toTopOf="@+id/menuLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,13 +27,16 @@
         android:id="@+id/menuBackground"
         android:layout_width="70dp"
         android:layout_height="0dp"
+        android:background="#003366"
         android:foreground="#003366"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/idTv"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@android:color/transparent"
+        tools:visibility="invisible" />
 
     <TextView
         android:id="@+id/idTv"
@@ -56,11 +61,12 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
@@ -105,7 +111,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
@@ -149,7 +155,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
@@ -193,7 +199,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
@@ -237,7 +243,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="107dp"
+            android:layout_height="120dp"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
