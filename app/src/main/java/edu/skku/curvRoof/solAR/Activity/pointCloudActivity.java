@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -155,6 +156,25 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
             }
         });
+
+
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN :
+                    case MotionEvent.ACTION_MOVE :
+                    case MotionEvent.ACTION_UP   :
+                        float tx = event.getX();
+                        float yy = event.getY();
+
+                        float[] ray = new float[16];
+
+                }
+                return true;
+            }
+        });
+
 
         myPlaneFinder = new planeFinder();
         mUserRequestedInstall = false;
@@ -376,4 +396,39 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
         }
     }
+    float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {
+        float[] points = new float[12];  // {clip query, camera query, camera origin}
+        // Set up the clip-space coordinates of our query point
+        // +x is right:
+        points[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
+        // +y is up (android UI Y is down):
+        points[1] = 1.0f - 2.0f * yPx / glSurfaceView.getMeasuredHeight();
+        points[2] = 1.0f; // +z is forwards (remember clip, not camera)
+        points[3] = 1.0f; // w (homogenous coordinates)
+
+        float[] matrices = new float[32];  // {proj, inverse proj}
+        // If you'll be calling this several times per frame factor out
+        // the next two lines to run when Frame.isDisplayRotationChanged().
+        frame.getCamera().getProjectionMatrix(matrices, 0, 1.0f, 100.0f);
+        Matrix.invertM(matrices, 16, matrices, 0);
+        // Transform clip-space point to camera-space.
+        Matrix.multiplyMV(points, 4, matrices, 16, points, 0);
+        // points[4,5,6] is now a camera-space vector.  Transform to world space to get a point
+        // along the ray.
+        float[] out = new float[6];
+        frame.getCamera().getPose().transformPoint(points, 4, out, 3);
+        // use points[8,9,10] as a zero vector to get the ray head position in world space.
+        frame.getCamera().getPose().transformPoint(points, 8, out, 0);
+        // normalize the direction vector:
+        float dx = out[3] - out[0];
+        float dy = out[4] - out[1];
+        float dz = out[5] - out[2];
+        float scale = 1.0f / (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
+        out[3] = dx * scale;
+        out[4] = dy * scale;
+        out[5] = dz * scale;
+        return out;
+    }
+
+
 }
