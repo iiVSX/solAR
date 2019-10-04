@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import edu.skku.curvRoof.solAR.R;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, ElecfeeDialog.ElecfeeDialogListner{
     private String ID;
     private String func;
     private Context mContext;
@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isFabOpen=false;
     private LinearLayout menull;
     private Animation fab_open, fab_close;
+    //기존 전기요금 등록 텍뷰
+    private TextView elecFee;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +60,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         idTv.setText(ID+"님 반갑습니다!");
 
+        elecFee = findViewById(R.id.elecfee);
+
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
+                    //기존 전기요금 등록
+                    case R.id.elecFab:
+                    case R.id.elecBtn:
+                       openDialog();
+                       break;
+                    //설치면적 측정
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
@@ -75,13 +85,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
+        elecFab.setOnClickListener(onClickListener);
+        elecBtn.setOnClickListener(onClickListener);
 
         measureFab.setOnClickListener(onClickListener);
         measureBtn.setOnClickListener(onClickListener);
 
         menuFab.setOnClickListener(this);
     }
-
+    //기존 전기요금 등록
+    private void openDialog() {
+        ElecfeeDialog exampleDialog = new ElecfeeDialog();
+        exampleDialog.show(getSupportFragmentManager(), "example dialog");
+    }
+    @Override
+    public void applyTexts(String elecfee) {
+        elecFee.setText("등록 전기요금은 " + elecfee +"원 입니다.");
+    }
     @Override
     public void onClick(View v){
         switch(v.getId()){
