@@ -31,7 +31,7 @@ public class ElecfeeDialog extends AppCompatDialogFragment {
 
                     }
                 })
-                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                .setPositiveButton("확인",  new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         String elecfee = editFee.getText().toString();
