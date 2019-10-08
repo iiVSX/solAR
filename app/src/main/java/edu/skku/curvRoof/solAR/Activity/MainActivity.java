@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         idTv.setText(ID+"님 반갑습니다!");
 
-        elecFee = findViewById(R.id.elecfee);
+        elecFee = findViewById(R.id.editfee);
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
