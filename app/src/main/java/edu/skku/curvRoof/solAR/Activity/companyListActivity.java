@@ -1,9 +1,14 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +22,8 @@ import java.net.URL;
 
 import edu.skku.curvRoof.solAR.Model.Company;
 import edu.skku.curvRoof.solAR.R;
+import edu.skku.curvRoof.solAR.companyListViewAdapter;
+import edu.skku.curvRoof.solAR.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
     private static String IP_ADDRESS = "127.0.0.1";
@@ -26,6 +33,31 @@ public class companyListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_list);
+
+        ListView listview;
+        companyListViewAdapter adapter;
+
+        adapter=new companyListViewAdapter();
+
+        listview=(ListView)findViewById(R.id.companyListView);
+        listview.setAdapter(adapter);
+
+        adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu),"한화","100000원",ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept),"경기도 수원시");
+        adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu),"LG","102340원",ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept),"경상북도 경주시");
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                companyListViewItem item=(companyListViewItem)parent.getItemAtPosition(position);
+
+                Drawable cpnyIcon=item.getCompanyIcon();
+                String cpnyName=item.getCompanyName();
+                String amt=item.getAmount();
+
+                Drawable rgnIcon=item.getRegionIcon();
+                String rgnName=item.getRegionName();
+            }
+        });
 
         jsonParser parser = new jsonParser();
         parser.execute("http://"+IP_ADDRESS+"/PHP_connection.php","");

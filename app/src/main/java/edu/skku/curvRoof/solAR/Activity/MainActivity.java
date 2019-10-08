@@ -79,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(intent);
                         break;
 
+                    case R.id.askFab:
+                    case R.id.askBtn:
+                        Intent intentlist= new Intent(MainActivity.this,companyListActivity.class);
+                        startActivity(intentlist);
+                        break;
                     default:
                         break;
 
@@ -90,6 +95,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         measureFab.setOnClickListener(onClickListener);
         measureBtn.setOnClickListener(onClickListener);
+
+        askFab.setOnClickListener(onClickListener);
+        askBtn.setOnClickListener(onClickListener);
 
         menuFab.setOnClickListener(this);
     }

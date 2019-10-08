@@ -3,9 +3,9 @@
     package="edu.skku.curvRoof.solAR">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.camera.ar"
@@ -13,30 +13,35 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_logoicon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_logoicon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.choiceActivity"/>
+        <activity android:name=".companyListViewItem"></activity>
+        <activity android:name=".Activity.choiceActivity" />
         <activity android:name=".Activity.companyListActivity" />
         <activity android:name=".Activity.receiptActivity" />
         <activity android:name=".Activity.resultActivity" />
         <activity android:name=".Activity.renderingActivity" />
-        <activity android:name=".Activity.pointCloudActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.loginActivity"/>
-        <activity android:name=".Activity.MainActivity"/>
+        <activity
+            android:name=".Activity.pointCloudActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.loginActivity" />
+        <activity android:name=".Activity.MainActivity" />
         <activity android:name=".Activity.startSplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="com.google.ar.core" android:value="required"/>
 
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
     </application>
 
 </manifest>
