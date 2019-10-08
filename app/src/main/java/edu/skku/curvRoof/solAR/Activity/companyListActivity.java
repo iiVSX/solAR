@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import edu.skku.curvRoof.solAR.Model.Company;
 import edu.skku.curvRoof.solAR.R;
@@ -26,24 +27,23 @@ import edu.skku.curvRoof.solAR.companyListViewAdapter;
 import edu.skku.curvRoof.solAR.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "127.0.0.1";
+    private static String IP_ADDRESS = "115.145.238.101";
     private String jsonString;
+    private ArrayList<Company> companyList = new ArrayList<Company>();
+    private ListView listview;
+    private companyListViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_list);
 
-        ListView listview;
         companyListViewAdapter adapter;
 
         adapter=new companyListViewAdapter();
 
         listview=(ListView)findViewById(R.id.companyListView);
         listview.setAdapter(adapter);
-
-        adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu),"한화","100000원",ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept),"경기도 수원시");
-        adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu),"LG","102340원",ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept),"경상북도 경주시");
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -59,11 +59,11 @@ public class companyListActivity extends AppCompatActivity {
             }
         });
 
-        jsonParser parser = new jsonParser();
-        parser.execute("http://"+IP_ADDRESS+"/PHP_connection.php","");
+        phpConnection conn = new phpConnection();
+        conn.execute("http://"+IP_ADDRESS+"/PHP_connection.php","");
     }
 
-    private class jsonParser extends AsyncTask<String, Void, String>{
+    private class phpConnection extends AsyncTask<String, Void, String>{
 
 
         @Override
@@ -122,12 +122,12 @@ public class companyListActivity extends AppCompatActivity {
             }
             else{
                 jsonString = s;
-                putInfo();
+                jsonParser();
             }
             super.onPostExecute(s);
         }
     }
-    public void putInfo(){
+    public void jsonParser(){
         try{
             JSONObject jsonObject = new JSONObject(jsonString);
             JSONArray jsonArray = jsonObject.getJSONArray("company_list");
@@ -152,11 +152,17 @@ public class companyListActivity extends AppCompatActivity {
                 com.setBuildcnt(buildCnt);
                 com.setEmail(email);
                 com.setTel(tel);
+
+                companyList.add(com);
             }
+
+            for(Company com : companyList){
+                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm());
+            }
+            adapter.notifyDataSetChanged();
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 }
 
