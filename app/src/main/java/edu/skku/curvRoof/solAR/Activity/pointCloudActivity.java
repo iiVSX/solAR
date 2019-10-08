@@ -90,6 +90,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private Plane myPlane;
     private boolean normalValid = false;
 
+    private float[] ray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,9 +168,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     case MotionEvent.ACTION_MOVE :
                     case MotionEvent.ACTION_UP   :
                         float tx = event.getX();
-                        float yy = event.getY();
+                        float ty = event.getY();
 
-                        float[] ray = new float[16];
+                        try{
+                            ray = screenPointToWorldRay(tx, ty, session.update());
+                        }catch (Exception e){
+                            Log.d("hit test", e.getMessage());
+                        }
+
 
                 }
                 return true;
@@ -398,7 +405,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     }
     float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {
         float[] points = new float[12];  // {clip query, camera query, camera origin}
-        // Set up the clip-space coordinates of our query point
+        // Set up the clip-space coordinates of our query point( 핸드폰 display 좌표를 local space로 변환)
         // +x is right:
         points[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
         // +y is up (android UI Y is down):
@@ -406,24 +413,34 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         points[2] = 1.0f; // +z is forwards (remember clip, not camera)
         points[3] = 1.0f; // w (homogenous coordinates)
 
+
         float[] matrices = new float[32];  // {proj, inverse proj}
         // If you'll be calling this several times per frame factor out
         // the next two lines to run when Frame.isDisplayRotationChanged().
         frame.getCamera().getProjectionMatrix(matrices, 0, 1.0f, 100.0f);
         Matrix.invertM(matrices, 16, matrices, 0);
         // Transform clip-space point to camera-space.
+        // point[4],point[5],point[6],point[7]에 (camera space좌표) = (projection MTX inverse) * (local space좌표)
         Matrix.multiplyMV(points, 4, matrices, 16, points, 0);
         // points[4,5,6] is now a camera-space vector.  Transform to world space to get a point
         // along the ray.
         float[] out = new float[6];
+
+
+
+        //터치한 ray의 카메라 좌표 -> world 좌표
         frame.getCamera().getPose().transformPoint(points, 4, out, 3);
-        // use points[8,9,10] as a zero vector to get the ray head position in world space.
+        // use points[8,9,10] as a zero vector to get the ray head position in world space.(카메라에서 0,0,0을 world 좌표로 옮김)
         frame.getCamera().getPose().transformPoint(points, 8, out, 0);
         // normalize the direction vector:
         float dx = out[3] - out[0];
         float dy = out[4] - out[1];
         float dz = out[5] - out[2];
         float scale = 1.0f / (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+        // 실제 ray의 형태
+        // A(out[0], out[1], out[2]),
+        // B(out[0] + out[3], out[1] + out[4], out[2] + out[5])
         out[3] = dx * scale;
         out[4] = dy * scale;
         out[5] = dz * scale;
