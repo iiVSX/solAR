@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".companyListViewItem"></activity>
+        <activity android:name=".moveSplashActivity"></activity>
+        <activity android:name=".companyListViewItem" />
         <activity android:name=".Activity.choiceActivity" />
         <activity android:name=".Activity.companyListActivity" />
         <activity android:name=".Activity.receiptActivity" />
