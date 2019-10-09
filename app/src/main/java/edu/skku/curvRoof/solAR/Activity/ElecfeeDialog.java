@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import edu.skku.curvRoof.solAR.R;
 
@@ -38,7 +39,7 @@ public class ElecfeeDialog extends AppCompatDialogFragment {
                         listner.applyTexts((elecfee));
                     }
                 });
-        editFee = view.findViewById(R.id.editfee);
+        editFee = (EditText) view.findViewById(R.id.elecfee);
 
         return builder.create();
     }
