@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         idTv.setText(ID+"님 반갑습니다!");
 
-        elecFee = findViewById(R.id.editfee);
+        elecFee = findViewById(R.id.elecfee);
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     public void applyTexts(String elecfee) {
-        elecFee.setText("등록 전기요금은 " + elecfee +"원 입니다.");
+        //TextView aa = (TextView) findViewById(R.id.eaa);
+        elecFee.setText("등록 전기요금은 "+ elecfee +"원 입니다.");
     }
     @Override
     public void onClick(View v){

@@ -91,7 +91,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private boolean normalValid = false;
 
     private float[] ray;
-
+    //tmp
+    private Button tmpBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +105,19 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
+        //tmp
+        tmpBtn = (Button)findViewById(R.id.tmpbtn);
+        tmpBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
+                startActivity(i);
+            }
+        });
+
+
+
+        //
 
         Thread t = new Thread(new Runnable() {
             @Override
