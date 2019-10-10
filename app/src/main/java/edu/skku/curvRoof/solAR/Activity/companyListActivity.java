@@ -27,20 +27,16 @@ import edu.skku.curvRoof.solAR.companyListViewAdapter;
 import edu.skku.curvRoof.solAR.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "115.145.238.101";
+    private static String IP_ADDRESS = "203.252.34.202";
     private String jsonString;
     private ArrayList<Company> companyList = new ArrayList<Company>();
     private ListView listview;
-    private companyListViewAdapter adapter;
+    private companyListViewAdapter adapter = new companyListViewAdapter();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_list);
-
-        companyListViewAdapter adapter;
-
-        adapter=new companyListViewAdapter();
 
         listview=(ListView)findViewById(R.id.companyListView);
         listview.setAdapter(adapter);
@@ -60,7 +56,7 @@ public class companyListActivity extends AppCompatActivity {
         });
 
         phpConnection conn = new phpConnection();
-        conn.execute("http://"+IP_ADDRESS+"/PHP_connection.php","");
+        conn.execute("http://"+IP_ADDRESS+"/get_company.php","");
     }
 
     private class phpConnection extends AsyncTask<String, Void, String>{
@@ -161,7 +157,7 @@ public class companyListActivity extends AppCompatActivity {
             }
             adapter.notifyDataSetChanged();
         }catch (Exception e){
-            e.printStackTrace();
+            Log.d("PLUSULTRA", e.getMessage());
         }
     }
 }

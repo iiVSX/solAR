@@ -41,6 +41,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".calculateSplashActivity"
+            android:screenOrientation="landscape">
+        </activity>
 
         <meta-data
             android:name="com.google.ar.core"
