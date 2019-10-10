@@ -1,4 +1,4 @@
-package edu.skku.curvRoof.solAR;
+package edu.skku.curvRoof.solAR.Utils;
 
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;

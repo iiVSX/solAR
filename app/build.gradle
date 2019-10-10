@@ -26,6 +26,7 @@ dependencies {
     implementation 'com.google.ar:core:1.9.0'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
     implementation files('libs/FSReq.jar')
+    implementation 'com.google.firebase:firebase-database:16.0.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

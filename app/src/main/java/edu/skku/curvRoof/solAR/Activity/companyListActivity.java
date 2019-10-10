@@ -23,8 +23,8 @@ import java.util.ArrayList;
 
 import edu.skku.curvRoof.solAR.Model.Company;
 import edu.skku.curvRoof.solAR.R;
-import edu.skku.curvRoof.solAR.companyListViewAdapter;
-import edu.skku.curvRoof.solAR.companyListViewItem;
+import edu.skku.curvRoof.solAR.Utils.companyListViewAdapter;
+import edu.skku.curvRoof.solAR.Utils.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
     private static String IP_ADDRESS = "203.252.34.202";

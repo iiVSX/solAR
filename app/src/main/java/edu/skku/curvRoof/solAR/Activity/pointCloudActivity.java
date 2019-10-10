@@ -45,7 +45,6 @@ import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.GpsUtil;
-import edu.skku.curvRoof.solAR.moveSplashActivity;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();

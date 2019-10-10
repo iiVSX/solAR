@@ -1,7 +1,16 @@
 package edu.skku.curvRoof.solAR.Model;
 
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class User {
-    private int userID;
+    private String userID;
     private String userNm;
     private double latitude;
     private double longitude;
@@ -14,13 +23,47 @@ public class User {
     private String email;
     private String tel;
 
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
-    public int getUserID() {
-        return userID;
+    User(final String email){
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+        myRef.child("user_id").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean flag = false;
+                int user_num = 0;
+                for(DataSnapshot child : dataSnapshot.getChildren()){
+                    if(child.getValue().equals(email)){
+                        userID = child.getKey();
+                        flag = true;
+                    }
+                    user_num++;
+                }
+                if(flag == false){
+                    userID = String.valueOf(user_num + 1);
+                    createUser();
+                }
+                else{
+                    getUser();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
+    public void createUser(){
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    }
+    public void getUser(){
+
+    }
+    public String getUserID() {
+        return userID;
     }
 
     public String getUserNm() {

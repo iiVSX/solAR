@@ -1,4 +1,4 @@
-package edu.skku.curvRoof.solAR;
+package edu.skku.curvRoof.solAR.Utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import edu.skku.curvRoof.solAR.R;
-import edu.skku.curvRoof.solAR.companyListViewItem;
 
 public class companyListViewAdapter extends BaseAdapter {
 

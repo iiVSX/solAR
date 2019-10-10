@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".moveSplashActivity"
+        <activity android:name=".Activity.receiptActivity$moveSplashActivity"
             android:screenOrientation="landscape">
         </activity>
         <activity android:name=".Activity.choiceActivity" />
@@ -40,7 +40,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".calculateSplashActivity"
+        <activity android:name=".Activity.receiptActivity$calculateSplashActivity"
             android:screenOrientation="landscape">
         </activity>
 

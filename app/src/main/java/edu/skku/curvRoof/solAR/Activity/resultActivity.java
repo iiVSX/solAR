@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -29,6 +31,8 @@ public class resultActivity extends AppCompatActivity {
     public double expectfee;// = i.getDoubleExtra("expectfee",0);
     public double userfee;
     public double down;
+    private Button companyListBtn;
+    Intent intent = new Intent(this, companyListActivity.class);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +60,17 @@ public class resultActivity extends AppCompatActivity {
         expectGen = findViewById(R.id.expectgen); expectGen.setText(tmpeg+"kWh");
         realUse = findViewById(R.id.realuse); realUse.setText(tmprl+"kWh");
         expectFee = findViewById(R.id.expectfee); expectFee.setText(tmpef+"원");
+        companyListBtn = findViewById(R.id.companyListBtn);
 
         down = (1-(expectfee/userfee))*100;
         setPieChart();
 
+        companyListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(intent);
+            }
+        });
     }
 
     private void setPieChart(){

@@ -9,8 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import edu.skku.curvRoof.solAR.R;
-import edu.skku.curvRoof.solAR.calculateSplashActivity;
-import edu.skku.curvRoof.solAR.moveSplashActivity;
 
 public class renderingActivity extends AppCompatActivity {
     // 임시 값 ///
@@ -34,7 +32,7 @@ public class renderingActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_rendering);
 
-        Intent intent = new Intent(this, calculateSplashActivity.class);
+        Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
         startActivity(intent);
 
         //결과화면으로
