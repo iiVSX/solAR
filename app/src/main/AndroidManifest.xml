@@ -23,7 +23,6 @@
         <activity android:name=".moveSplashActivity"
             android:screenOrientation="landscape">
         </activity>
-        <activity android:name=".companyListViewItem" />
         <activity android:name=".Activity.choiceActivity" />
         <activity android:name=".Activity.companyListActivity" />
         <activity android:name=".Activity.receiptActivity" />
