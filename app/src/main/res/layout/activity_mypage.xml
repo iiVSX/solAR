@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.mypageActivity">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/beforeFab"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:backgroundTint="#003366"
+        android:clickable="true"
+        android:src="@android:color/transparent"
+        app:backgroundTint="#00FF0000"
+        android:foreground="@drawable/ic_03_next"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="52dp" />
+
+</android.support.constraint.ConstraintLayout>
