@@ -42,6 +42,7 @@ import javax.microedition.khronos.opengles.GL10;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
+import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.GpsUtil;
@@ -90,7 +91,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private Plane myPlane;
     private boolean normalValid = false;
 
-    private float[] ray;
+    private float[] ray = null;
+    private boolean isRay = false;
+    Frame frame;
+    LineRender lineRenderer = new LineRender();
     //tmp
     private Button tmpBtn;
     @Override
@@ -196,6 +200,38 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
 
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {		// pointCloudActivity (onCreate)
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN :
+                    case MotionEvent.ACTION_MOVE :
+                    case MotionEvent.ACTION_UP   :
+                        float tx = event.getX();
+                        float ty = event.getY();
+
+                        try{
+                            ray = screenPointToWorldRay(tx, ty, frame);
+                            float[] rayStart = new float[]{ray[0], ray[1], ray[2]};
+                            float[] rayEnd = new float[]{ray[0] + ray[3], ray[1] + ray[4], ray[2] + ray[5]};
+                            lineRenderer.bufferUpdate(rayStart, rayEnd);
+                            if(myPlane != null) {
+                                int hitResult = myPlane.hitPoint(ray);
+                                Log.d("Ray", "hit result : " + hitResult);
+                                Toast.makeText(getApplicationContext(), "hit Result : " + hitResult, Toast.LENGTH_SHORT ).show();
+                            }
+                            isRay = true;
+                        }catch (Exception e){
+                            Log.d("hit test", e.getMessage());
+                        }
+
+
+                }
+                return true;
+            }
+        });
+
+
 
         myPlaneFinder = new planeFinder();
         mUserRequestedInstall = false;
@@ -282,6 +318,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             backgroundRenderer.createOnGlThread(this);
             pointCloudRenderer.createGlThread(this);
             planeRenderer.createGlThread(this);
+            lineRenderer.createGlThread(this);
 
         }catch (IOException e){
             e.getMessage();
@@ -310,7 +347,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         try{
             session.setCameraTextureName(backgroundRenderer.getTextureId());
 
-            Frame frame = session.update();
+            frame = session.update();
             Camera camera = frame.getCamera();
 
             backgroundRenderer.draw(frame);
@@ -361,6 +398,16 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
                 pointCloudRenderer.draw_final(vpMatrix);
+            }
+            if(isRay){		//onDrawFrame
+                if(camera.getTrackingState() == TrackingState.TRACKING) {
+                    // Fixed Work -> ARCore
+                    camera.getViewMatrix(viewMatrix, 0);
+                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+                }
+
+                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+                lineRenderer.draw(vpMatrix);
             }
         }catch(CameraNotAvailableException e){
             finish();
@@ -417,47 +464,42 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
         }
     }
-    float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {
-        float[] points = new float[12];  // {clip query, camera query, camera origin}
-        // Set up the clip-space coordinates of our query point( 핸드폰 display 좌표를 local space로 변환)
-        // +x is right:
-        points[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
+    float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {		// pointCloudActivity
+        float[] ray_clip = new float[4];
+        ray_clip[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
         // +y is up (android UI Y is down):
-        points[1] = 1.0f - 2.0f * yPx / glSurfaceView.getMeasuredHeight();
-        points[2] = 1.0f; // +z is forwards (remember clip, not camera)
-        points[3] = 1.0f; // w (homogenous coordinates)
+        ray_clip[1] = 1.0f - 2.0f * yPx / glSurfaceView.getMeasuredHeight();
+        ray_clip[2] = -1.0f; // +z is forwards (remember clip, not camera)
+        ray_clip[3] = 1.0f; // w (homogenous coordinates)
 
+        float[] ProMatrices = new float[32];  // {proj, inverse proj}
+        frame.getCamera().getProjectionMatrix(ProMatrices, 0, 1.0f, 100.0f);
+        Matrix.invertM(ProMatrices, 16, ProMatrices, 0);
+        float[] ray_eye = new float[4];
+        Matrix.multiplyMV(ray_eye, 0, ProMatrices, 16, ray_clip, 0);
 
-        float[] matrices = new float[32];  // {proj, inverse proj}
-        // If you'll be calling this several times per frame factor out
-        // the next two lines to run when Frame.isDisplayRotationChanged().
-        frame.getCamera().getProjectionMatrix(matrices, 0, 1.0f, 100.0f);
-        Matrix.invertM(matrices, 16, matrices, 0);
-        // Transform clip-space point to camera-space.
-        // point[4],point[5],point[6],point[7]에 (camera space좌표) = (projection MTX inverse) * (local space좌표)
-        Matrix.multiplyMV(points, 4, matrices, 16, points, 0);
-        // points[4,5,6] is now a camera-space vector.  Transform to world space to get a point
-        // along the ray.
+        ray_eye[2] = -1.0f;
+        ray_eye[3] = 0.0f;
+
         float[] out = new float[6];
+        float[] ray_wor = new float[4];
+        float[] ViewMatrices = new float[32];
 
+        frame.getCamera().getViewMatrix(ViewMatrices, 0);
+        Matrix.invertM(ViewMatrices, 16, ViewMatrices, 0);
+        Matrix.multiplyMV(ray_wor, 0, ViewMatrices, 16, ray_eye, 0);
 
+        float size = (float)Math.sqrt(ray_wor[0] * ray_wor[0] + ray_wor[1] * ray_wor[1] + ray_wor[2] * ray_wor[2]);
 
-        //터치한 ray의 카메라 좌표 -> world 좌표
-        frame.getCamera().getPose().transformPoint(points, 4, out, 3);
-        // use points[8,9,10] as a zero vector to get the ray head position in world space.(카메라에서 0,0,0을 world 좌표로 옮김)
-        frame.getCamera().getPose().transformPoint(points, 8, out, 0);
-        // normalize the direction vector:
-        float dx = out[3] - out[0];
-        float dy = out[4] - out[1];
-        float dz = out[5] - out[2];
-        float scale = 1.0f / (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
+        out[3] = ray_wor[0] / size;
+        out[4] = ray_wor[1] / size;
+        out[5] = ray_wor[2] / size;
 
-        // 실제 ray의 형태
-        // A(out[0], out[1], out[2]),
-        // B(out[0] + out[3], out[1] + out[4], out[2] + out[5])
-        out[3] = dx * scale;
-        out[4] = dy * scale;
-        out[5] = dz * scale;
+        out[0] = frame.getCamera().getPose().tx();
+        out[1] = frame.getCamera().getPose().ty();
+        out[2] = frame.getCamera().getPose().tz();
+        //Log.d("Ray", out[0] + " " + out[1] + " " + out[2] + " " + out[3] + " " + out[4] + " " + out[5] + " ");
+
         return out;
     }
 
