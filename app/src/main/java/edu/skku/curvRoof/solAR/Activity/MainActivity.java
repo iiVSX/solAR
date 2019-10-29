@@ -84,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intentlist= new Intent(MainActivity.this,companyListActivity.class);
                         startActivity(intentlist);
                         break;
+
+                    case R.id.mypageFab:
+                    case R.id.myPageBtn:
+                        Intent intentmypage=new Intent(MainActivity.this,mypageActivity.class);
+                        startActivity(intentmypage);
+                        break;
+
                     default:
                         break;
 
@@ -98,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         askFab.setOnClickListener(onClickListener);
         askBtn.setOnClickListener(onClickListener);
+
+        myPageFab.setOnClickListener(onClickListener);
+        myPageBtn.setOnClickListener(onClickListener);
 
         menuFab.setOnClickListener(this);
     }

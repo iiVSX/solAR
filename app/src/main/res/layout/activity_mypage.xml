@@ -1,22 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Activity.mypageActivity">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/beforeFab"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:backgroundTint="#003366"
-        android:clickable="true"
-        android:src="@android:color/transparent"
-        app:backgroundTint="#00FF0000"
-        android:foreground="@drawable/ic_03_next"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="52dp" />
+        android:layout_weight="1"
+        android:background="#003366"
+        android:orientation="horizontal">
 
-</android.support.constraint.ConstraintLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/beforeFab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:background="#003366"
+            android:clickable="true"
+            android:foreground="@drawable/ic_03_next"
+            android:src="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/userText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:fontFamily="@font/nanumgothicbold"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:textSize="24sp"
+            android:gravity="center_vertical|end"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#003366"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/infoFab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:foreground="@drawable/ic_15_userinfo"
+            app:backgroundTint="#00FFFFFF"
+            app:fabSize="auto" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/infoBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:fontFamily="@font/nanumgothicbold"
+                android:gravity="bottom|start"
+                android:paddingBottom="10dp"
+                android:text="개인 정보 수정"
+                android:textColor="#003366"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/infoText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:fontFamily="@font/nanumgothic"
+                android:text="연락처, 이메일 및 주소 등을 수정하거나 등록할 수 있습니다." />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#003366"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/historyFab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:foreground="@drawable/ic_18_choosedatecircle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/historyBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:fontFamily="@font/nanumgothicbold"
+                android:gravity="bottom|start"
+                android:paddingBottom="10dp"
+                android:text="히스토리 확인"
+                android:textColor="#003366"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/historyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/nanumgothic"
+                android:text="실행했던 결과들의 목록을 보여줍니다." />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#003366"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/settingsFab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:foreground="@drawable/ic_05_settings" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFFFF"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/settingsBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:fontFamily="@font/nanumgothicbold"
+                android:gravity="bottom|start"
+                android:paddingBottom="10dp"
+                android:text="환경설정"
+                android:textColor="#003366"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/settingsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/nanumgothic"
+                android:text="어플리케이션의 환경을 재설정 합니다." />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

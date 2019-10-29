@@ -27,7 +27,7 @@ import edu.skku.curvRoof.solAR.Utils.companyListViewAdapter;
 import edu.skku.curvRoof.solAR.Utils.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "203.252.34.202";
+    private static String IP_ADDRESS = "203.252.34.157";
     private String jsonString;
     private ArrayList<Company> companyList = new ArrayList<Company>();
     private ListView listview;
