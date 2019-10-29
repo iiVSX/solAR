@@ -19,13 +19,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String ID;
     private String func;
     private Context mContext;
-    private ImageView menuBackground;
-    private FloatingActionButton menuFab, elecFab, conditionFab, measureFab, askFab, myPageFab;
-    private Button elecBtn, conditionBtn, measureBtn, askBtn, myPageBtn;
+    private FloatingActionButton elecFab,  measureFab, askFab, myPageFab;
+    private Button elecBtn, measureBtn, askBtn, myPageBtn;
     private TextView idTv;
-    private boolean isFabOpen=false;
     private LinearLayout menull;
-    private Animation fab_open, fab_close;
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
     @Override
@@ -34,24 +31,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mContext=getApplicationContext();
 
-        fab_open= AnimationUtils.loadAnimation(mContext,R.anim.fab_open);
-        fab_close=AnimationUtils.loadAnimation(mContext,R.anim.fab_close);
 
         Intent fromIntent = getIntent();
         ID = fromIntent.getStringExtra("ID");
 
-        menuFab=(FloatingActionButton)findViewById(R.id.menuFab);
-        menuBackground=(ImageView)findViewById(R.id.menuBackground);
         menull=(LinearLayout)findViewById(R.id.menuLinearLayout);
 
         elecFab=(FloatingActionButton)findViewById(R.id.elecFab);
-        conditionFab=(FloatingActionButton)findViewById(R.id.conditionFab);
         measureFab = (FloatingActionButton)findViewById(R.id.measureFab);
         askFab=(FloatingActionButton)findViewById(R.id.askFab);
         myPageFab=(FloatingActionButton)findViewById(R.id.mypageFab);
 
         elecBtn=(Button)findViewById(R.id.elecBtn);
-        conditionBtn=(Button)findViewById(R.id.conditionBtn);
         measureBtn=(Button)findViewById(R.id.measureBtn);
         askBtn=(Button)findViewById(R.id.askBtn);
         myPageBtn=(Button)findViewById(R.id.myPageBtn);
@@ -109,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myPageFab.setOnClickListener(onClickListener);
         myPageBtn.setOnClickListener(onClickListener);
 
-        menuFab.setOnClickListener(this);
     }
     //기존 전기요금 등록
     private void openDialog() {
@@ -121,47 +111,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //TextView aa = (TextView) findViewById(R.id.eaa);
         elecFee.setText("등록 전기요금은 "+ elecfee +"원 입니다.");
     }
-    @Override
-    public void onClick(View v){
-        switch(v.getId()){
-            case R.id.menuFab:
-                toogleFab();
-                break;
-        }
-    }
 
-    private void toogleFab(){
-        if(isFabOpen){
-            menuFab.setForeground(getResources().getDrawable(R.drawable.ic_01_menu));
-            menuBackground.startAnimation(fab_close);
-            menull.startAnimation(fab_close);
-            elecFab.setClickable(false);
-            elecBtn.setClickable(false);
-            conditionFab.setClickable(false);
-            conditionBtn.setClickable(false);
-            measureFab.setClickable(false);
-            measureBtn.setClickable(false);
-            askFab.setClickable(false);
-            askBtn.setClickable(false);
-            myPageFab.setClickable(false);
-            myPageBtn.setClickable(false);
-            isFabOpen=false;
-        }
-        else{
-            menuFab.setForeground(getResources().getDrawable(R.drawable.ic_02_closebackground));
-            menuBackground.startAnimation(fab_open);
-            menull.startAnimation(fab_open);
-            elecFab.setClickable(true);
-            elecBtn.setClickable(true);
-            conditionFab.setClickable(true);
-            conditionBtn.setClickable(true);
-            measureFab.setClickable(true);
-            measureBtn.setClickable(true);
-            askFab.setClickable(true);
-            askBtn.setClickable(true);
-            myPageFab.setClickable(true);
-            myPageBtn.setClickable(true);
-            isFabOpen=true;
-        }
+    @Override
+    public void onClick(View v) {
+
     }
 }

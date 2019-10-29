@@ -1,37 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Activity.MainActivity">
 
 
-    <ImageView
-        android:id="@+id/menuBackground"
-        android:layout_width="70dp"
-        android:layout_height="728dp"
-        android:layout_marginEnd="8dp"
-        android:background="#003366"
-        android:foreground="#003366"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@android:color/transparent"
-        tools:visibility="invisible" />
-
     <LinearLayout
         android:id="@+id/linearLayout3"
-        android:layout_width="404dp"
-        android:layout_height="86dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/menuLinearLayout"
-        app:layout_constraintTop_toTopOf="@+id/menuBackground">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#003366"
+        android:orientation="horizontal">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/menuFab"
@@ -39,8 +21,9 @@
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
             android:backgroundTint="#003366"
             android:clickable="true"
             android:foreground="@drawable/ic_01_menu"
@@ -49,11 +32,9 @@
 
         <TextView
             android:id="@+id/idTv"
-            android:layout_width="323dp"
-            android:layout_height="76dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
             android:fontFamily="@font/nanumgothicbold"
             android:gravity="center"
             android:textColor="#003366"
@@ -62,27 +43,22 @@
 
     <LinearLayout
         android:id="@+id/menuLinearLayout"
-        android:layout_width="0dp"
-        android:layout_height="608dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        android:paddingTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="#003366"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/elecFab"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="15dp"
                 android:background="#00FFFFFF"
@@ -93,12 +69,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#FFFFFF"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/elecBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1.5"
                     android:background="#00FFFFFF"
                     android:fontFamily="@font/nanumgothicbold"
@@ -111,6 +89,7 @@
                     android:id="@+id/elecfee"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
                     android:text="최근 3개월 전기요금을 등록합니다." />
@@ -121,58 +100,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/conditionFab"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="15dp"
-                android:background="#00FFFFFF"
-                android:clickable="true"
-                android:foreground="@drawable/ic_07_filtering" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/conditionBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.5"
-                    android:background="#00FFFFFF"
-                    android:fontFamily="@font/nanumgothicbold"
-                    android:gravity="start|center_vertical"
-                    android:text="설치 조건 설정"
-                    android:textColor="#003366"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/nanumgothic"
-                    android:text="최소 절감 전기요금, 최대 예산 등을 설정할 수 있습니다." />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="#003366"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/measureFab"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="15dp"
                 android:background="#00FFFFFF"
@@ -182,12 +119,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#FFFFFF"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/measureBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1.5"
                     android:background="#00FFFFFF"
                     android:fontFamily="@font/nanumgothicbold"
@@ -199,6 +138,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
                     android:text="설치 위치를 유형별로 선택하며, 면적을 측정합니다." />
@@ -209,14 +149,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="#003366"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/askFab"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="15dp"
                 android:background="#00FFFFFF"
@@ -226,12 +168,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#FFFFFF"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/askBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1.5"
                     android:background="#00FFFFFF"
                     android:fontFamily="@font/nanumgothicbold"
@@ -243,6 +187,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
                     android:text="시뮬레이션을 기반으로 업체에게 견적을 의뢰합니다." />
@@ -253,7 +198,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="#003366"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
@@ -271,13 +218,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#FFFFFF"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/myPageBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.2"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1.5"
                     android:background="#00FFFFFF"
                     android:fontFamily="@font/nanumgothicbold"
                     android:gravity="start|center_vertical"
@@ -287,7 +236,8 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
                     android:text="업체를 선정하고, 진행 중인 설치 작업을 확인합니다. 개인 정보를 수정 혹은 등록할 수 있습니다." />
@@ -296,7 +246,15 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:layout_weight="3"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_solar_logo" />
+
     </LinearLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
