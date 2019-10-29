@@ -92,9 +92,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private boolean normalValid = false;
 
     private float[] ray = null;
+    private float[] normalRay= null;
     private boolean isRay = false;
+    private int holedPoint = 0;
     Frame frame;
     LineRender lineRenderer = new LineRender();
+    LineRender normalLineRenderer = new LineRender();
+    private float[] pop;
+
     //tmp
     private Button tmpBtn;
     @Override
@@ -203,30 +208,49 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {		// pointCloudActivity (onCreate)
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_DOWN :
-                    case MotionEvent.ACTION_MOVE :
-                    case MotionEvent.ACTION_UP   :
-                        float tx = event.getX();
-                        float ty = event.getY();
+                float tx = event.getX();
+                float ty = event.getY();
+                // ray 생성
+                ray = screenPointToWorldRay(tx, ty, frame);
+                float[] rayStart = new float[]{ray[0], ray[1], ray[2]};
+                float[] rayEnd = new float[]{ray[0] + ray[3], ray[1] + ray[4], ray[2] + ray[5]};
+                lineRenderer.bufferUpdate(rayStart, rayEnd);
 
-                        try{
-                            ray = screenPointToWorldRay(tx, ty, frame);
-                            float[] rayStart = new float[]{ray[0], ray[1], ray[2]};
-                            float[] rayEnd = new float[]{ray[0] + ray[3], ray[1] + ray[4], ray[2] + ray[5]};
-                            lineRenderer.bufferUpdate(rayStart, rayEnd);
-                            if(myPlane != null) {
-                                int hitResult = myPlane.hitPoint(ray);
-                                Log.d("Ray", "hit result : " + hitResult);
-                                Toast.makeText(getApplicationContext(), "hit Result : " + hitResult, Toast.LENGTH_SHORT ).show();
-                            }
-                            isRay = true;
-                        }catch (Exception e){
-                            Log.d("hit test", e.getMessage());
-                        }
-
-
+                // hit Test
+                if(myPlane != null) {
+                    int hitResult = myPlane.hitPoint(ray);
+                    Log.d("Ray", "hit result : " + hitResult);
+                    Toast.makeText(getApplicationContext(), "hit Result : " + hitResult, Toast.LENGTH_SHORT ).show();
+                    holedPoint = hitResult;
                 }
+                isRay = true;
+
+                // obj 움직이기
+                if(myPlane != null){            // 1:ll, 2:lr, 3:ur, 4:ul
+                    switch(event.getAction()) {
+                        case MotionEvent.ACTION_DOWN :
+                            Log.d("moveP",
+                                    "\nll : "+ myPlane.getLl()[0]+", "+ myPlane.getLl()[1]+", "+ myPlane.getLl()[2]+"\n"+
+                                            "lr : "+ myPlane.getLr()[0]+", "+ myPlane.getLr()[1]+", "+ myPlane.getLr()[2]+"\n"+
+                                            "ul : "+ myPlane.getUl()[0]+", "+ myPlane.getUl()[1]+", "+ myPlane.getUl()[2]+"\n"+
+                                            "ur : "+ myPlane.getUr()[0]+", "+ myPlane.getUr()[1]+", "+ myPlane.getUr()[2]+"\n");
+                        case MotionEvent.ACTION_MOVE :
+                            if(myPlane != null) {
+                                pop = myPlane.rayOnPlane(ray);  // point on Plane
+                                Log.d("moveP", "\n" + holedPoint +" : "+ pop[0] + "/ " + pop[1] + "/ " + pop[2] );
+                                if(holedPoint == 1) myPlane.setLl(pop);
+                                else if(holedPoint == 2) myPlane.setLr(pop);
+                                else if(holedPoint == 3) myPlane.setUr(pop);
+                                else if(holedPoint == 4) myPlane.setUl(pop);
+                                planeRenderer.bufferUpdate(myPlane);
+                            }
+
+                            break;
+                        case MotionEvent.ACTION_UP   :
+                            holedPoint = 0;
+                    }
+                }
+
                 return true;
             }
         });
@@ -319,6 +343,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             pointCloudRenderer.createGlThread(this);
             planeRenderer.createGlThread(this);
             lineRenderer.createGlThread(this);
+            normalLineRenderer.createGlThread(this);
 
         }catch (IOException e){
             e.getMessage();
@@ -369,7 +394,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     pointCloudRenderer.draw_seedPoint(vpMatrix);
                     if(myPlane != null){
                         planeRenderer.bufferUpdate(myPlane);
-                        myPlane.checkNormal(camera);
                         normalValid = true;
                     }
                 }
@@ -399,16 +423,26 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
                 pointCloudRenderer.draw_final(vpMatrix);
             }
-            if(isRay){		//onDrawFrame
-                if(camera.getTrackingState() == TrackingState.TRACKING) {
-                    // Fixed Work -> ARCore
-                    camera.getViewMatrix(viewMatrix, 0);
-                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-                }
-
-                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                lineRenderer.draw(vpMatrix);
-            }
+//            if(isRay){		//onDrawFrame
+//                if(camera.getTrackingState() == TrackingState.TRACKING) {
+//                    // Fixed Work -> ARCore
+//                    camera.getViewMatrix(viewMatrix, 0);
+//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+//                }
+//
+//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+//                lineRenderer.draw(vpMatrix);
+//            }
+//            if(normalRay!=null){
+//                if(camera.getTrackingState() == TrackingState.TRACKING) {
+//                    // Fixed Work -> ARCore
+//                    camera.getViewMatrix(viewMatrix, 0);
+//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
+//                }
+//
+//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
+//                normalLineRenderer.draw(vpMatrix);
+//            }
         }catch(CameraNotAvailableException e){
             finish();
         }
@@ -457,7 +491,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             super.onPostExecute(o);
             Log.d("requestStatus", String.valueOf(requestStatus));
             try{
-                myPlane = new Plane(o.ll, o.lr, o.ur, o.ul);
+                myPlane = new Plane(o.ll, o.lr, o.ur, o.ul,frame.getCamera());
+                normalRay = myPlane.getNormal();
+                float[] temp = new float[]{myPlane.pivot[0] + myPlane.getNormal()[0], myPlane.pivot[1] + myPlane.getNormal()[1], myPlane.pivot[2] + myPlane.getNormal()[2]};
+                normalLineRenderer.bufferUpdate(myPlane.pivot, temp);
             }catch (Exception e){
                 Log.d("Plane", e.getMessage());
             }
@@ -465,6 +502,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
     }
     float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {		// pointCloudActivity
+                                                                            // ray[0~2] : camera pose
+                                                                            // ray[3~5] : Unit vector of ray
         float[] ray_clip = new float[4];
         ray_clip[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
         // +y is up (android UI Y is down):
