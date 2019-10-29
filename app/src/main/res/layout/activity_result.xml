@@ -1,59 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Activity.resultActivity">
-
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/chart"
-        android:layout_width="277dp"
-        android:layout_height="262dp"
-        android:layout_marginBottom="68dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></com.github.mikephil.charting.charts.PieChart>
+    android:layout_height="wrap_content" >
 
     <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="365dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="171dp"
-        android:layout_marginBottom="362dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/companyListBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="78dp"
+            android:text="설치후 예상효과" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="185dp"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="223dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView13"
+                android:id="@+id/textView5"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="월 평균 전기 사용량" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="월평균 전기세" />
 
             <TextView
-                android:id="@+id/textView14"
+                android:id="@+id/textView6"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="월 평균 예상 발전량" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="예상 감소 전기세" />
 
             <TextView
-                android:id="@+id/textView15"
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="예상 전기세" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/monthlyUse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/expectReduce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/expectFee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="362dp"
+            android:orientation="vertical">
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="예상 실 사용 전력량" />
+                android:layout_weight="1" />
         </LinearLayout>
 
         <LinearLayout
@@ -61,73 +94,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/montlyuse"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center|start" />
-
-            <TextView
-                android:id="@+id/expectgen"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center|start" />
-
-            <TextView
-                android:id="@+id/realuse"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center|start" />
+            <Button
+                android:id="@+id/companyListBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="업체 선정" />
         </LinearLayout>
-
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout6"
-        android:layout_width="365dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="24dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/chart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/textView19"
-            android:layout_width="223dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="예상 전기세" />
-
-        <TextView
-            android:id="@+id/expectfee"
-            android:layout_width="142dp"
-            android:layout_height="match_parent"
-            android:gravity="center|start" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView21"
-        android:layout_width="134dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="8dp"
-        android:text="결과 확인"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-        android:id="@+id/companyListBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="업체 선정"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
-
-</android.support.constraint.ConstraintLayout>
+</ScrollView>
