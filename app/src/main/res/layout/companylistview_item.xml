@@ -7,43 +7,46 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="60dp">
 
         <ImageView
             android:id="@+id/companyIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"/>
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
 
         <TextView
             android:id="@+id/companyName"
-            android:layout_width="120dp"
-            android:layout_height="80dp"
+            android:layout_width="140dp"
+            android:layout_height="60dp"
+            android:fontFamily="@font/nanumgothicbold"
+            android:gravity="center"
             android:textSize="20sp"
-            android:fontFamily="@font/nanumgothiclight"/>
+            android:textColor="#003366"/>
 
         <TextView
             android:id="@+id/amount"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:textSize="20sp"
-            android:fontFamily="@font/nanumgothiclight"/>
+            android:layout_height="60dp"
+            android:fontFamily="@font/nanumgothic"
+            android:gravity="center_vertical"
+            android:textSize="15sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="60dp">
 
         <ImageView
             android:id="@+id/regionIcon"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/regionName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="20sp"
-            android:fontFamily="@font/nanumgothiclight"/>
+            android:fontFamily="@font/nanumgothic"
+            android:textSize="15sp" />
     </LinearLayout>
 </LinearLayout>
