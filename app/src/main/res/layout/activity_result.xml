@@ -51,32 +51,37 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="6"
+                android:layout_weight="2"
+                android:gravity="center_horizontal|center_vertical"
                 android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_weight="1"
+                    android:adjustViewBounds="false"
                     android:foreground="@drawable/ic_20_elecblue" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:foreground="@drawable/ic_20_elec" />
+                    android:foreground="@drawable/ic_20_elec"
+                    android:scaleType="centerCrop" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:foreground="@drawable/ic_20_elecylw" />
+                    android:foreground="@drawable/ic_20_elecylw"
+                    android:scaleType="centerCrop" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="5"
                 android:orientation="vertical">
 
                 <TextView
@@ -113,26 +118,29 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="12"
+                android:layout_weight="4"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/monthlyUse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
 
                 <TextView
                     android:id="@+id/expectReduce"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
 
                 <TextView
                     android:id="@+id/expectFee"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
             </LinearLayout>
         </LinearLayout>
 

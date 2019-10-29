@@ -11,9 +11,14 @@ import android.widget.TextView;
 
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -83,24 +88,68 @@ public class resultActivity extends AppCompatActivity {
         BarChart barChart = (BarChart) findViewById(R.id.chart);
 
 
-        ArrayList<BarEntry> val=new ArrayList<>(); //데이터의 값
-        val.add(new BarEntry((float)(monthlyfee),0));
-        val.add(new BarEntry((float)(expectfee),1));
+        ArrayList<BarEntry> val= new ArrayList<>(); //데이터의 값
+        val.add(new BarEntry(0, (float)monthlyfee));
+        val.add(new BarEntry(1, (float)expectfee));
 
 
         //String tmpdown = String.format("%.0f",down);
-       //BarChart.setCenterText("전기세 절감율은 약"+ tmpdown + "%입니다.");
+        //BarChart.setCenterText("전기세 절감율은 약"+ tmpdown + "%입니다.");
 
 
-        BarDataSet dataSet = new BarDataSet(val,"aa");
+        BarDataSet dataSet = new BarDataSet(val,"Fee");
+        //barChart.animateY(5000);
+        BarData data = new BarData(dataSet);
+        data.setBarWidth(0.6f);
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
-        BarData data = new BarData((dataSet));
-        data.setValueTextSize(0);
-
         barChart.setData(data);
-        barChart.setFitBars(false);
-        barChart.animateXY(1000,1000);
-        barChart.invalidate();
+
+        barChart.setFitBars(true);
+        barChart.setScaleEnabled(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+
+        YAxis leftAxis = barChart.getAxisLeft();
+        YAxis rightAxis = barChart.getAxisRight();
+        XAxis xAxis = barChart.getXAxis();
+
+        //xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(10f);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawGridLines(false);
+
+
+        //leftAxis.setTextSize(10f);
+        //leftAxis.setDrawLabels(false);
+        leftAxis.setDrawAxisLine(true);
+        leftAxis.setDrawGridLines(false);
+
+        /*
+        rightAxis.setDrawAxisLine(false);
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setDrawLabels(false);
+        */
+        final ArrayList<String> xlabel = new ArrayList<>();
+        xlabel.add("월 평균 전기료");
+        xlabel.add("예상 전기료");
+
+        //XAxis xxAxis = barChart.getXAxis();
+        xAxis.setGranularity(1f);
+        //xAxis.setCenterAxisLabels(true);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                if(value >= 0){
+                    if(value <= xlabel.size()-1){
+                        return xlabel.get((int)value);
+                    }
+                    return "";
+                }
+                return "";
+            }
+        });
+
     }
+
+
 }
