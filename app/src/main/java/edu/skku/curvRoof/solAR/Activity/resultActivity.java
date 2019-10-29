@@ -8,13 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
+
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.skku.curvRoof.solAR.R;
 
@@ -22,17 +25,16 @@ public class resultActivity extends AppCompatActivity {
 
 
     private TextView monthlyUse;
-    private TextView expectGen;
-    private TextView realUse;
+    private TextView expectReduce;
     private TextView expectFee;
-    public double monthlyuse;// = i.getDoubleExtra("monthlyuse",0);
-    public double expectgen;// = i.getDoubleExtra("expectgen",0);
-    public double realuse;// = i.getDoubleExtra("realuse",0);
+
+    public double monthlyfee;// = i.getDoubleExtra("monthlyuse",0);
+    //public double expectgen;// = i.getDoubleExtra("expectgen",0);
     public double expectfee;// = i.getDoubleExtra("expectfee",0);
-    public double userfee;
+    public double reducefee;
     public double down;
     private Button companyListBtn;
-    Intent intent = new Intent(this, companyListActivity.class);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,58 +47,59 @@ public class resultActivity extends AppCompatActivity {
 
 
 
-        monthlyuse = i.getDoubleExtra("monthlyuse",0);
-        expectgen = i.getDoubleExtra("expectgen",0);
-        realuse = i.getDoubleExtra("realuse",0);
+        monthlyfee = i.getDoubleExtra("userfee",0);
+        //expectgen = i.getDoubleExtra("expectgen",0);
         expectfee = i.getDoubleExtra("expectfee",0);
-        userfee = i.getDoubleExtra("usermoney",0);
+        //userfee = i.getDoubleExtra("usermoney",0);
+        reducefee = monthlyfee - expectfee;
 
-        String tmpmu = String.format("%.0f", monthlyuse);
-        String tmpeg = String.format("%.0f", expectgen);
-        String tmprl = String.format("%.0f", realuse);
+        String tmpmu = String.format("%.0f", monthlyfee);
+        String tmpeg = String.format("%.0f", reducefee);
         String tmpef = String.format("%.0f", expectfee);
 
-        monthlyUse = findViewById(R.id.montlyuse); monthlyUse.setText(tmpmu+"kWh");
-        expectGen = findViewById(R.id.expectgen); expectGen.setText(tmpeg+"kWh");
-        realUse = findViewById(R.id.realuse); realUse.setText(tmprl+"kWh");
-        expectFee = findViewById(R.id.expectfee); expectFee.setText(tmpef+"원");
+        monthlyUse = findViewById(R.id.monthlyUse); monthlyUse.setText(tmpmu+"원");
+        expectReduce = findViewById(R.id.expectReduce); expectReduce.setText(tmpeg+"원");
+        expectFee = findViewById(R.id.expectFee); expectFee.setText(tmpef+"원");
         companyListBtn = findViewById(R.id.companyListBtn);
 
-        down = (1-(expectfee/userfee))*100;
-        setPieChart();
+        //down = (1-(expectfee/userfee))*100;
+
 
         companyListBtn.setOnClickListener(new View.OnClickListener() {
+            Intent intent = new Intent(resultActivity.this, companyListActivity.class);
             @Override
             public void onClick(View v) {
+
                 startActivity(intent);
+
             }
         });
+        setBarChart();
     }
 
-    private void setPieChart(){
+    private void setBarChart(){
 
-        PieChart pieChart = (PieChart) findViewById(R.id.chart);
-
-        pieChart.setUsePercentValues(true);
-
-        ArrayList<PieEntry> val=new ArrayList<>(); //데이터의 값
-        val.add(new PieEntry((float)(userfee-expectfee),""));
-        val.add(new PieEntry((float)(expectfee),""));
+        BarChart barChart = (BarChart) findViewById(R.id.chart);
 
 
-        pieChart.getDescription().setEnabled(false);
-        pieChart.getLegend().setEnabled(false);
-        String tmpdown = String.format("%.0f",down);
-        pieChart.setCenterText("전기세 절감율은 약"+ tmpdown + "%입니다.");
-        pieChart.setHoleRadius(70);
+        ArrayList<BarEntry> val=new ArrayList<>(); //데이터의 값
+        val.add(new BarEntry((float)(monthlyfee),0));
+        val.add(new BarEntry((float)(expectfee),1));
 
-        PieDataSet dataSet = new PieDataSet(val,"");
-        dataSet.setSliceSpace(2f);
+
+        //String tmpdown = String.format("%.0f",down);
+       //BarChart.setCenterText("전기세 절감율은 약"+ tmpdown + "%입니다.");
+
+
+        BarDataSet dataSet = new BarDataSet(val,"aa");
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
-        PieData data = new PieData((dataSet));
+        BarData data = new BarData((dataSet));
         data.setValueTextSize(0);
 
-        pieChart.setData(data);
+        barChart.setData(data);
+        barChart.setFitBars(false);
+        barChart.animateXY(1000,1000);
+        barChart.invalidate();
     }
 }

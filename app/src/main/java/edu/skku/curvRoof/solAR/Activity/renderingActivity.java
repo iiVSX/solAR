@@ -15,12 +15,11 @@ public class renderingActivity extends AppCompatActivity {
     private double panelinfo =  7.5;//1.64 x 0.99 x 15.4 x 30(1month)
     private double panelnum = 10;
     private double radiation = 3.57;
-    private double userfee = 55080;
-    private double solargen;
-    private double monthlyuse;
-    private double money;
-    private double result;
-    private double generate;
+    private double userfee = 55080; //월평균 전기세
+    private double monthlyuse; //userfee를 통해 알아낸 월 평균 전기 사용량
+    private double money; //예상 전기세
+    private double result; // 월평균 사용량 - 예상 발전량
+    private double generate; //예상 발전량
     //////////////
     private Button gotoResult;
     private TextView expectGen;
@@ -41,11 +40,12 @@ public class renderingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Intent i = new Intent(renderingActivity.this, resultActivity.class);
-                i.putExtra("expectgen",generate);
-                i.putExtra("monthlyuse", monthlyuse);
-                i.putExtra("realuse", result);
-                i.putExtra("expectfee", money);
-                i.putExtra("usermoney", userfee);
+                //i.putExtra("expectgen",generate);
+                i.putExtra("userfee", userfee); //사용자 전기세 전송
+                //i.putExtra("monthlyuse", monthlyuse);
+                //i.putExtra("realuse", result);
+                i.putExtra("expectfee", money); //예상 전기세 전송
+                //i.putExtra("usermoney", userfee);
                 startActivity(i);
             }
         });
