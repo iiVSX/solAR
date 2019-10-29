@@ -3,6 +3,7 @@ package edu.skku.curvRoof.solAR.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -33,7 +34,7 @@ public class resultActivity extends AppCompatActivity {
     public double expectfee;// = i.getDoubleExtra("expectfee",0);
     public double reducefee;
     public double down;
-    private Button companyListBtn;
+    private FloatingActionButton companyListFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +61,12 @@ public class resultActivity extends AppCompatActivity {
         monthlyUse = findViewById(R.id.monthlyUse); monthlyUse.setText(tmpmu+"원");
         expectReduce = findViewById(R.id.expectReduce); expectReduce.setText(tmpeg+"원");
         expectFee = findViewById(R.id.expectFee); expectFee.setText(tmpef+"원");
-        companyListBtn = findViewById(R.id.companyListBtn);
+        companyListFab = findViewById(R.id.companyListFab);
 
         //down = (1-(expectfee/userfee))*100;
 
 
-        companyListBtn.setOnClickListener(new View.OnClickListener() {
+        companyListFab.setOnClickListener(new View.OnClickListener() {
             Intent intent = new Intent(resultActivity.this, companyListActivity.class);
             @Override
             public void onClick(View v) {
