@@ -39,9 +39,11 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import edu.skku.curvRoof.solAR.Model.Cube;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
+import edu.skku.curvRoof.solAR.Renderer.CubeRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
@@ -99,6 +101,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     LineRender lineRenderer = new LineRender();
     LineRender normalLineRenderer = new LineRender();
     private float[] pop;
+
+    CubeRenderer cubeRenderer = new CubeRenderer();
+    Cube mcube;
+
 
     //tmp
     private Button tmpBtn;
@@ -377,6 +383,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             backgroundRenderer.draw(frame);
 
+            if(mcube != null){
+                cubeRenderer.bufferUpdate(mcube,this);
+
+                cubeRenderer.draw();
+            }
+
             if(pickTouched){
                 pointCloudRenderer.pickPoint(camera);
                 pickTouched = false;
@@ -423,26 +435,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
                 pointCloudRenderer.draw_final(vpMatrix);
             }
-//            if(isRay){		//onDrawFrame
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
+
 //
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                lineRenderer.draw(vpMatrix);
-//            }
-//            if(normalRay!=null){
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
-//
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                normalLineRenderer.draw(vpMatrix);
-//            }
         }catch(CameraNotAvailableException e){
             finish();
         }
