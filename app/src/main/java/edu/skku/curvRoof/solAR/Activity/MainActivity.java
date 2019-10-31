@@ -2,9 +2,12 @@ package edu.skku.curvRoof.solAR.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,10 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import edu.skku.curvRoof.solAR.R;
+import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ElecfeeDialog.ElecfeeDialogListner{
-    private String ID;
     private String func;
     private Context mContext;
     private ImageView menuBackground;
@@ -28,17 +37,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Animation fab_open, fab_close;
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
+
+    private double longitude, latitude;
+    private String email, userID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                GpsUtil gpsTracker = new GpsUtil(MainActivity.this);
+                longitude = gpsTracker.getLongitude();
+                latitude = gpsTracker.getLatitude();
+                Looper.loop();
+            }
+        });
+
+        t.start();
+
+        Intent fromIntent = getIntent();
+        email = fromIntent.getStringExtra("ID");
+
         mContext=getApplicationContext();
 
         fab_open= AnimationUtils.loadAnimation(mContext,R.anim.fab_open);
         fab_close=AnimationUtils.loadAnimation(mContext,R.anim.fab_close);
-
-        Intent fromIntent = getIntent();
-        ID = fromIntent.getStringExtra("ID");
 
         menuFab=(FloatingActionButton)findViewById(R.id.menuFab);
         menuBackground=(ImageView)findViewById(R.id.menuBackground);
@@ -58,9 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         idTv = (TextView)findViewById(R.id.idTv);
 
-        idTv.setText(ID+"님 반갑습니다!");
+        idTv.setText(email+"님 반갑습니다!");
 
         elecFee = findViewById(R.id.elecfee);
+
+        putFirebase();
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
@@ -76,12 +105,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
                         intent.putExtra("type", "measure");
+                        intent.putExtra("userID", userID);
                         startActivity(intent);
                         break;
 
                     case R.id.askFab:
                     case R.id.askBtn:
                         Intent intentlist= new Intent(MainActivity.this,companyListActivity.class);
+                        intentlist.putExtra("userID", userID);
                         startActivity(intentlist);
                         break;
                     default:
@@ -154,4 +185,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isFabOpen=true;
         }
     }
+
+    public void putFirebase(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference();
+        myRef.child("user_id").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    if(snapshot.getValue().equals(email)) {
+                        userID = snapshot.getKey();
+                    }
+                }
+                if(userID == null){
+                    userID = myRef.child("user_id").push().getKey();
+                    myRef.child("user_id").child(userID).setValue(email);
+                }
+
+                DatabaseReference userRef = myRef.child("user_list").child(userID);
+
+                userRef.child("longitude").setValue(longitude);
+                userRef.child("latitude").setValue(latitude);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+
 }
