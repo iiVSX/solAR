@@ -27,7 +27,7 @@ import edu.skku.curvRoof.solAR.Utils.companyListViewAdapter;
 import edu.skku.curvRoof.solAR.Utils.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "203.252.34.202";
+    private static String IP_ADDRESS = "203.252.34.157";
     private String jsonString;
     private ArrayList<Company> companyList = new ArrayList<Company>();
     private ListView listview;
@@ -153,7 +153,7 @@ public class companyListActivity extends AppCompatActivity {
             }
 
             for(Company com : companyList){
-                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_01_menu), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm());
+                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_19_panel), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm());
             }
             adapter.notifyDataSetChanged();
         }catch (Exception e){
