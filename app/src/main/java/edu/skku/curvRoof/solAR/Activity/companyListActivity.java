@@ -1,7 +1,12 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +26,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import edu.skku.curvRoof.solAR.Model.Company;
 import edu.skku.curvRoof.solAR.R;
@@ -27,31 +34,41 @@ import edu.skku.curvRoof.solAR.Utils.companyListViewAdapter;
 import edu.skku.curvRoof.solAR.Utils.companyListViewItem;
 
 public class companyListActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "203.252.34.157";
+    private static String IP_ADDRESS = "192.168.0.2";
     private String jsonString;
     private ArrayList<Company> companyList = new ArrayList<Company>();
     private ListView listview;
-    private companyListViewAdapter adapter = new companyListViewAdapter();;
+    private companyListViewAdapter adapter = new companyListViewAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_list);
 
-        listview=(ListView)findViewById(R.id.companyListView);
+        listview = (ListView) findViewById(R.id.companyListView);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                companyListViewItem item=(companyListViewItem)parent.getItemAtPosition(position);
+                companyListViewItem item = (companyListViewItem) parent.getItemAtPosition(position);
 
-                Drawable cpnyIcon=item.getCompanyIcon();
-                String cpnyName=item.getCompanyName();
-                String amt=item.getAmount();
+                Drawable cpnyIcon = item.getCompanyIcon();
+                String cpnyName = item.getCompanyName();
+                String amt = item.getAmount();
 
-                Drawable rgnIcon=item.getRegionIcon();
-                String rgnName=item.getRegionName();
+                Drawable rgnIcon = item.getRegionIcon();
+                String rgnName = item.getRegionName();
+                String companyTel = item.getCompanyTel();
+
+                companyTel = companyTel.replaceAll("-", "");
+
+                Log.d("iiVSX", companyTel);
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(), "전화걸기 권한을 설정해주세요", Toast.LENGTH_SHORT);
+                    return;
+                }
+                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+companyTel)));
             }
         });
 
@@ -153,7 +170,7 @@ public class companyListActivity extends AppCompatActivity {
             }
 
             for(Company com : companyList){
-                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_19_panel), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm());
+                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_19_panel), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm(), com.getTel());
             }
             adapter.notifyDataSetChanged();
         }catch (Exception e){
