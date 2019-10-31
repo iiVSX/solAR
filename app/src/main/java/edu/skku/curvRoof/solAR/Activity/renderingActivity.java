@@ -2,11 +2,18 @@ package edu.skku.curvRoof.solAR.Activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import edu.skku.curvRoof.solAR.R;
 
@@ -24,12 +31,18 @@ public class renderingActivity extends AppCompatActivity {
     private Button gotoResult;
     private TextView expectGen;
     private TextView expectFee;
+    private String userID;
+    private double longitude, latitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //가로본능
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_rendering);
+
+        Intent fromintent = getIntent();
+        userID = fromintent.getStringExtra("userID");
+        getInfo();
 
         Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
         startActivity(intent);
@@ -99,5 +112,24 @@ public class renderingActivity extends AppCompatActivity {
         expectGen.setText(tmpgen+"kWh");
         expectFee.setText(tmpmon+"원");
 
+    }
+
+    public void getInfo(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+
+        myRef.child("user_list").child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userfee = Double.valueOf(dataSnapshot.child("elec_fee").getValue().toString());
+                longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
+                latitude = Double.valueOf(dataSnapshot.child("latitude").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

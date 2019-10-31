@@ -102,10 +102,15 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     //tmp
     private Button tmpBtn;
+
+    private String userID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_point_cloud);
+
+        Intent fromintent = getIntent();
+        userID = fromintent.getStringExtra("userID");
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -120,6 +125,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View view){
                 Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
+                i.putExtra("userID", userID);
                 startActivity(i);
             }
         });
@@ -127,19 +133,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
 
         //
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                GpsUtil gpsTracker = new GpsUtil(pointCloudActivity.this);
-                Toast.makeText(getApplicationContext(), gpsTracker.getAddress(), Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-        });
-        t.start();
-
-
         recordBtn = (Button)findViewById(R.id.recordBtn);
         pickBtn = (Button)findViewById(R.id.pickBtn);
         recordBtn.setOnClickListener(new View.OnClickListener() {

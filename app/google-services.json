@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "131871256338-f9nnb13osp9kk0kplrme63lva13opqp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.skku.curvRoof.solAR",
+            "certificate_hash": "db31b63e18f3921f0289a59bf1eb98b4c1616ddf"
+          }
+        },
+        {
           "client_id": "131871256338-nrbbhmc31v1d8h84qfpv32kctcevjq8j.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
