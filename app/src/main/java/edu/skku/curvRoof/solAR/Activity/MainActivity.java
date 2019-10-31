@@ -2,17 +2,12 @@ package edu.skku.curvRoof.solAR.Activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +18,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
-import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ElecfeeDialog.ElecfeeDialogListner {
     private String func;
@@ -36,26 +31,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
 
-    private double longitude, latitude, elec_fee;
+    private double elec_fee;
     private String email, userID;
+    private User user;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    final DatabaseReference myRef = database.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                GpsUtil gpsTracker = new GpsUtil(MainActivity.this);
-                longitude = gpsTracker.getLongitude();
-                latitude = gpsTracker.getLatitude();
-                Looper.loop();
-            }
-        });
-
-        t.start();
+        user = new User();
 
         Intent fromIntent = getIntent();
         email = fromIntent.getStringExtra("ID");
@@ -80,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         elecFee = findViewById(R.id.elecfee);
 
-        putLocation();
+        checkUser();
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
@@ -95,15 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
-                        intent.putExtra("type", "measure");
-                        intent.putExtra("userID", userID);
+                        intent.putExtra("user", user);
                         startActivity(intent);
                         break;
 
                     case R.id.askFab:
                     case R.id.askBtn:
                         Intent intentlist = new Intent(MainActivity.this, companyListActivity.class);
-                        intentlist.putExtra("userID", userID);
+                        intentlist.putExtra("user", user);
                         startActivity(intentlist);
                         break;
 
@@ -145,7 +131,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         elecFee.setText("등록 전기요금은 " + elecfee + "원 입니다.");
         elec_fee = Double.valueOf(elecfee);
         if(userID != null){
-            putElecFee(elec_fee);
+            user.setElec_fee(elec_fee);
+            myRef.child("user_list").child(userID).child("elec_fee").setValue(elec_fee);
         }
         else{
             Toast.makeText(getApplicationContext(), "USER NOT REGISTERED", Toast.LENGTH_SHORT);
@@ -158,9 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void putLocation(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference();
+    public void checkUser(){
         myRef.child("user_id").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -174,10 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     myRef.child("user_id").child(userID).setValue(email);
                 }
 
-                DatabaseReference userRef = myRef.child("user_list").child(userID);
-
-                userRef.child("longitude").setValue(longitude);
-                userRef.child("latitude").setValue(latitude);
+                user.setUserID(userID);
             }
 
             @Override
@@ -185,10 +167,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-    }
-
-    public void putElecFee(double elec_fee){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.getReference().child("user_list").child(userID).child("elec_fee").setValue(elec_fee);
     }
 }

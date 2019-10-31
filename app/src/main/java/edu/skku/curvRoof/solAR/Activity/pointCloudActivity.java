@@ -9,7 +9,6 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -39,13 +38,14 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import edu.skku.curvRoof.solAR.Model.Trial;
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
-import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -103,14 +103,16 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     //tmp
     private Button tmpBtn;
 
-    private String userID;
+    private User user;
+    private Trial trial;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_point_cloud);
 
-        Intent fromintent = getIntent();
-        userID = fromintent.getStringExtra("userID");
+        user = (User)getIntent().getSerializableExtra("user");
+        trial = (Trial)getIntent().getSerializableExtra("trial");
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -125,7 +127,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View view){
                 Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
-                i.putExtra("userID", userID);
+                i.putExtra("user", user);
+                i.putExtra("trial", trial);
                 startActivity(i);
             }
         });

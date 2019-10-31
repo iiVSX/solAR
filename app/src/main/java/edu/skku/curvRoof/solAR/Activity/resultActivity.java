@@ -3,6 +3,7 @@ package edu.skku.curvRoof.solAR.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,10 +22,17 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.skku.curvRoof.solAR.Model.Trial;
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 
 public class resultActivity extends AppCompatActivity {
@@ -40,6 +48,10 @@ public class resultActivity extends AppCompatActivity {
     public double reducefee;
     public double down;
     private FloatingActionButton companyListFab;
+    private Button saveBtn;
+
+    private User user;
+    private Trial trial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +63,8 @@ public class resultActivity extends AppCompatActivity {
 
         Intent i = getIntent();
 
-
+        user = (User)i.getSerializableExtra("user");
+        trial = (Trial)i.getSerializableExtra("trial");
 
         monthlyfee = i.getDoubleExtra("userfee",0);
         //expectgen = i.getDoubleExtra("expectgen",0);
@@ -67,6 +80,7 @@ public class resultActivity extends AppCompatActivity {
         expectReduce = findViewById(R.id.expectReduce); expectReduce.setText(tmpeg+"원");
         expectFee = findViewById(R.id.expectFee); expectFee.setText(tmpef+"원");
         companyListFab = findViewById(R.id.companyListFab);
+        saveBtn = findViewById(R.id.save_btn);
 
         //down = (1-(expectfee/userfee))*100;
 
@@ -78,6 +92,13 @@ public class resultActivity extends AppCompatActivity {
 
                 startActivity(intent);
 
+            }
+        });
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveInfo();
             }
         });
         setBarChart();
@@ -148,8 +169,23 @@ public class resultActivity extends AppCompatActivity {
                 return "";
             }
         });
+    }
+    public void saveInfo(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference();
+        String userID = user.getUserID();
+        String trialID = trial.getTrialID();
+
+        myRef.child("user_list").child(userID).child(trialID).child("longitude").setValue(trial.getLongitude());
+        myRef.child("user_list").child(userID).child(trialID).child("latitude").setValue(trial.getLatitude());
+        myRef.child("user_list").child(userID).child(trialID).child("area_type").setValue(trial.getArea_type());
+       /* myRef.child("user_list").child(userID).child(trialID).child("area_height").setValue(trial.getArea_height());
+        myRef.child("user_list").child(userID).child(trialID).child("area_width").setValue(trial.getArea_width());
+        myRef.child("user_list").child(userID).child(trialID).child("angle").setValue(trial.getAngle());
+        myRef.child("user_list").child(userID).child(trialID).child("azimuth").setValue(trial.getAzimuth());
+        myRef.child("user_list").child(userID).child(trialID).child("img_url").setValue(trial.getCaptureUrl());
+        myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());*/
 
     }
-
 
 }
