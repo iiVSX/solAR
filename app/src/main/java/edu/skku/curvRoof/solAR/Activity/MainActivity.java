@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
 
-    private double longitude, latitude;
+    private double longitude, latitude, elec_fee;
     private String email, userID;
 
     @Override
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         elecFee = findViewById(R.id.elecfee);
 
-        putFirebase();
+        putLocation();
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
@@ -142,6 +143,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void applyTexts(String elecfee) {
         //TextView aa = (TextView) findViewById(R.id.eaa);
         elecFee.setText("등록 전기요금은 " + elecfee + "원 입니다.");
+        elec_fee = Double.valueOf(elecfee);
+        if(userID != null){
+            putElecFee(elec_fee);
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "USER NOT REGISTERED", Toast.LENGTH_SHORT);
+        }
     }
 
     @Override
@@ -150,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void putFirebase(){
+    public void putLocation(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference();
         myRef.child("user_id").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -177,9 +185,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-
-
     }
 
-
+    public void putElecFee(double elec_fee){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference().child("user_list").child(userID).child("elec_fee").setValue(elec_fee);
+    }
 }
