@@ -38,11 +38,13 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import edu.skku.curvRoof.solAR.Model.Cube;
 import edu.skku.curvRoof.solAR.Model.Trial;
 import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
+import edu.skku.curvRoof.solAR.Renderer.CubeRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
@@ -99,6 +101,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     LineRender lineRenderer = new LineRender();
     LineRender normalLineRenderer = new LineRender();
     private float[] pop;
+
+    //Cube
+    Cube mCube = new Cube();
+    CubeRenderer cubeRenderer = new CubeRenderer();
 
     //tmp
     private Button tmpBtn;
@@ -340,6 +346,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             planeRenderer.createGlThread(this);
             lineRenderer.createGlThread(this);
             normalLineRenderer.createGlThread(this);
+            cubeRenderer.createGlThread(this);
 
         }catch (IOException e){
             e.getMessage();
@@ -395,6 +402,13 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else{
                     planeRenderer.draw(vpMatrix);
+
+//                    float[] mvp = new float[16];
+//                    Matrix.translateM(mvp, 0,myPlane.getLl()[0],myPlane.getLl()[1],myPlane.getLl()[2]);
+//                    Matrix.multiplyMM(mvp, 0, vpMatrix, 0, mvp,0);
+//                    cubeRenderer.bufferUpdate(mCube);
+//                    cubeRenderer.draw(mvp);
+
                 }
             }
             else if(isRecording){
@@ -419,26 +433,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
                 pointCloudRenderer.draw_final(vpMatrix);
             }
-//            if(isRay){		//onDrawFrame
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
 //
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                lineRenderer.draw(vpMatrix);
-//            }
-//            if(normalRay!=null){
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
-//
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                normalLineRenderer.draw(vpMatrix);
-//            }
         }catch(CameraNotAvailableException e){
             finish();
         }
