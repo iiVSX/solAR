@@ -48,6 +48,9 @@ import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
     private final BackgroundRenderer backgroundRenderer = new BackgroundRenderer();
@@ -384,7 +387,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             backgroundRenderer.draw(frame);
 
-
             if(pickTouched){
                 pointCloudRenderer.pickPoint(camera);
                 pickTouched = false;
@@ -407,18 +409,49 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else{
                     planeRenderer.draw(vpMatrix);
+                    /*
                     Matrix.setIdentityM(modelMatrix,0);
                     float[] change = myPlane.getLl();
+                    //float[] ll = myPlane.getLl();
+                    //float[] width = {change[0]-ll[0],change[1]-ll[1],change[2]-ll[2]};
+                    //Log.d("width","\n"+width[0]+","+width[1]+","+width[2]);
+/*
                     Matrix.translateM(modelMatrix, 0,change[0],change[1],change[2]);
                     Matrix.multiplyMM(mvpMatrix, 0,vpMatrix,0,modelMatrix,0);
 
                     if(cube==null) Log.d("NULL", "ondrawframe");
+
                     cube.draw(mvpMatrix,0);
                     cube.draw(mvpMatrix,1);
                     cube.draw(mvpMatrix,2);
                     cube.draw(mvpMatrix,3);
                     cube.draw(mvpMatrix,4);
                     cube.draw(mvpMatrix,5);
+                    */
+
+                    int m =3;
+                    int n=2;
+                    float angle=0.0f;
+                    float[] change = myPlane.getLl();
+
+                    Matrix.setIdentityM(modelMatrix,0);
+                    Matrix.translateM(modelMatrix,0,change[0]+0.5f*0.167f,change[1]+0.05f*(float)sin(angle),change[2]+(float)(-0.05f*cos(angle)));
+                    Matrix.rotateM(modelMatrix,0,angle,1,0,0);
+                    for(int i=0;i<n;i++){
+                        for(int j=0;j<m;j++){
+                            Matrix.translateM(modelMatrix,0,0.167f,0,0);
+                            //Matrix.translateM(modelMatrix,0,(float)0.5*0.167f+j*0.167f,(float)(0.5*0.0032f*sin(angle)+i*0.0032f*sin(angle)),(float)(-0.05f*cos(angle)-0.05f*i*cos(angle)));
+                            Matrix.multiplyMM(mvpMatrix,0,vpMatrix,0,modelMatrix,0);
+                            cube.draw(mvpMatrix,0);
+                            cube.draw(mvpMatrix,1);
+                            cube.draw(mvpMatrix,2);
+                            cube.draw(mvpMatrix,3);
+                            cube.draw(mvpMatrix,4);
+                            cube.draw(mvpMatrix,5);
+                        }
+                        Matrix.translateM(modelMatrix,0,-m*0.167f,0.1f*(float)sin(angle),0);
+                        Matrix.translateM(modelMatrix,0,0,0,-0.1f*(float)cos(angle));
+                    }
                 }
             }
             else if(isRecording){
