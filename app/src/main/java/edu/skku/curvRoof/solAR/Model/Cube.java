@@ -197,14 +197,14 @@ public class Cube {
             final Bitmap bitmap = BitmapFactory.decodeResource(mActivityContext2.getResources(), resourceId, options);
 
             // Bind to the texture in OpenGL
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, texture[0]);
 
             // Set filtering
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_BINDING_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_BINDING_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
             // Load the bitmap into the bound texture.
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_BINDING_2D, 0, bitmap, 0);
 
             // Recycle the bitmap, since its data has been loaded into OpenGL.
             bitmap.recycle();
@@ -235,36 +235,36 @@ public class Cube {
 
         if(i==0){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,mTextureDataHandle0);}
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D,mTextureDataHandle0);}
         if(i==1){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle1);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle1);
         }
         if(i==2){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle2);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle2);
         }
         if(i==3){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle3);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle3);
         }
         if(i==4){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE4);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle4);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle4);
         }
         if(i==5){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle5);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle5);
         }
         GLES20.glUniform1i(mTextureUniformHandle,i);
 
