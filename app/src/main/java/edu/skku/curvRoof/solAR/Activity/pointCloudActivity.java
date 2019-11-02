@@ -39,6 +39,7 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import edu.skku.curvRoof.solAR.Model.Cube;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
@@ -66,6 +67,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] viewMatrix = new float[16];
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
+    private float[] modelMatrix = new float[16];
+    private float[] mvpMatrix = new float[16];
 
     //Recording gathered points, and pick start point for Region Growing
     private Button pickBtn;
@@ -100,6 +103,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     LineRender normalLineRenderer = new LineRender();
     private float[] pop;
 
+    //cube
+    private Cube cube;
+
     //tmp
     private Button tmpBtn;
     @Override
@@ -133,7 +139,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void run() {
                 Looper.prepare();
                 GpsUtil gpsTracker = new GpsUtil(pointCloudActivity.this);
-                Toast.makeText(getApplicationContext(), gpsTracker.getAddress(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), gpsTracker.getAddress(), Toast.LENGTH_SHORT).show();
                 Looper.loop();
             }
         });
@@ -344,6 +350,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             planeRenderer.createGlThread(this);
             lineRenderer.createGlThread(this);
             normalLineRenderer.createGlThread(this);
+            cube = new Cube(this, glSurfaceView);
 
         }catch (IOException e){
             e.getMessage();
@@ -377,6 +384,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             backgroundRenderer.draw(frame);
 
+
             if(pickTouched){
                 pointCloudRenderer.pickPoint(camera);
                 pickTouched = false;
@@ -399,6 +407,18 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else{
                     planeRenderer.draw(vpMatrix);
+                    Matrix.setIdentityM(modelMatrix,0);
+                    float[] change = myPlane.getLl();
+                    Matrix.translateM(modelMatrix, 0,change[0],change[1],change[2]);
+                    Matrix.multiplyMM(mvpMatrix, 0,vpMatrix,0,modelMatrix,0);
+
+                    if(cube==null) Log.d("NULL", "ondrawframe");
+                    cube.draw(mvpMatrix,0);
+                    cube.draw(mvpMatrix,1);
+                    cube.draw(mvpMatrix,2);
+                    cube.draw(mvpMatrix,3);
+                    cube.draw(mvpMatrix,4);
+                    cube.draw(mvpMatrix,5);
                 }
             }
             else if(isRecording){
