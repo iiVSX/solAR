@@ -10,7 +10,9 @@ public class companyListViewItem {
     private String amount;
     private Drawable regionIcon;
     private String regionName;
+    private String companyTel;
 
+    public void setCompanyTel(String tel){companyTel = tel;}
     public void setCompanyIcon(Drawable icon){
         companyIcon=icon;
     }
@@ -36,7 +38,7 @@ public class companyListViewItem {
     public String getAmount(){
         return this.amount;
     }
-
+    public String getCompanyTel(){return this.companyTel;}
     public Drawable getRegionIcon(){
         return this.regionIcon;
     }

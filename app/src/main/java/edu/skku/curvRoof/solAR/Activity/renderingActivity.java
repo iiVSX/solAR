@@ -2,12 +2,21 @@ package edu.skku.curvRoof.solAR.Activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import edu.skku.curvRoof.solAR.Model.Trial;
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 
 public class renderingActivity extends AppCompatActivity {
@@ -20,16 +29,24 @@ public class renderingActivity extends AppCompatActivity {
     private double money; //예상 전기세
     private double result; // 월평균 사용량 - 예상 발전량
     private double generate; //예상 발전량
+    private double longitude, latitude;
     //////////////
     private Button gotoResult;
     private TextView expectGen;
     private TextView expectFee;
+
+    private User user;
+    private Trial trial;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //가로본능
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_rendering);
+
+        user = (User)getIntent().getSerializableExtra("user");
+        trial = (Trial)getIntent().getSerializableExtra("trial");
 
         Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
         startActivity(intent);
@@ -46,12 +63,17 @@ public class renderingActivity extends AppCompatActivity {
                 //i.putExtra("realuse", result);
                 i.putExtra("expectfee", money); //예상 전기세 전송
                 //i.putExtra("usermoney", userfee);
+                i.putExtra("user", user);
+                i.putExtra("trial", trial);
                 startActivity(i);
             }
         });
 
 
         //계산
+        userfee = user.getElec_fee();
+        longitude = trial.getLongitude();
+        latitude = trial.getLatitude();
         /**
          * 1.DB에서 사용자의 전기세 받아오기.
          * 2.위치정보 받아서 DB에서 일사량 가져오기.

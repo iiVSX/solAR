@@ -64,12 +64,13 @@ public class companyListViewAdapter extends BaseAdapter {
 
         return convertView;
     }
-    public void addItem(Drawable companyIcon, String companyName, String amount, Drawable regionIcon, String regionName){
+    public void addItem(Drawable companyIcon, String companyName, String amount, Drawable regionIcon, String regionName, String tel){
         companyListViewItem item=new companyListViewItem();
 
         item.setCompanyIcon(companyIcon);
         item.setCompanyName(companyName);
         item.setAmount(amount);
+        item.setCompanyTel(tel);
         item.setRegionIcon(regionIcon);
         item.setRegionName(regionName);
 

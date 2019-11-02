@@ -34,12 +34,8 @@ public class GpsUtil extends Service implements LocationListener {
     private long MIN_TIME = 100, MIN_DISTANCE = 10;
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
-    private Geocoder mGeocoder;
-    private String address;
-
     public GpsUtil(Context context) {
         this.context = context;
-        mGeocoder = new Geocoder(context);
         getLocation();
     }
 
@@ -80,23 +76,11 @@ public class GpsUtil extends Service implements LocationListener {
                 }
             }
 
+            if(lm == null) Toast.makeText(getApplicationContext(), "LOCATION ERROR", Toast.LENGTH_SHORT).show();
         }catch(Exception e){
             Log.d("Plus",e.getMessage());
         }
         return null;
-    }
-
-    public void geocodedAddress(){
-        try{
-            List<Address> address_list = mGeocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
-            address = address_list.get(0).getAddressLine(0);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public String getAddress(){
-        return address;
     }
 
     public double getLongitude(){
