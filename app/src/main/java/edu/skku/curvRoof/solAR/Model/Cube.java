@@ -18,6 +18,7 @@ import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Utils.ShaderUtil;
 
 public class Cube {
+
     private final FloatBuffer textureBuffer;
     private final int mTextureUniformHandle;
     String TAG = "Cube";
@@ -25,8 +26,8 @@ public class Cube {
     Context context;
     static final int COORDDS_PER_VERTEX = 3;
     static final int vertexStride = COORDDS_PER_VERTEX *4;
-    private static final String VERTEX_SHADER_NAME = "shaders/cube.vert";
-    private static final String FRAGMENT_SHADER_NAME = "shaders/cube.frag";
+    private static final String VERTEX_SHADER_NAME = "cube.vert";
+    private static final String FRAGMENT_SHADER_NAME = "cube.frag";
     private final int vertexCount = vertices.length/COORDDS_PER_VERTEX;
     private int mProgram;
 
@@ -39,7 +40,7 @@ public class Cube {
     private ShortBuffer drawListBuffer;
     private FloatBuffer colorBuffer;
 
-    private static float[] vertices = {
+    static float[] vertices = {
             -(0.05f*1.67f),0.0f, (float) (0.05*1.0),
             0.05f*1.67f,0.0f,(float) (0.05*1.0),  // 오른쪽 아래
             0.05f*1.67f,  0.0032f,(float) (0.05*1.0),
@@ -76,7 +77,7 @@ public class Cube {
             -0.05f*1.67f, 0.0032f,(float)-(0.05*1.0),
     };
 
-    private short[] indices = {
+    short[] indices = {
             0, 1, 2, 2, 3, 0,
             4, 5, 7, 5, 6, 7,
             8, 9, 11, 9, 10, 11,
@@ -85,7 +86,7 @@ public class Cube {
             20, 21, 23, 21, 22, 23,
     };
 
-    private float [] textures = {
+    float [] textures = {
 
             //front face
             0.0f, 0.0f,
@@ -125,6 +126,17 @@ public class Cube {
     };
 
 
+    float[] colors = new float[]{
+            0.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 0.0f, 1.0f,
+            0.0f, 1.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 1.0f, 1.0f,
+    };
+    private int m_textureId;
     private int mTextureDataHandle0;
     private int mTextureDataHandle1;
     private int mTextureDataHandle2;
@@ -132,8 +144,10 @@ public class Cube {
     private int mTextureDataHandle4;
     private int mTextureDataHandle5;
 
+    //float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
-    public Cube(Context context, GLSurfaceView surfaceView){
+
+    public Cube(Context context,GLSurfaceView surfaceView){
         ByteBuffer bb = ByteBuffer.allocateDirect(vertices.length*4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
@@ -146,6 +160,11 @@ public class Cube {
         drawListBuffer.put(indices);
         drawListBuffer.position(0);
 
+        ByteBuffer cbuf = ByteBuffer.allocateDirect(colors.length*4);
+        cbuf.order(ByteOrder.nativeOrder());
+        colorBuffer = cbuf.asFloatBuffer();
+        colorBuffer.put(colors);
+        colorBuffer.position(0);
 
 
 
@@ -155,6 +174,7 @@ public class Cube {
         textureBuffer.put(textures);
         textureBuffer.position(0);
 
+        //loadTexture(context);
 
         try{
             int vertexShader = ShaderUtil.loadGLShader(TAG, context, GLES20.GL_VERTEX_SHADER,VERTEX_SHADER_NAME );
@@ -197,14 +217,14 @@ public class Cube {
             final Bitmap bitmap = BitmapFactory.decodeResource(mActivityContext2.getResources(), resourceId, options);
 
             // Bind to the texture in OpenGL
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, texture[0]);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
 
             // Set filtering
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_BINDING_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_BINDING_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
             // Load the bitmap into the bound texture.
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_BINDING_2D, 0, bitmap, 0);
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 
             // Recycle the bitmap, since its data has been loaded into OpenGL.
             bitmap.recycle();
@@ -216,6 +236,25 @@ public class Cube {
         }
 
         return texture[0];
+        //GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+       /* GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP,textures[0]);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP,GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP,GLES20.GL_TEXTURE_WRAP_S,GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP,GLES20.GL_TEXTURE_WRAP_T,GLES20.GL_CLAMP_TO_EDGE);
+
+
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_X,0, BitmapFactory.decodeResource(con.getResources(),R.drawable.cloud),0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,0,BitmapFactory.decodeResource(con.getResources(),R.drawable.cloud),0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,0,BitmapFactory.decodeResource(con.getResources(),R.drawable.m1),0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,0,BitmapFactory.decodeResource(con.getResources(),R.drawable.m1),0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_Z,0,BitmapFactory.decodeResource(con.getResources(),R.drawable.m1),0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,0,BitmapFactory.decodeResource(con.getResources(),R.drawable.m1),0);
+
+        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP,0);
+        m_textureId =textures[0];*/
     }
 
     public void draw(float[] mvpMatrix,int i){
@@ -228,6 +267,9 @@ public class Cube {
         GLES20.glVertexAttribPointer(mPositionHandle, COORDDS_PER_VERTEX, GLES20.GL_FLOAT,false, 0, vertexBuffer);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
+        // color 설정
+        //GLES20.glVertexAttribPointer(mColorHandle, 4, GLES20.GL_FLOAT, false, 16, colorBuffer);
+        //GLES20.glEnableVertexAttribArray(mColorHandle);
 
         textureBuffer.position(8*i);
         GLES20.glVertexAttribPointer(mTexCoordHandle,2,GLES20.GL_FLOAT,false,0,textureBuffer);
@@ -235,39 +277,46 @@ public class Cube {
 
         if(i==0){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D,mTextureDataHandle0);}
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,mTextureDataHandle0);}
         if(i==1){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle1);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle1);
         }
         if(i==2){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle2);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle2);
         }
         if(i==3){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle3);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle3);
         }
         if(i==4){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE4);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle4);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle4);
         }
         if(i==5){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
 
             // Bind the texture to this unit.
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_BINDING_2D, mTextureDataHandle5);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle5);
         }
         GLES20.glUniform1i(mTextureUniformHandle,i);
 
+        //loadTexture(c);
+
+        //GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP,m_textureId);
+        //GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        //GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP,m_textureId);
+        //GLES20.glEnableVertexAttribArray(mMipHandle);
+        //GLES20.glUniform1i(mTextureUniformHandle,0);
 
         Log.d("HHH", "QQQ");
         // mvpMatrix 설정
