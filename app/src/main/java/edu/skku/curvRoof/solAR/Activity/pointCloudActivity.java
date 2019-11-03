@@ -9,17 +9,18 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.curvsurf.fsweb.FindSurfaceRequester;
@@ -40,13 +41,14 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import edu.skku.curvRoof.solAR.Model.Cube;
+import edu.skku.curvRoof.solAR.Model.Trial;
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
-import edu.skku.curvRoof.solAR.Utils.GpsUtil;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -70,22 +72,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] viewMatrix = new float[16];
     private float[] projMatrix = new float[16];
     private float[] vpMatrix = new float[16];
-    private float[] modelMatrix = new float[16];
-    private float[] mvpMatrix = new float[16];
 
     //Recording gathered points, and pick start point for Region Growing
     private Button pickBtn;
     private Button recordBtn;
-    private boolean isRecording = false;
-    private boolean isRecorded = false;
-    private boolean isPicked = false;
-    private boolean pickTouched = false;
+    private int renderingStage = 0;
     private static int requestStatus = 0;                  // 0 : not requested
-                                                    // 1 : requested
-                                                    // 2 : plane found
-                                                    // 3 : plane found(Toast alarmed)
-                                                    // 4 : not found
-                                                    // 5 : not found(Toast alarmed)
+    // 1 : requested
+    // 2 : plane found
+    // 3 : plane found(Toast alarmed)
+    // 4 : not found
+    // 5 : not found(Toast alarmed)
 
     Handler mHandler = null; // handler for GPS tracker to toast on MainActivity
 
@@ -98,23 +95,29 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private boolean normalValid = false;
 
     private float[] ray = null;
-    private float[] normalRay= null;
-    private boolean isRay = false;
     private int holedPoint = 0;
     Frame frame;
     LineRender lineRenderer = new LineRender();
     LineRender normalLineRenderer = new LineRender();
     private float[] pop;
 
-    //cube
-    private Cube cube;
+    //Cube
+    Cube cube;
 
     //tmp
     private Button tmpBtn;
+
+    private User user;
+    private Trial trial;
+    private LinearLayout dashboard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_point_cloud);
+        setContentView(R.layout.activity_point_cloud_land);
+
+        user = (User)getIntent().getSerializableExtra("user");
+        trial = (Trial)getIntent().getSerializableExtra("trial");
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -123,48 +126,47 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
+        // dashboard
+        dashboard = findViewById(R.id.dashboard);
         //tmp
         tmpBtn = (Button)findViewById(R.id.tmpbtn);
         tmpBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
-                startActivity(i);
+//                Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
+//                i.putExtra("user", user);
+//                i.putExtra("trial", trial);
+//                startActivity(i);
+                if(dashboard.getVisibility() == View.GONE){
+                    dashboard.setVisibility(View.VISIBLE);
+                    renderingStage = 5;
+                }
+                else{
+                    dashboard.setVisibility(View.GONE);
+                    renderingStage = 4;
+                }
+
             }
         });
 
 
 
         //
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                GpsUtil gpsTracker = new GpsUtil(pointCloudActivity.this);
-                //Toast.makeText(getApplicationContext(), gpsTracker.getAddress(), Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-        });
-        t.start();
-
-
         recordBtn = (Button)findViewById(R.id.recordBtn);
         pickBtn = (Button)findViewById(R.id.pickBtn);
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPicked = false;
-                if(isRecording == false){
-                    isRecording = true;
-                    Toast.makeText(getApplicationContext(), "Start Recording", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    isRecording = false;
+                if(renderingStage == 1){
+                    renderingStage = 2;
                     pointCloudRenderer.filterHashMap();
                     Toast.makeText(getApplicationContext(), "Stop Recording", Toast.LENGTH_SHORT).show();
                     pointCloudRenderer.cal_gathering();
-                    isRecorded = true;
+
+                }
+                else if(renderingStage == 0){
+                    renderingStage = 1;
+                    Toast.makeText(getApplicationContext(), "Start Recording", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -174,9 +176,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
             @Override
             public void onClick(View v) {
-                if(isPicked == false){
-                    isPicked = true;
-                    pickTouched = true;
+                //if(isPicked == false){
+                if(renderingStage < 3){
+                    renderingStage = 3;
                     if(myPlaneFinder != null){
                         if(myPlaneFinder.getStatus() == AsyncTask.Status.FINISHED || myPlaneFinder.getStatus() == AsyncTask.Status.RUNNING){
                             myPlaneFinder.cancel(true);
@@ -186,31 +188,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     }
                 }
                 else{
-                    isPicked = false;
-                }
-            }
-        });
-
-
-        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_DOWN :
-                    case MotionEvent.ACTION_MOVE :
-                    case MotionEvent.ACTION_UP   :
-                        float tx = event.getX();
-                        float ty = event.getY();
-
-                        try{
-                            ray = screenPointToWorldRay(tx, ty, session.update());
-                        }catch (Exception e){
-                            Log.d("hit test", e.getMessage());
-                        }
-
 
                 }
-                return true;
             }
         });
 
@@ -232,7 +211,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     Toast.makeText(getApplicationContext(), "hit Result : " + hitResult, Toast.LENGTH_SHORT ).show();
                     holedPoint = hitResult;
                 }
-                isRay = true;
 
                 // obj 움직이기
                 if(myPlane != null){            // 1:ll, 2:lr, 3:ur, 4:ul
@@ -380,122 +358,81 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
 
         try{
+            // 항상 카메라 화면 렌더링
             session.setCameraTextureName(backgroundRenderer.getTextureId());
-
             frame = session.update();
             Camera camera = frame.getCamera();
-
             backgroundRenderer.draw(frame);
 
-            if(pickTouched){
-                pointCloudRenderer.pickPoint(camera);
-                pickTouched = false;
+            // arcore mvp matrix 계산
+            if(camera.getTrackingState() == TrackingState.TRACKING) {
+                // Fixed Work -> ARCore
+                camera.getViewMatrix(viewMatrix, 0);
+                camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
             }
+            Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
 
-            if(isPicked){
-                if(camera.getTrackingState() == TrackingState.TRACKING) {
-                    // Fixed Work -> ARCore
-                    camera.getViewMatrix(viewMatrix, 0);
-                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-                }
+            switch (renderingStage){
+                case 1: // recording point Cloud
+                    pointCloudRenderer.update(frame.acquirePointCloud());
+                    pointCloudRenderer.draw(vpMatrix);
+                    break;
 
-                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                if(normalValid == false){
-                    pointCloudRenderer.draw_seedPoint(vpMatrix);
-                    if(myPlane != null){
-                        planeRenderer.bufferUpdate(myPlane);
-                        normalValid = true;
+                case 2: // rendering recorded point cloud
+                    if(pointCloudRenderer.getFiltered_pointCloud() != null){
+                        pointCloudRenderer.draw_final(vpMatrix);
                     }
-                }
-                else{
-                    planeRenderer.draw(vpMatrix);
-                    /*
-                    Matrix.setIdentityM(modelMatrix,0);
-                    float[] change = myPlane.getLl();
-                    //float[] ll = myPlane.getLl();
-                    //float[] width = {change[0]-ll[0],change[1]-ll[1],change[2]-ll[2]};
-                    //Log.d("width","\n"+width[0]+","+width[1]+","+width[2]);
-/*
-                    Matrix.translateM(modelMatrix, 0,change[0],change[1],change[2]);
-                    Matrix.multiplyMM(mvpMatrix, 0,vpMatrix,0,modelMatrix,0);
 
-                    if(cube==null) Log.d("NULL", "ondrawframe");
+                    break;
 
-                    cube.draw(mvpMatrix,0);
-                    cube.draw(mvpMatrix,1);
-                    cube.draw(mvpMatrix,2);
-                    cube.draw(mvpMatrix,3);
-                    cube.draw(mvpMatrix,4);
-                    cube.draw(mvpMatrix,5);
-                    */
+                case 3: // pickPoint
+                    pointCloudRenderer.pickPoint(camera);
+                    renderingStage = 4;
+                    break;
 
+                case 4: // plane이 정상적으로 뽑혔으면 PlaneRenderer, 그게 아니면 PointCloud에서 seed point draw
+                    if(normalValid == false){
+                        pointCloudRenderer.draw_seedPoint(vpMatrix);
+                        if(myPlane != null){
+                            planeRenderer.bufferUpdate(myPlane);
+                            normalValid = true;
+                        }
+                    }
+                    else{
+                        planeRenderer.draw(vpMatrix);
+                    }
+                    break;
+
+                case 5:         // cube 렌더링
                     int m =3;
                     int n=2;
                     float angle=0.0f;
                     float[] change = myPlane.getLl();
 
+                    float[] modelMatrix = new float[16];
+                    float[] mvpMatrix = new float[16];
+
                     Matrix.setIdentityM(modelMatrix,0);
                     Matrix.translateM(modelMatrix,0,change[0]+0.5f*0.167f,change[1]+0.05f*(float)sin(angle),change[2]+(float)(-0.05f*cos(angle)));
                     Matrix.rotateM(modelMatrix,0,angle,1,0,0);
-                    for(int i=0;i<n;i++){
-                        for(int j=0;j<m;j++){
-                            Matrix.translateM(modelMatrix,0,0.167f,0,0);
+                    for(int i=0;i<n;i++) {
+                        for (int j = 0; j < m; j++) {
+                            Matrix.translateM(modelMatrix, 0, 0.167f, 0, 0);
                             //Matrix.translateM(modelMatrix,0,(float)0.5*0.167f+j*0.167f,(float)(0.5*0.0032f*sin(angle)+i*0.0032f*sin(angle)),(float)(-0.05f*cos(angle)-0.05f*i*cos(angle)));
-                            Matrix.multiplyMM(mvpMatrix,0,vpMatrix,0,modelMatrix,0);
-                            cube.draw(mvpMatrix,0);
-                            cube.draw(mvpMatrix,1);
-                            cube.draw(mvpMatrix,2);
-                            cube.draw(mvpMatrix,3);
-                            cube.draw(mvpMatrix,4);
-                            cube.draw(mvpMatrix,5);
+                            Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, modelMatrix, 0);
+                            cube.draw(mvpMatrix, 0);
+                            cube.draw(mvpMatrix, 1);
+                            cube.draw(mvpMatrix, 2);
+                            cube.draw(mvpMatrix, 3);
+                            cube.draw(mvpMatrix, 4);
+                            cube.draw(mvpMatrix, 5);
                         }
-                        Matrix.translateM(modelMatrix,0,-m*0.167f,0.1f*(float)sin(angle),0);
-                        Matrix.translateM(modelMatrix,0,0,0,-0.1f*(float)cos(angle));
+                        Matrix.translateM(modelMatrix, 0, -m * 0.167f, 0.1f * (float) sin(angle), 0);
+                        Matrix.translateM(modelMatrix, 0, 0, 0, -0.1f * (float) cos(angle));
                     }
-                }
+                    break;
             }
-            else if(isRecording){
-                pointCloudRenderer.update(frame.acquirePointCloud());
 
-                if(camera.getTrackingState() == TrackingState.TRACKING) {
-                    // Fixed Work -> ARCore
-                    camera.getViewMatrix(viewMatrix, 0);
-                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-                }
-
-                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                pointCloudRenderer.draw(vpMatrix);
-            }
-            else if(isRecorded){
-                if(camera.getTrackingState() == TrackingState.TRACKING) {
-                    // Fixed Work -> ARCore
-                    camera.getViewMatrix(viewMatrix, 0);
-                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-                }
-
-                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-                pointCloudRenderer.draw_final(vpMatrix);
-            }
-//            if(isRay){		//onDrawFrame
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
-//
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                lineRenderer.draw(vpMatrix);
-//            }
-//            if(normalRay!=null){
-//                if(camera.getTrackingState() == TrackingState.TRACKING) {
-//                    // Fixed Work -> ARCore
-//                    camera.getViewMatrix(viewMatrix, 0);
-//                    camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-//                }
-//
-//                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
-//                normalLineRenderer.draw(vpMatrix);
-//            }
         }catch(CameraNotAvailableException e){
             finish();
         }
@@ -521,9 +458,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             try{
                 ResponseForm resp = fsr.request(rf, points);
                 if(resp != null && resp.isSuccess()) {
-                        ResponseForm.PlaneParam param = resp.getParamAsPlane();
-                        requestStatus = 2;
-                        return param;
+                    ResponseForm.PlaneParam param = resp.getParamAsPlane();
+                    requestStatus = 2;
+                    return param;
                 }
                 else{
                     requestStatus = 4;
@@ -545,9 +482,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             Log.d("requestStatus", String.valueOf(requestStatus));
             try{
                 myPlane = new Plane(o.ll, o.lr, o.ur, o.ul,frame.getCamera());
-                normalRay = myPlane.getNormal();
-                float[] temp = new float[]{myPlane.pivot[0] + myPlane.getNormal()[0], myPlane.pivot[1] + myPlane.getNormal()[1], myPlane.pivot[2] + myPlane.getNormal()[2]};
-                normalLineRenderer.bufferUpdate(myPlane.pivot, temp);
             }catch (Exception e){
                 Log.d("Plane", e.getMessage());
             }
@@ -555,8 +489,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         }
     }
     float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {		// pointCloudActivity
-                                                                            // ray[0~2] : camera pose
-                                                                            // ray[3~5] : Unit vector of ray
+        // ray[0~2] : camera pose
+        // ray[3~5] : Unit vector of ray
         float[] ray_clip = new float[4];
         ray_clip[0] = 2.0f * xPx / glSurfaceView.getMeasuredWidth() - 1.0f;
         // +y is up (android UI Y is down):
