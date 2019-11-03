@@ -479,7 +479,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }catch (Exception e){
                 Log.d("Plane", e.getMessage());
             }
-
+            if(myPlane == null){
+                float[] seed = pointCloudRenderer.seedPoint;
+                float[] ll = {seed[0]-0.3f,seed[1],seed[2]};
+                float[] lr = {seed[0],seed[1],seed[2]-0.3f};
+                float[] ur = {seed[0]+0.3f,seed[1],seed[2]};
+                float[] ul = {seed[0],seed[1],seed[2]+0.3f};
+                myPlane = new Plane(ll,lr,ur,ul,frame.getCamera());
+            }
         }
     }
     float[] screenPointToWorldRay(float xPx, float yPx, Frame frame) {		// pointCloudActivity

@@ -66,7 +66,7 @@ public class PointCloudRenderer {
     private FloatBuffer gathered_color_buffer;
 
     //Pick seed Point
-    private float[] seedPoint;
+    public float[] seedPoint;
     private FloatBuffer seedBuffer;
     private int seedPointID;
 
