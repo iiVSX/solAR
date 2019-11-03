@@ -1,9 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.historyPageActivity">
+    tools:context=".Activity.historyPageActivity" >
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="#FFFFFF"
+            app:srcCompat="@drawable/ic_00_logo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/nanumgothicbold"
+            android:gravity="center"
+            android:text="2019년 11월 4일 오후 11시 46분"
+            android:textColor="#003366"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/resultImage"
+            android:layout_width="400dp"
+            android:layout_height="300dp"
+            android:layout_margin="5dp"
+            android:backgroundTint="#7AFFFFFF"
+            android:src="@drawable/solar_logo"
+            android:background="#33000000"
+           android:scaleType="centerInside" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:foreground="@drawable/ic_19_panel" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:foreground="@drawable/ic_09_rooficon2" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:foreground="@drawable/ic_20_panelprice_small" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:foreground="@drawable/ic_20_elec" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:foreground="@drawable/ic_21_elecprice"
+                    app:srcCompat="@drawable/ic_22_whitecircle_144px" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:text="패널 개수"
+                        android:textColor="#003366"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:text="지붕 면적"
+                        android:textColor="#003366"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:text="패널 가로*세로"
+                        android:textColor="#003366"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:text="전기 발전량"
+                        android:textColor="#003366"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:text="전기 요금"
+                        android:textColor="#003366"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/panelText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:text="12개"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/roofText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:text="13,325m²"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/useroofText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:text="3*4"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/elecText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:text="45,20kW"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/elecfeeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:fontFamily="@font/nanumgothic"
+                        android:gravity="center_vertical"
+                        android:text="24,240원"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:foreground="@drawable/ic_03_next" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/nanumgothicbold"
+                android:gravity="center_vertical"
+                android:paddingStart="15dp"
+                android:text="회사 목록 보기"
+                android:textColor="#003366"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
