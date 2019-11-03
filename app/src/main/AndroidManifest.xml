@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.DIAL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.DIAL_PHONE" />
 
     <uses-feature
         android:name="android.hardware.camera.ar"
@@ -22,10 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.mypageActivity"></activity>
+        <activity android:name=".Activity.historyActivity"></activity>
+        <activity android:name=".Activity.mypageActivity" />
         <activity
             android:name=".Activity.receiptActivity$moveSplashActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity android:name=".Activity.choiceActivity" />
         <activity android:name=".Activity.companyListActivity" />
         <activity android:name=".Activity.receiptActivity" />
@@ -45,7 +46,7 @@
         </activity>
         <activity
             android:name=".Activity.receiptActivity$calculateSplashActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
 
         <meta-data
             android:name="com.google.ar.core"

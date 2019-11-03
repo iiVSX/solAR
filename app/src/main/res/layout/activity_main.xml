@@ -199,12 +199,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:background="#003366"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/mypageFab"
+                android:id="@+id/historyFab"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"
@@ -212,7 +212,7 @@
                 android:layout_marginEnd="15dp"
                 android:background="#00FFFFFF"
                 android:clickable="true"
-                android:foreground="@drawable/ic_15_userinfo"
+                android:foreground="@drawable/ic_18_choosedatecircle"
                 app:srcCompat="@mipmap/ic_launcher_round" />
 
             <LinearLayout
@@ -222,7 +222,7 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/myPageBtn"
+                    android:id="@+id/historyBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -230,7 +230,7 @@
                     android:background="#00FFFFFF"
                     android:fontFamily="@font/nanumgothicbold"
                     android:gravity="start|center_vertical"
-                    android:text="마이페이지"
+                    android:text="히스토리 확인"
                     android:textColor="#003366"
                     android:textSize="24sp" />
 
@@ -240,7 +240,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
-                    android:text="업체를 선정하고, 진행 중인 설치 작업을 확인합니다. 개인 정보를 수정 혹은 등록할 수 있습니다." />
+                    android:text="실행했던 결과들의 목록을 보여줍니다." />
 
             </LinearLayout>
 

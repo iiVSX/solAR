@@ -24,8 +24,8 @@ import edu.skku.curvRoof.solAR.R;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ElecfeeDialog.ElecfeeDialogListner {
     private String func;
     private Context mContext;
-    private FloatingActionButton elecFab, measureFab, askFab, myPageFab;
-    private Button elecBtn, measureBtn, askBtn, myPageBtn;
+    private FloatingActionButton elecFab, measureFab, askFab, historyFab;
+    private Button elecBtn, measureBtn, askBtn, historyBtn;
     private TextView idTv, elecFeeTv;
     private LinearLayout menull;
     //기존 전기요금 등록 텍뷰
@@ -54,12 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         elecFab = (FloatingActionButton) findViewById(R.id.elecFab);
         measureFab = (FloatingActionButton) findViewById(R.id.measureFab);
         askFab = (FloatingActionButton) findViewById(R.id.askFab);
-        myPageFab = (FloatingActionButton) findViewById(R.id.mypageFab);
+        historyFab = (FloatingActionButton) findViewById(R.id.historyFab);
 
         elecBtn = (Button) findViewById(R.id.elecBtn);
         measureBtn = (Button) findViewById(R.id.measureBtn);
         askBtn = (Button) findViewById(R.id.askBtn);
-        myPageBtn = (Button) findViewById(R.id.myPageBtn);
+        historyBtn = (Button) findViewById(R.id.historyBtn);
 
         idTv = (TextView) findViewById(R.id.idTv);
         elecFeeTv = (TextView)findViewById(R.id.elecfee);
@@ -92,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(intentlist);
                         break;
 
-                    case R.id.mypageFab:
-                    case R.id.myPageBtn:
-                        Intent intentmypage = new Intent(MainActivity.this, mypageActivity.class);
+                    case R.id.historyFab:
+                    case R.id.historyBtn:
+                        Intent intentmypage = new Intent(MainActivity.this, historyActivity.class);
                         intentmypage.putExtra("user", user);
                         startActivity(intentmypage);
                         break;
@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         askFab.setOnClickListener(onClickListener);
         askBtn.setOnClickListener(onClickListener);
 
-        myPageFab.setOnClickListener(onClickListener);
-        myPageBtn.setOnClickListener(onClickListener);
+        historyFab.setOnClickListener(onClickListener);
+        historyBtn.setOnClickListener(onClickListener);
 
     }
 
