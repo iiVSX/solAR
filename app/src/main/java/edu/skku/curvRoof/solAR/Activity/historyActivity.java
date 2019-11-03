@@ -1,5 +1,6 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +29,9 @@ public class historyActivity extends AppCompatActivity {
         historylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent historyIntent=new Intent(historyActivity.this,historyPageActivity.class);
+                startActivity(historyIntent);
 
             }
         });
