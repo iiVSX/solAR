@@ -22,7 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.historyActivity"></activity>
+        <activity android:name=".Activity.historyPageActivity"></activity>
+        <activity android:name=".Utils.historyListViewItem" />
+        <activity android:name=".Utils.historyListViewAdapter" />
+        <activity android:name=".Activity.historyActivity" />
         <activity android:name=".Activity.mypageActivity" />
         <activity
             android:name=".Activity.receiptActivity$moveSplashActivity"
