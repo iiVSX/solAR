@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context mContext;
     private FloatingActionButton elecFab, measureFab, askFab, myPageFab;
     private Button elecBtn, measureBtn, askBtn, myPageBtn;
-    private TextView idTv;
+    private TextView idTv, elecFeeTv;
     private LinearLayout menull;
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myPageBtn = (Button) findViewById(R.id.myPageBtn);
 
         idTv = (TextView) findViewById(R.id.idTv);
+        elecFeeTv = (TextView)findViewById(R.id.elecfee);
 
         idTv.setText(email + "님 반갑습니다!");
 
@@ -127,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void applyTexts(String elecfee) {
-        //TextView aa = (TextView) findViewById(R.id.eaa);
         elecFee.setText("등록 전기요금은 " + elecfee + "원 입니다.");
         elec_fee = Double.valueOf(elecfee);
         if(userID != null){
@@ -146,10 +146,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void checkUser(){
-        myRef.child("user_id").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for(DataSnapshot snapshot : dataSnapshot.child("user_id").getChildren()){
                     if(snapshot.getValue().equals(email)) {
                         userID = snapshot.getKey();
                     }
@@ -158,7 +158,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     userID = myRef.child("user_id").push().getKey();
                     myRef.child("user_id").child(userID).setValue(email);
                 }
-
+                else{
+                    Object temp = null;
+                    if((temp = dataSnapshot.child("user_list").child(userID).child("elec_fee").getValue()) != null){
+                        elecFeeTv.setText("등록 전기요금은 " + temp.toString() + "원 입니다.");
+                    }
+                }
                 user.setUserID(userID);
             }
 
