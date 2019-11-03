@@ -8,10 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 
 public class mypageActivity extends AppCompatActivity {
-    private String ID;
+    private User user;
     private TextView userText;
     private Button infoBtn,historyBtn,settingsBtn;
     private FloatingActionButton infoFab,historyFab,settingsFab;
@@ -22,11 +23,11 @@ public class mypageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mypage);
 
         Intent fromIntent = getIntent();
-        ID = fromIntent.getStringExtra("ID");
+        user = (User)fromIntent.getSerializableExtra("user");
 
         userText = (TextView)findViewById(R.id.userText);
 
-        userText.setText(ID+"님");
+        userText.setText(user.getUserID()+"님");
 
         infoBtn=(Button)findViewById(R.id.infoBtn);
         infoFab=(FloatingActionButton)findViewById(R.id.infoFab);

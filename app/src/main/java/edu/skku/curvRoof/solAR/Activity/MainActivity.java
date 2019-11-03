@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         idTv = (TextView) findViewById(R.id.idTv);
         elecFeeTv = (TextView)findViewById(R.id.elecfee);
 
-        idTv.setText(email + "님 반갑습니다!");
-
         elecFee = findViewById(R.id.elecfee);
 
         checkUser();
@@ -97,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.mypageFab:
                     case R.id.myPageBtn:
                         Intent intentmypage = new Intent(MainActivity.this, mypageActivity.class);
+                        intentmypage.putExtra("user", user);
                         startActivity(intentmypage);
                         break;
 
@@ -165,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 user.setUserID(userID);
+                idTv.setText(user.getUserID() + "님 반갑습니다!");
             }
 
             @Override
