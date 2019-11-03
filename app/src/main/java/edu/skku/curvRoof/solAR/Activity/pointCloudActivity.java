@@ -137,7 +137,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 //                i.putExtra("user", user);
 //                i.putExtra("trial", trial);
 //                startActivity(i);
-                if(dashboard.getVisibility() == View.GONE){
+                if(dashboard.getVisibility() == View.GONE && myPlane != null){
                     dashboard.setVisibility(View.VISIBLE);
                     renderingStage = 5;
                 }
