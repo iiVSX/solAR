@@ -74,8 +74,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] vpMatrix = new float[16];
 
     //Recording gathered points, and pick start point for Region Growing
-    private Button pickBtn;
+    private Button nextBtn;
     private Button recordBtn;
+    private Button backBtn;
     private int renderingStage = 0;
     private static int requestStatus = 0;                  // 0 : not requested
     // 1 : requested
@@ -105,7 +106,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     Cube cube;
 
     //tmp
-    private Button tmpBtn;
+
 
     private User user;
     private Trial trial;
@@ -129,67 +130,51 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         // dashboard
         dashboard = findViewById(R.id.dashboard);
         //tmp
-        tmpBtn = (Button)findViewById(R.id.tmpbtn);
-        tmpBtn.setOnClickListener(new View.OnClickListener(){
+        nextBtn = findViewById(R.id.nextBtn);
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(renderingStage == 4){
+                    renderingStage = 5;
+                    backBtn.setVisibility(View.VISIBLE);
+                    dashboard.setVisibility(View.VISIBLE);
+                }
+                else if(renderingStage == 5){
+                    // next activity(result_activity)
+                }
+            }
+        });
+        backBtn = (Button)findViewById(R.id.BackBtn);
+        backBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-//                Intent i = new Intent(pointCloudActivity.this, renderingActivity.class);
-//                i.putExtra("user", user);
-//                i.putExtra("trial", trial);
-//                startActivity(i);
-                if(dashboard.getVisibility() == View.GONE && myPlane != null){
-                    dashboard.setVisibility(View.VISIBLE);
-                    renderingStage = 5;
-                }
-                else{
-                    dashboard.setVisibility(View.GONE);
+                if(renderingStage == 5){
                     renderingStage = 4;
+                    backBtn.setVisibility(View.INVISIBLE);
+                    dashboard.setVisibility(View.INVISIBLE);
                 }
-
             }
         });
 
-
+        Toast.makeText(getApplicationContext(), "오른쪽의 흰색 버튼을 눌러 촬영을 시작하세요", Toast.LENGTH_SHORT).show();
 
         //
         recordBtn = (Button)findViewById(R.id.recordBtn);
-        pickBtn = (Button)findViewById(R.id.pickBtn);
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(renderingStage == 1){
+                    Toast.makeText(getApplicationContext(), "인식하려는 면적을 터치하세요", Toast.LENGTH_SHORT).show();
                     renderingStage = 2;
                     pointCloudRenderer.filterHashMap();
-                    Toast.makeText(getApplicationContext(), "Stop Recording", Toast.LENGTH_SHORT).show();
                     pointCloudRenderer.cal_gathering();
 
                 }
                 else if(renderingStage == 0){
                     renderingStage = 1;
-                    Toast.makeText(getApplicationContext(), "Start Recording", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "움직이면서 면적을 촬영하세요", Toast.LENGTH_SHORT).show();
                 }
 
-            }
-        });
-
-        pickBtn.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                //if(isPicked == false){
-                if(renderingStage < 3){
-                    renderingStage = 3;
-                    if(myPlaneFinder != null){
-                        if(myPlaneFinder.getStatus() == AsyncTask.Status.FINISHED || myPlaneFinder.getStatus() == AsyncTask.Status.RUNNING){
-                            myPlaneFinder.cancel(true);
-                            myPlaneFinder = new planeFinder();
-                        }
-                        myPlaneFinder.execute();
-                    }
-                }
-                else{
-
-                }
             }
         });
 
@@ -200,43 +185,53 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 float ty = event.getY();
                 // ray 생성
                 ray = screenPointToWorldRay(tx, ty, frame);
-                float[] rayStart = new float[]{ray[0], ray[1], ray[2]};
-                float[] rayEnd = new float[]{ray[0] + ray[3], ray[1] + ray[4], ray[2] + ray[5]};
-                lineRenderer.bufferUpdate(rayStart, rayEnd);
 
-                // hit Test
-                if(myPlane != null) {
-                    int hitResult = myPlane.hitPoint(ray);
-                    Log.d("Ray", "hit result : " + hitResult);
-                    Toast.makeText(getApplicationContext(), "hit Result : " + hitResult, Toast.LENGTH_SHORT ).show();
-                    holedPoint = hitResult;
+                if(renderingStage == 2){
+                    renderingStage = 3;
+                    if(myPlaneFinder != null){
+                        if(myPlaneFinder.getStatus() == AsyncTask.Status.FINISHED || myPlaneFinder.getStatus() == AsyncTask.Status.RUNNING){
+                            myPlaneFinder.cancel(true);
+                            myPlaneFinder = new planeFinder();
+                        }
+                        myPlaneFinder.execute();
+                    }
+                    recordBtn.setVisibility(View.GONE);
+                    nextBtn.setVisibility(View.VISIBLE);
+
                 }
 
-                // obj 움직이기
-                if(myPlane != null){            // 1:ll, 2:lr, 3:ur, 4:ul
-                    switch(event.getAction()) {
-                        case MotionEvent.ACTION_DOWN :
-                            Log.d("moveP",
-                                    "\nll : "+ myPlane.getLl()[0]+", "+ myPlane.getLl()[1]+", "+ myPlane.getLl()[2]+"\n"+
-                                            "lr : "+ myPlane.getLr()[0]+", "+ myPlane.getLr()[1]+", "+ myPlane.getLr()[2]+"\n"+
-                                            "ul : "+ myPlane.getUl()[0]+", "+ myPlane.getUl()[1]+", "+ myPlane.getUl()[2]+"\n"+
-                                            "ur : "+ myPlane.getUr()[0]+", "+ myPlane.getUr()[1]+", "+ myPlane.getUr()[2]+"\n");
-                        case MotionEvent.ACTION_MOVE :
-                            if(myPlane != null) {
-                                pop = myPlane.rayOnPlane(ray);  // point on Plane
-                                Log.d("moveP", "\n" + holedPoint +" : "+ pop[0] + "/ " + pop[1] + "/ " + pop[2] );
-                                if(holedPoint == 1) myPlane.setLl(pop);
-                                else if(holedPoint == 2) myPlane.setLr(pop);
-                                else if(holedPoint == 3) myPlane.setUr(pop);
-                                else if(holedPoint == 4) myPlane.setUl(pop);
-                                planeRenderer.bufferUpdate(myPlane);
-                            }
+                else if(renderingStage == 4){
+                    // obj 움직이기
+                    if(myPlane != null){            // 1:ll, 2:lr, 3:ur, 4:ul
+                        switch(event.getAction()) {
+                            case MotionEvent.ACTION_DOWN :
+                                Log.d("moveP",
+                                        "\nll : "+ myPlane.getLl()[0]+", "+ myPlane.getLl()[1]+", "+ myPlane.getLl()[2]+"\n"+
+                                                "lr : "+ myPlane.getLr()[0]+", "+ myPlane.getLr()[1]+", "+ myPlane.getLr()[2]+"\n"+
+                                                "ul : "+ myPlane.getUl()[0]+", "+ myPlane.getUl()[1]+", "+ myPlane.getUl()[2]+"\n"+
+                                                "ur : "+ myPlane.getUr()[0]+", "+ myPlane.getUr()[1]+", "+ myPlane.getUr()[2]+"\n");
+                                if(myPlane != null) {
+                                    holedPoint = myPlane.hitPoint(ray);
+                                }
+                                break;
+                            case MotionEvent.ACTION_MOVE :
+                                if(myPlane != null) {
+                                    pop = myPlane.rayOnPlane(ray);  // point on Plane
+                                    Log.d("moveP", "\n" + holedPoint +" : "+ pop[0] + "/ " + pop[1] + "/ " + pop[2] );
+                                    if(holedPoint == 1) myPlane.setLl(pop);
+                                    else if(holedPoint == 2) myPlane.setLr(pop);
+                                    else if(holedPoint == 3) myPlane.setUr(pop);
+                                    else if(holedPoint == 4) myPlane.setUl(pop);
+                                    planeRenderer.bufferUpdate(myPlane);
+                                }
 
-                            break;
-                        case MotionEvent.ACTION_UP   :
-                            holedPoint = 0;
+                                break;
+                            case MotionEvent.ACTION_UP   :
+                                holedPoint = 0;
+                        }
                     }
                 }
+
 
                 return true;
             }

@@ -12,42 +12,41 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/pickBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="180dp"
-        android:text="Pick"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
         android:id="@+id/recordBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="83dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="84dp"
-        android:text="Record"
-        app:layout_constraintBottom_toBottomOf="@+id/pickBtn"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="24dp"
+        android:foreground="@drawable/ic_22_whitecircle_144px"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tmpbtn" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/tmpbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="258dp"
-        android:text="TMP"
+        android:id="@+id/nextBtn"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="24dp"
+        android:foreground="@drawable/ic_03_next"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/BackBtn"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="160dp"
+        android:foreground="@drawable/ic_03_back"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/pointCloud_view"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
