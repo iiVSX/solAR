@@ -164,11 +164,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 if(renderingStage == 1){
+                    renderingStage = 0;
+                    pointCloudRenderer.filterHashMap();
                     Toast.makeText(getApplicationContext(), "인식하려는 면적을 터치하세요", Toast.LENGTH_SHORT).show();
                     renderingStage = 2;
-                    pointCloudRenderer.filterHashMap();
-                    pointCloudRenderer.cal_gathering();
-
                 }
                 else if(renderingStage == 0){
                     renderingStage = 1;

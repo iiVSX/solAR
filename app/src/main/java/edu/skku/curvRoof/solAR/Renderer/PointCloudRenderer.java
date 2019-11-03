@@ -257,7 +257,7 @@ public class PointCloudRenderer {
                     Point temp_point = iter.next();
                     float temp = (float)(Math.pow((temp_point.getX() - mean_x), 2) + Math.pow((temp_point.getY() - mean_y), 2) + Math.pow((temp_point.getZ() - mean_z), 2));
                     float z_score = (float)(Math.abs(temp - distance_mean) / Math.sqrt(variance));
-                    if (z_score >= 1.5f) {
+                    if (z_score >= 1.2f) {
                         iter.remove();
                     }
                 }
@@ -294,7 +294,7 @@ public class PointCloudRenderer {
         float[] tempArray = new float[listFinalPoints.size()];
         for(int i = 0 ; i < tempArray.length ; i++){
             tempArray[i] = listFinalPoints.get(i);
-    }
+        }
 
         filtered_pointCloud.put(tempArray);
         filtered_pointCloud.position(0);
