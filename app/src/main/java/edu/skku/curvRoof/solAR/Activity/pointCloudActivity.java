@@ -52,6 +52,7 @@ import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -400,20 +401,26 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 case 5:         // cube 렌더링
                     int m =3;
                     int n=2;
-                    float angle=0.0f;
+                    float angle=30.0f;
+                    float direction = 45.0f;
                     float[] change = myPlane.getLl();
-
+                    float[] x = new float[6];
+                    float[] y = new float[6];
+                    float[] z = new float[6];
                     float[] modelMatrix = new float[16];
                     float[] mvpMatrix = new float[16];
 
-                    Matrix.setIdentityM(modelMatrix,0);
-                    Matrix.translateM(modelMatrix,0,change[0]+0.5f*0.167f,change[1]+0.05f*(float)sin(angle),change[2]+(float)(-0.05f*cos(angle)));
-                    Matrix.rotateM(modelMatrix,0,angle,1,0,0);
-                    for(int i=0;i<n;i++) {
-                        for (int j = 0; j < m; j++) {
-                            Matrix.translateM(modelMatrix, 0, 0.167f, 0, 0);
-                            //Matrix.translateM(modelMatrix,0,(float)0.5*0.167f+j*0.167f,(float)(0.5*0.0032f*sin(angle)+i*0.0032f*sin(angle)),(float)(-0.05f*cos(angle)-0.05f*i*cos(angle)));
-                            Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, modelMatrix, 0);
+                    for(int i = 0;i<n;i++){
+                        for(int j = 0;j<m;j++){
+                            Matrix.setIdentityM(modelMatrix,0);
+
+                            Matrix.rotateM(modelMatrix,0,direction,0,1,0);
+                            Matrix.translateM(modelMatrix,0,change[0],change[1],change[2]);
+
+                            Matrix.translateM(modelMatrix,0,(float)(j+0.5)*0.167f,(float)((i+0.5)*0.1f*sin(toRadians(angle))),(float)(-(i+0.5)*0.1f*cos(toRadians(angle))));
+
+                            Matrix.rotateM(modelMatrix,0,angle,1,0,0);
+                            Matrix.multiplyMM(mvpMatrix,0,vpMatrix,0,modelMatrix,0);
                             cube.draw(mvpMatrix, 0);
                             cube.draw(mvpMatrix, 1);
                             cube.draw(mvpMatrix, 2);
@@ -421,9 +428,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                             cube.draw(mvpMatrix, 4);
                             cube.draw(mvpMatrix, 5);
                         }
-                        Matrix.translateM(modelMatrix, 0, -m * 0.167f, 0.1f * (float) sin(angle), 0);
-                        Matrix.translateM(modelMatrix, 0, 0, 0, -0.1f * (float) cos(angle));
                     }
+
                     break;
             }
 
