@@ -19,7 +19,9 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/nanumgothicbold"
+        android:textColor="#003366"/>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -52,7 +54,9 @@
                 android:layout_weight="2"
                 android:gravity="center"
                 android:text="ROOF - 지붕"
-                android:textSize="32sp" />
+                android:textSize="32sp"
+                android:fontFamily="@font/nanumgothicbold"
+                android:textColor="#003366"/>
         </LinearLayout>
 
         <LinearLayout
@@ -76,7 +80,9 @@
                 android:layout_weight="2"
                 android:gravity="center"
                 android:text="TOP - 옥상"
-                android:textSize="32sp" />
+                android:textSize="32sp"
+                android:fontFamily="@font/nanumgothicbold"
+                android:textColor="#003366"/>
         </LinearLayout>
 
     </LinearLayout>
