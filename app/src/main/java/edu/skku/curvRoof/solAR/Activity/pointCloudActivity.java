@@ -142,6 +142,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else if(renderingStage == 5){
                     // next activity(result_activity)
+                    Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
+                    intentmypage.putExtra("trial", trial);
+                    startActivity(intentmypage);
+
                 }
             }
         });
