@@ -41,6 +41,7 @@ public class resultActivity extends AppCompatActivity {
     private TextView monthlyUse;
     private TextView expectReduce;
     private TextView expectFee;
+    private TextView reduceAmt;
 
     public double monthlyfee;// = i.getDoubleExtra("monthlyuse",0);
     //public double expectgen;// = i.getDoubleExtra("expectgen",0);
@@ -66,9 +67,11 @@ public class resultActivity extends AppCompatActivity {
         user = (User)i.getSerializableExtra("user");
         trial = (Trial)i.getSerializableExtra("trial");
 
-        monthlyfee = i.getDoubleExtra("userfee",0);
+        //monthlyfee = i.getDoubleExtra("userfee",0);
+        monthlyfee = user.getElec_fee();
         //expectgen = i.getDoubleExtra("expectgen",0);
-        expectfee = i.getDoubleExtra("expectfee",0);
+        //expectfee = i.getDoubleExtra("expectfee",0);
+        expectfee = user.getExpect_fee();
         //userfee = i.getDoubleExtra("usermoney",0);
         reducefee = monthlyfee - expectfee;
 
@@ -82,8 +85,9 @@ public class resultActivity extends AppCompatActivity {
         companyListFab = findViewById(R.id.companyListFab);
         saveBtn = findViewById(R.id.save_btn);
 
-        //down = (1-(expectfee/userfee))*100;
-
+        down = (1-(expectfee/monthlyfee))*100;
+        String tmpdo = String.format("%.0f", down);
+        reduceAmt = findViewById(R.id.reduceAmt); reduceAmt.setText(tmpdo+"%");
 
         companyListFab.setOnClickListener(new View.OnClickListener() {
             Intent intent = new Intent(resultActivity.this, companyListActivity.class);

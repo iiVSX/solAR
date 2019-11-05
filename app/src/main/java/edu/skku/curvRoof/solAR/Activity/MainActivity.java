@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout menull;
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
+    private Long temp2;
 
     private double elec_fee;
     private String email, userID;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
+                        user.setElec_fee(temp2);
                         intent.putExtra("user", user);
                         startActivity(intent);
                         break;
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else{
                     Object temp = null;
                     if((temp = dataSnapshot.child("user_list").child(userID).child("elec_fee").getValue()) != null){
+                        temp2 = (Long)temp;
                         elecFeeTv.setText("등록 전기요금은 " + temp.toString() + "원 입니다.");
                     }
                 }

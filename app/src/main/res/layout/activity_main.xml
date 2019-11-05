@@ -92,7 +92,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/nanumgothic"
-                    android:text="최근 3개월 전기요금을 등록합니다." />
+                    android:text="한달 평균 전기요금을 등록합니다." />
 
             </LinearLayout>
 

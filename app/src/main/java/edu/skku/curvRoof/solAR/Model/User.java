@@ -7,6 +7,7 @@ public class User implements Serializable {
     String tel;
     String userID;
     double elec_fee;
+    double expect_fee;
     ArrayList<Trial> trialList;
 
     public User() {
@@ -40,4 +41,13 @@ public class User implements Serializable {
     public void setElec_fee(double elec_fee) {
         this.elec_fee = elec_fee;
     }
+
+    public double getExpect_fee() {
+        return expect_fee;
+    }
+
+    public void setExpect_fee(double expect_fee) {
+        this.expect_fee = expect_fee;
+    }
+
 }

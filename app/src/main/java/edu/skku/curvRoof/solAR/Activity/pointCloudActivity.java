@@ -117,6 +117,26 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private Button btn_dir_right;
     private Button btn_angle_n;
     private Button btn_angle_p;
+
+
+    // ------------------ from rendering activity ------------------------- //
+    // 임시 값 ///
+    private double panelinfo =  7.5;//1.64 x 0.99 x 15.4 x 30(1month)
+    private double panelnum = 10;
+    private double radiation = 3.57;
+    private double userfee; //월평균 전기세
+    private double monthlyuse; //userfee를 통해 알아낸 월 평균 전기 사용량
+    private double money; //예상 전기세
+    private double result; // 월평균 사용량 - 예상 발전량
+    private double generate; //예상 발전량
+    private double longitude, latitude;
+    //////////////
+    //private Button gotoResult;
+    private TextView textView_fee;
+    //private TextView expectFee;
+
+
+    //////////////////////////////////////////////////////////////////////////
     //tmp
 
 
@@ -141,29 +161,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
         // dashboard
         dashboard = findViewById(R.id.dashboard);
-        //tmp
-        nextBtn = findViewById(R.id.nextBtn);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(renderingStage == 4){
-                    renderingStage = 5;
-                    backBtn.setVisibility(View.VISIBLE);
-                    dashboard.setVisibility(View.VISIBLE);
-                }
-                else if(renderingStage == 5){
-                    // next activity(result_activity)
-                    Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
-                    trial.setAngle(angle);
-                    trial.setAzimuth(direction);
-                    trial.setArea_height((double)m);
-                    trial.setArea_height((double)n);
-                    intentmypage.putExtra("trial", trial);
-                    startActivity(intentmypage);
 
-                }
-            }
-        });
         backBtn = (Button)findViewById(R.id.BackBtn);
         backBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -250,8 +248,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                         }
                     }
                 }
-
-
                 return true;
             }
         });
@@ -297,7 +293,110 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
 
+        //----------- from rendering activity --------------//
+        //Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
+        //startActivity(intent);
 
+        //결과화면으로
+        /*
+        gotoResult = (Button)findViewById(R.id.gotoresult);
+        gotoResult.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent i = new Intent(renderingActivity.this, resultActivity.class);
+                //i.putExtra("expectgen",generate);
+                i.putExtra("userfee", userfee); //사용자 전기세 전송
+                //i.putExtra("monthlyuse", monthlyuse);
+                //i.putExtra("realuse", result);
+                i.putExtra("expectfee", money); //예상 전기세 전송
+                //i.putExtra("usermoney", userfee);
+                i.putExtra("user", user);
+                i.putExtra("trial", trial);
+                startActivity(i);
+            }
+        });
+        */
+
+        //계산
+        userfee = user.getElec_fee();
+        Log.d("adfasdfasdf", String.valueOf(userfee));
+        longitude = trial.getLongitude();
+        latitude = trial.getLatitude();
+        /**
+         * 1.DB에서 사용자의 전기세 받아오기.
+         * 2.위치정보 받아서 DB에서 일사량 가져오기.
+         * 3.면적통해서 개수 받아오기.
+         * **/
+
+        double temp;
+        //유저의 전기세를 바탕으로 사용전력량 계산
+        if (userfee <= 17960) {
+            //printf("태양광 발전을 필요로 하지 않습니다.");
+        }
+        else if (userfee <= 65760) {
+            temp = userfee / 1.137;
+            monthlyuse = ((temp - 20260) / 187.9) + 200;
+        }
+        else {
+            temp = userfee / 1.137;
+            monthlyuse = ((temp - 57840) / 280.6) + 400;
+        }
+        generate = panelinfo*panelnum*radiation; //발전량 계산
+        //expectGen.setText(generate);
+        result = monthlyuse - generate;
+
+
+        //예상 전기료 계산
+        if (result <= 200) {
+            temp = 910 + 93.3 * result;
+            if (temp < 5000) money = 1130;
+            else {
+                money = (temp - 4000) * 1.137;
+            }
+        }
+        else if (result <= 400) {
+            temp = 20260 + ((result - 200) * 187.9);
+            money = temp * 1.137;
+        }
+        else {
+            temp = 57840 + ((result - 400) * 280.6);
+            money = temp * 1.137;
+        }
+        String tmpgen = String.format("%.0f", generate);
+        String tmpmon = String.format("%.0f", money);
+        textView_fee = findViewById(R.id.textView_fee);
+        //expectFee = findViewById(R.id.expectfee);
+        //expectGen.setText(tmpgen+"kWh");
+        textView_fee.setText(tmpmon+"원");
+
+        //////////////////////////////////////////////////////
+        //tmp
+        nextBtn = findViewById(R.id.nextBtn);
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(renderingStage == 4){
+                    renderingStage = 5;
+                    backBtn.setVisibility(View.VISIBLE);
+                    dashboard.setVisibility(View.VISIBLE);
+                }
+                else if(renderingStage == 5){
+                    // next activity(result_activity)
+                    Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
+                    trial.setAngle(angle);
+                    trial.setAzimuth(direction);
+                    trial.setArea_height((double)m);
+                    trial.setArea_height((double)n);
+                    user.setElec_fee(userfee);
+                    user.setExpect_fee(money);
+                    intentmypage.putExtra("user", user);
+                    intentmypage.putExtra("trial", trial);
+                    startActivity(intentmypage);
+
+                }
+            }
+        });
+        ////
 
 
 
