@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.curvsurf.fsweb.FindSurfaceRequester;
@@ -105,10 +106,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     //Cube
     Cube cube;
-    double direction;
-    double angle;
+    double direction = 180;
+    double angle = 33;
     int m,n;
 
+    //blue btn
+    private TextView textView_dir;
+    private TextView textView_angle;
+    private Button btn_dir_left;
+    private Button btn_dir_right;
+    private Button btn_angle_n;
+    private Button btn_angle_p;
     //tmp
 
 
@@ -247,6 +255,49 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 return true;
             }
         });
+
+        //blue btn
+        textView_dir= findViewById(R.id.textView_dir);
+        textView_dir.setText(String.valueOf(direction));
+        btn_dir_left = (Button)findViewById(R.id.btn_dir_left);
+        btn_dir_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                direction --;
+                textView_dir.setText(String.valueOf(direction));
+            }
+        });
+
+        btn_dir_right = (Button)findViewById(R.id.btn_dir_right);
+        btn_dir_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                direction ++;
+                textView_dir.setText(String.valueOf(direction));
+            }
+        });
+
+        textView_angle= findViewById(R.id.textView_angle);
+        textView_angle.setText(String.valueOf(angle));
+        btn_angle_n = (Button)findViewById(R.id.btn_angle_n);
+        btn_angle_n.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                angle --;
+                textView_angle.setText(String.valueOf(angle));
+            }
+        });
+
+        btn_angle_p = (Button)findViewById(R.id.btn_angle_p);
+        btn_angle_p.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                angle ++;
+                textView_angle.setText(String.valueOf(angle));
+            }
+        });
+
+
 
 
 

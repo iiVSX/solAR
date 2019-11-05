@@ -93,7 +93,7 @@
                     android:id="@+id/btn_dir_left"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="-" />
+                    android:text=' 좌 ' />
 
                 <TextView
                     android:id="@+id/textView_dir"
@@ -109,7 +109,7 @@
                     android:id="@+id/btn_dir_right"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="p" />
+                    android:text="우" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -148,10 +148,10 @@
                     android:orientation="horizontal"></LinearLayout>
 
                 <Button
-                    android:id="@+id/button8"
+                    android:id="@+id/btn_angle_n"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="n"
+                    android:text="-"
                     android:textSize="18sp" />
 
                 <TextView
@@ -159,7 +159,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:text="고도"
+                    android:text="경사각"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp" />
@@ -168,7 +168,7 @@
                     android:id="@+id/btn_angle_p"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:text="p"
+                    android:text="+"
                     android:textSize="18sp" />
 
                 <LinearLayout
