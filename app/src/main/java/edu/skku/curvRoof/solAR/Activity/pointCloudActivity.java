@@ -105,6 +105,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     //Cube
     Cube cube;
+    double direction;
+    double angle;
+    int m,n;
 
     //tmp
 
@@ -143,6 +146,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 else if(renderingStage == 5){
                     // next activity(result_activity)
                     Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
+                    trial.setAngle(angle);
+                    trial.setAzimuth(direction);
+                    trial.setArea_height((double)m);
+                    trial.setArea_height((double)n);
                     intentmypage.putExtra("trial", trial);
                     startActivity(intentmypage);
 
@@ -403,10 +410,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     break;
 
                 case 5:         // cube 렌더링
-                    int m =3;
-                    int n=2;
-                    float angle=30.0f;
-                    float direction = 45.0f;
+                    m =3;
+                    n=2;
+                    angle=30.0f;
+                    direction = 45.0f;
                     float[] change = myPlane.getLl();
                     float[] x = new float[6];
                     float[] y = new float[6];
@@ -418,12 +425,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                         for(int j = 0;j<m;j++){
                             Matrix.setIdentityM(modelMatrix,0);
 
-                            Matrix.rotateM(modelMatrix,0,direction,0,1,0);
+                            Matrix.rotateM(modelMatrix,0,(float)direction,0,1,0);
                             Matrix.translateM(modelMatrix,0,change[0],change[1],change[2]);
 
                             Matrix.translateM(modelMatrix,0,(float)(j+0.5)*0.167f,(float)((i+0.5)*0.1f*sin(toRadians(angle))),(float)(-(i+0.5)*0.1f*cos(toRadians(angle))));
 
-                            Matrix.rotateM(modelMatrix,0,angle,1,0,0);
+                            Matrix.rotateM(modelMatrix,0,(float)angle,1,0,0);
                             Matrix.multiplyMM(mvpMatrix,0,vpMatrix,0,modelMatrix,0);
                             cube.draw(mvpMatrix, 0);
                             cube.draw(mvpMatrix, 1);
