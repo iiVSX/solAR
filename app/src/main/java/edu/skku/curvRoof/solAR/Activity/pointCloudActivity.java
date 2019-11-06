@@ -402,7 +402,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 else if(renderingStage == 5){
                     // next activity(result_activity)
                     Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
-                    trial = new Trial();
                     trial.setAngle(angle);
                     trial.setAzimuth(direction);
                     area_width = m * (0.1 * 1.67);

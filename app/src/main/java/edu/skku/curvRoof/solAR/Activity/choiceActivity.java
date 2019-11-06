@@ -61,7 +61,7 @@ public class choiceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 intent.putExtra("user",user);
                 if(user.getUserID() != null){
-                    createTrial(longitude,latitude,0);
+                    trial = createTrial(longitude,latitude,0);
                     intent.putExtra("trial", trial);
                 }
                 startActivity(intent);
@@ -82,12 +82,14 @@ public class choiceActivity extends AppCompatActivity {
         });
     }
 
-    public void createTrial(double latitude, double longitude, int area_type){
-        trial = new Trial();
+    public Trial createTrial(double latitude, double longitude, int area_type){
+        Trial trial = new Trial();
         trial.setTrialID(myRef.child(userID).push().getKey());
 
         trial.setLongitude(longitude);
         trial.setLatitude(latitude);
         trial.setArea_type(area_type);
+
+        return trial;
     }
 }
