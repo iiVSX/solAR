@@ -44,7 +44,7 @@ public class resultActivity extends AppCompatActivity {
     private TextView reduceAmt;
 
     public double monthlyfee;// = i.getDoubleExtra("monthlyuse",0);
-    //public double expectgen;// = i.getDoubleExtra("expectgen",0);
+    public double expectgen;// = i.getDoubleExtra("expectgen",0);
     public double expectfee;// = i.getDoubleExtra("expectfee",0);
     public double reducefee;
     public double down;
@@ -190,6 +190,7 @@ public class resultActivity extends AppCompatActivity {
         myRef.child("user_list").child(userID).child(trialID).child("img_url").setValue(trial.getCaptureUrl());
         myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());
         myRef.child("user_list").child(userID).child(trialID).child("expect_fee").setValue(expectFee);
+        myRef.child("user_list").child(userID).child(trialID).child("expect_gen").setValue(trial.getElec_gen());
     }
 
 }
