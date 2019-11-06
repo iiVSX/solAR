@@ -60,6 +60,7 @@ import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
+import edu.skku.curvRoof.solAR.Utils.VectorCal;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -124,10 +125,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     //blue btn
     private TextView textView_dir;
     private TextView textView_angle;
+    private TextView textView_row;
+    private TextView textView_col;
     private Button btn_dir_left;
     private Button btn_dir_right;
     private Button btn_angle_n;
     private Button btn_angle_p;
+    private Button btn_row_n;
+    private Button btn_row_p;
+    private Button btn_col_n;
+    private Button btn_col_p;
+
 
 
     // ------------------ from rendering activity ------------------------- //
@@ -267,40 +275,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else if(renderingStage == 5){
                     if(change != null){
-                        float[] pointOnRay = new float[3];
-                        float[] pll = new float[]{(float)(0.5)*0.167f,(float)((1)*0.1f*sin(toRadians(angle))),(float)((-1)*0.1f*cos(toRadians(angle)))};
-                        float[] controlPoint = new float[]{(float)(m+0.5)*0.167f,(float)((n+1)*0.1f*sin(toRadians(angle))),(float)(-(n+1)*0.1f*cos(toRadians(angle)))};
-
-                        float u = pNormal[0]*ray[3] + pNormal[1]*ray[4] + pNormal[2]*ray[5];
-                        u =    (pNormal[0]*(pll[0] - ray[0]) +
-                                pNormal[1]*(pll[1] - ray[1]) +
-                                pNormal[2]*(pll[2] - ray[2])) / u;
-
-                        pointOnRay[0] = ray[0] + (ray[3]*u);
-                        pointOnRay[1] = ray[1] + (ray[4]*u);
-                        pointOnRay[2] = ray[2] + (ray[5]*u);
-
-                        float distance = (pointOnRay[0] - controlPoint[0])*(pointOnRay[0] - controlPoint[0]) +
-                                (pointOnRay[1] - controlPoint[1])*(pointOnRay[1] - controlPoint[1]) +
-                                (pointOnRay[2] - controlPoint[2])*(pointOnRay[2] - controlPoint[2]);
-                        float[] mid = new float[]{(controlPoint[0]+pll[0])/2,
-                                (controlPoint[1]+pll[1])/2,
-                                (controlPoint[2]+pll[2])/2};
-                        float distanceMid = (pointOnRay[0] - mid[0])*(pointOnRay[0] - mid[0]) +
-                                (pointOnRay[1] - mid[1])*(pointOnRay[1] - mid[1]) +
-                                (pointOnRay[2] - mid[2])*(pointOnRay[2] - mid[2]);
-
+                        float[] tVec = new float[3];
+                        tVec[0] = change[0] - ray[0]; tVec[1] = change[1] - ray[1]; tVec[2] = change[2] - ray[2];
+                        float distance = VectorCal.inner(tVec, ray,3);
+                        distance = VectorCal.vectorSize(tVec) * VectorCal.vectorSize(tVec) - distance *distance;
 
 
                         switch(event.getAction()) {
                             case MotionEvent.ACTION_DOWN :
                                 if(distance < 0.1){
-                                    pHold = 1;
-                                }
-                                else if(distanceMid < 0.8){
                                     pHold = 2;
                                 }
-                                break;
                             case MotionEvent.ACTION_MOVE :
                                 if(pHold == 2)  {
                                     change = myPlane.rayOnPlane(ray);
@@ -388,8 +373,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         //계산
         userfee = user.getElec_fee();
         Log.d("adfasdfasdf", String.valueOf(userfee));
-        longitude = trial.getLongitude();
-        latitude = trial.getLatitude();
+//        longitude = trial.getLongitude();
+//        latitude = trial.getLatitude();
         /**
          * 1.DB에서 사용자의 전기세 받아오기.
          * 2.위치정보 받아서 DB에서 일사량 가져오기.
@@ -450,18 +435,32 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                     change = myPlane.getPanelPivot();
                     direction = myPlane.getDir();
-                    m = 3;
-                    n= 2;
+
+                    float[] widthV = {
+                            myPlane.getLl()[0] - myPlane.getLr()[0],
+                            myPlane.getLl()[1] - myPlane.getLr()[1],
+                            myPlane.getLl()[2] - myPlane.getLr()[2]
+                    };
+                    float[] heightV = {
+                            myPlane.getLl()[0] - myPlane.getUl()[0],
+                            myPlane.getLl()[1] - myPlane.getUl()[1],
+                            myPlane.getLl()[2] - myPlane.getUl()[2]
+                    };
+
+                    n = (int)(VectorCal.vectorSize(heightV)/(1.0f * 1.0f));
+                    m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
                     String value = String.format("%.0f", direction);
                     textView_dir.setText(value);
                     value = String.format("%.0f", angle);
                     textView_angle.setText(value);
-
+                    textView_row.setText(String.valueOf(n));
+                    textView_col.setText(String.valueOf(m));
                     renderingStage = 5;
                 }
                 else if(renderingStage == 5){
                     // next activity(result_activity)
                     Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
+                    trial = new Trial();
                     trial.setAngle(angle);
                     trial.setAzimuth(direction);
                     area_width = m * (0.1 * 1.67);
@@ -479,6 +478,51 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             }
         });
         ////
+
+
+        textView_row = findViewById(R.id.textView_row);
+        textView_col = findViewById(R.id.textView_col);
+        btn_row_n = findViewById(R.id.button_row_n);
+        btn_row_p = findViewById(R.id.button_row_p);
+        btn_col_n = findViewById(R.id.button_col_n);
+        btn_col_p = findViewById(R.id.button_col_p);
+
+        btn_row_n.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(n>1){
+                    n--;
+                    textView_row.setText(String.valueOf(n));
+                }
+            }
+        });
+        btn_row_p.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(n<9){
+                    n++;
+                    textView_row.setText(String.valueOf(n));
+                }
+            }
+        });
+        btn_col_n.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(n>1){
+                    m--;
+                    textView_col.setText(String.valueOf(m));
+                }
+            }
+        });
+        btn_col_p.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(m<9){
+                    m++;
+                    textView_col.setText(String.valueOf(m));
+                }
+            }
+        });
 
 
 
@@ -649,7 +693,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 //                            myPlane.getLl()[2] - myPlane.getUl()[2],
 //                    };
 //                    float pHeight = VectorCal.vectorSize(h);
-                    Matrix.translateM(originMatrix, 0, -(0.1f * 1.67f)*m*0.5f, 0, 0);
+                    Matrix.translateM(originMatrix, 0, -(1.0f * 1.67f)*m*0.5f, 0, 0);
 
                     float[] rotateMatrix = new float[16];
                     Matrix.setIdentityM(rotateMatrix, 0);

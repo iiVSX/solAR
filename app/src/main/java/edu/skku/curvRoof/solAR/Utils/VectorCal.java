@@ -9,6 +9,9 @@ public class VectorCal {
     static public float inner(float[] a, float[] b){
         return (a[0]*b[0]) + (a[1]*b[1]) + (a[2]*b[2]);
     }
+    static public float inner(float[] a, float[] b,int i){
+        return (a[0]*b[0+i]) + (a[1]*b[1+i]) + (a[2]*b[2+i]);
+    }
 
     static public float[] outer(float[] a, float[] b){
         float[] result = new float[3];

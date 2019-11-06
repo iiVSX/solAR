@@ -34,10 +34,10 @@ public class PlaneRenderer {
     private float[] planeVertex = new float[12];
     private short drawOrder[] = { 0, 1, 2, 0, 2, 3 };
     private float[] colors = new float[]{
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f, 1,0f,
-            0.0f, 1.0f, 1.0f, 1.0f,
-            1,0f, 0.0f, 1.0f, 1.0f
+            0.0f, 0.0f, 1.0f, 0.5f,
+            0.0f, 0.0f, 1.0f, 0.5f,
+            0.0f, 0.0f, 1.0f, 0.5f,
+            0,0f, 0.0f, 1.0f, 0.5f
     };
 
     public void bufferUpdate(Plane plane){
@@ -89,7 +89,7 @@ public class PlaneRenderer {
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
         GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
-        GLES20.glVertexAttribPointer(mColor_u, FLOAT_SIZE, GLES20.GL_FLOAT, false, 16, colorBuffer);
+        GLES20.glVertexAttribPointer(mColor_u, 4, GLES20.GL_FLOAT, false, 16, colorBuffer);
         GLES20.glEnableVertexAttribArray(mColor_u);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
