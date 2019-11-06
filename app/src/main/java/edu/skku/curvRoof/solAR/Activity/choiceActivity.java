@@ -74,7 +74,7 @@ public class choiceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 intent.putExtra("user",user);
                 if(user.getUserID() != null){
-                    createTrial(longitude,latitude,1);
+                    trial = createTrial(longitude,latitude,1);
                     intent.putExtra("trial", trial);
                 }
                 startActivity(intent);

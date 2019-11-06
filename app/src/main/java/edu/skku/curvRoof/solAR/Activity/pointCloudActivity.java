@@ -406,7 +406,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     trial.setAzimuth(direction);
                     area_width = m * (0.1 * 1.67);
                     area_height = n * (0.1 * 1.0f);
-                    trial.setPanel_count((int)(n*m));
+                    trial.setPanel_count((int)panelnum);
                     trial.setArea_height(area_height);
                     trial.setArea_height(area_width);
                     user.setElec_fee(userfee);
@@ -416,7 +416,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     intentmypage.putExtra("user", user);
                     intentmypage.putExtra("trial", trial);
                     startActivity(intentmypage);
-
+                    finish();
                 }
             }
         });
