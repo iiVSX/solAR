@@ -60,7 +60,7 @@ public class historyPageActivity extends AppCompatActivity {
                 panelNumTv.setText(dataSnapshot.child("panel_count").getValue().toString());
                 String area = dataSnapshot.child("area_width").getValue().toString()+"*"+dataSnapshot.child("area_height").getValue().toString();
                 roofAreaTv.setText(area);
-                //expectElecTv.setText(dataSnapshot.child("expect_elec").getValue().toString());
+                expectElecTv.setText(dataSnapshot.child("expect_gen").getValue().toString());
                 expectFeeTv.setText(dataSnapshot.child("expect_fee").getValue().toString());
                 img_url = dataSnapshot.child("img_url").getValue().toString();
                 try{

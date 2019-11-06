@@ -8,6 +8,16 @@ public class Trial implements Serializable {
     double latitude, longitude;
     double angle, area_width, area_height, azimuth;
     int area_type, panel_count;
+
+    public double getElec_gen() {
+        return elec_gen;
+    }
+
+    public void setElec_gen(double elec_gen) {
+        this.elec_gen = elec_gen;
+    }
+
+    double elec_gen;
     String captureUrl;
     String trialID;
 
