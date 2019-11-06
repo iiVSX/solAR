@@ -119,7 +119,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     float[]pNormal = {0,1,0,0};
     int pHold = 0;  // 0 : 아무것도 없음, 1 : control Point 잡음, 2 : 패널 이동
     double direction = 180;
-    double angle ;
+    double angle = 33 ;
     int m,n;
 
     //blue btn
@@ -178,7 +178,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
        // direction = getOptimalAzimuth();
-        angle = getOptimalAngle();
+        //angle = getOptimalAngle();
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -243,7 +243,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     recordBtn.setVisibility(View.GONE);
                     nextBtn.setVisibility(View.VISIBLE);
                     String value = String.format("%.0f", direction);
-                    textView_dir.setText(value);
+                    //textView_dir.setText(value);
                     textView_angle.setText(String.valueOf(angle));
 
                 }
@@ -319,7 +319,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction --;
                 String value = String.format("%.0f", direction);
-                textView_dir.setText(value);
+                //textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -330,7 +330,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
-                textView_dir.setText(value);
+                //textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -393,7 +393,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     n = (int)(VectorCal.vectorSize(heightV)/(1.0f * 1.0f));
                     m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
                     String value = String.format("%.0f", direction);
-                    textView_dir.setText(value);
+                    //textView_dir.setText(value);
                     value = String.format("%.0f", angle);
                     textView_angle.setText(value);
                     textView_row.setText(String.valueOf(n));
@@ -868,8 +868,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
         //전체효율
         resultab = resulta*resultb/100;
-
-        result = (monthlyuse - generate)* (resultab/100);
+        generate = generate*resultab/100;
+        result = monthlyuse - generate;
         Log.d("resultab", String.valueOf(resultab));
         Log.d("result", String.valueOf(result));
 
