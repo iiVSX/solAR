@@ -189,6 +189,7 @@ public class resultActivity extends AppCompatActivity {
         myRef.child("user_list").child(userID).child(trialID).child("azimuth").setValue(trial.getAzimuth());
         myRef.child("user_list").child(userID).child(trialID).child("img_url").setValue(trial.getCaptureUrl());
         myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());
+        myRef.child("user_list").child(userID).child(trialID).child("expect_fee").setValue(expectFee);
     }
 
 }
