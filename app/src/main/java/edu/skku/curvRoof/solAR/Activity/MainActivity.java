@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent fromIntent = getIntent();
         email = fromIntent.getStringExtra("ID");
+        user.setEmail(email);
 
         mContext = getApplicationContext();
 
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 user.setUserID(userID);
-                idTv.setText(user.getUserID() + "님 반갑습니다!");
+                idTv.setText(user.getEmail() + "님 반갑습니다!");
             }
 
             @Override
