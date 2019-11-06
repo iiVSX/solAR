@@ -96,6 +96,16 @@
                     android:text=' 좌 ' />
 
                 <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="방향 :"
+                    android:textAlignment="textEnd"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp" />
+
+                <TextView
                     android:id="@+id/textView_dir"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -147,6 +157,16 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="경사각 :"
+                    android:textAlignment="textEnd"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp" />
+
+                <TextView
                     android:id="@+id/textView_angle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -196,6 +216,16 @@
                         android:text="-" />
 
                     <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="행"
+                        android:textAlignment="center"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <TextView
                         android:id="@+id/textView_row"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -222,6 +252,16 @@
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:text="-" />
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="열"
+                        android:textAlignment="center"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/textView_col"

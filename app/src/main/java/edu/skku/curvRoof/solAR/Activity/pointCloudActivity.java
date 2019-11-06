@@ -118,8 +118,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     float change[] = null;
     float[]pNormal = {0,1,0,0};
     int pHold = 0;  // 0 : 아무것도 없음, 1 : control Point 잡음, 2 : 패널 이동
-    double direction = 0;
-    double angle = 33;
+    double direction ;
+    double angle ;
     int m,n;
 
     //blue btn
@@ -141,7 +141,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     // ------------------ from rendering activity ------------------------- //
     // 임시 값 ///
     private double panelinfo =  7.5;//1.64 x 0.99 x 15.4 x 30(1month)
-    private double panelnum = 10;
+    private double panelnum;
     private double radiation = 3.57;
     private double userfee; //월평균 전기세
     private double monthlyuse; //userfee를 통해 알아낸 월 평균 전기 사용량
@@ -149,6 +149,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private double result; // 월평균 사용량 - 예상 발전량
     private double generate; //예상 발전량
     private double longitude, latitude;
+    private double resultb;
     //////////////
     //private Button gotoResult;
     private TextView textView_fee;
@@ -173,6 +174,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
+
+        direction = getOptimalAzimuth();
+        angle = getOptimalAngle();
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -312,7 +316,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 direction --;
-                textView_dir.setText(String.valueOf(direction));
+                String value = String.format("%.0f", direction);
+                String value2 = String.format("%.0f", money);
+                textView_dir.setText(value);
+                textView_fee.setText(value2 + "원");
             }
         });
 
@@ -322,7 +329,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
+                String value2 = String.format("%.0f", money);
                 textView_dir.setText(value);
+                textView_fee.setText(value2 + "원");
             }
         });
 
@@ -334,6 +343,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 angle --;
                 textView_angle.setText(String.valueOf(angle));
+                String value2 = String.format("%.0f", money);
+                textView_fee.setText(value2 + "원");
             }
         });
 
@@ -343,36 +354,17 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 angle ++;
                 textView_angle.setText(String.valueOf(angle));
+                String value2 = String.format("%.0f", money);
+                textView_fee.setText(value2 + "원");
             }
         });
 
         //----------- from rendering activity --------------//
-        //Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
-        //startActivity(intent);
-
-        //결과화면으로
-        /*
-        gotoResult = (Button)findViewById(R.id.gotoresult);
-        gotoResult.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent i = new Intent(renderingActivity.this, resultActivity.class);
-                //i.putExtra("expectgen",generate);
-                i.putExtra("userfee", userfee); //사용자 전기세 전송
-                //i.putExtra("monthlyuse", monthlyuse);
-                //i.putExtra("realuse", result);
-                i.putExtra("expectfee", money); //예상 전기세 전송
-                //i.putExtra("usermoney", userfee);
-                i.putExtra("user", user);
-                i.putExtra("trial", trial);
-                startActivity(i);
-            }
-        });
-        */
-
         //계산
         userfee = user.getElec_fee();
-        Log.d("adfasdfasdf", String.valueOf(userfee));
+        panelnum = n*m;
+        Log.d("panelnum", String.valueOf(panelnum));
+        Log.d("userfee", String.valueOf(userfee));
 //        longitude = trial.getLongitude();
 //        latitude = trial.getLatitude();
         /**
@@ -395,9 +387,19 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             monthlyuse = ((temp - 57840) / 280.6) + 400;
         }
         generate = panelinfo*panelnum*radiation; //발전량 계산
+        Log.d("monthlyuse", String.valueOf(monthlyuse));
+        Log.d("generate", String.valueOf(generate));
         //expectGen.setText(generate);
-        result = monthlyuse - generate;
 
+        //방향
+        //resulta = 100 - 0.1072 * (direction+180) - 0.0112 * (direction+180) * (direction+180);
+        //각도
+        resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
+        //전체효율
+
+        result = (monthlyuse - generate)* (resultb/100);
+        Log.d("result", String.valueOf(resultb));
+        Log.d("result", String.valueOf(result));
 
         //예상 전기료 계산
         if (result <= 200) {
@@ -421,6 +423,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         //expectFee = findViewById(R.id.expectfee);
         //expectGen.setText(tmpgen+"kWh");
         textView_fee.setText(tmpmon+"원");
+
+
 
         //////////////////////////////////////////////////////
         //tmp
