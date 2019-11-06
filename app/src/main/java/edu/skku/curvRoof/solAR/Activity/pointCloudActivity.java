@@ -317,9 +317,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction --;
                 String value = String.format("%.0f", direction);
-                String value2 = String.format("%.0f", money);
                 textView_dir.setText(value);
-                textView_fee.setText(value2 + "원");
+                calUserfee();
             }
         });
 
@@ -329,9 +328,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
-                String value2 = String.format("%.0f", money);
                 textView_dir.setText(value);
-                textView_fee.setText(value2 + "원");
+                calUserfee();
             }
         });
 
@@ -342,9 +340,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 angle --;
-                textView_angle.setText(String.valueOf(angle));
-                String value2 = String.format("%.0f", money);
-                textView_fee.setText(value2 + "원");
+                String value = String.format("%.0f", angle);
+                textView_angle.setText(value);
+                calUserfee();
             }
         });
 
@@ -353,76 +351,15 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 angle ++;
-                textView_angle.setText(String.valueOf(angle));
-                String value2 = String.format("%.0f", money);
-                textView_fee.setText(value2 + "원");
+                String value = String.format("%.0f", angle);
+                textView_angle.setText(value);
+                calUserfee();
             }
         });
 
         //----------- from rendering activity --------------//
         //계산
-        userfee = user.getElec_fee();
-        panelnum = n*m;
-        Log.d("panelnum", String.valueOf(panelnum));
-        Log.d("userfee", String.valueOf(userfee));
-//        longitude = trial.getLongitude();
-//        latitude = trial.getLatitude();
-        /**
-         * 1.DB에서 사용자의 전기세 받아오기.
-         * 2.위치정보 받아서 DB에서 일사량 가져오기.
-         * 3.면적통해서 개수 받아오기.
-         * **/
 
-        double temp;
-        //유저의 전기세를 바탕으로 사용전력량 계산
-        if (userfee <= 17960) {
-            //printf("태양광 발전을 필요로 하지 않습니다.");
-        }
-        else if (userfee <= 65760) {
-            temp = userfee / 1.137;
-            monthlyuse = ((temp - 20260) / 187.9) + 200;
-        }
-        else {
-            temp = userfee / 1.137;
-            monthlyuse = ((temp - 57840) / 280.6) + 400;
-        }
-        generate = panelinfo*panelnum*radiation; //발전량 계산
-        Log.d("monthlyuse", String.valueOf(monthlyuse));
-        Log.d("generate", String.valueOf(generate));
-        //expectGen.setText(generate);
-
-        //방향
-        //resulta = 100 - 0.1072 * (direction+180) - 0.0112 * (direction+180) * (direction+180);
-        //각도
-        resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
-        //전체효율
-
-        result = (monthlyuse - generate)* (resultb/100);
-        Log.d("result", String.valueOf(resultb));
-        Log.d("result", String.valueOf(result));
-
-        //예상 전기료 계산
-        if (result <= 200) {
-            temp = 910 + 93.3 * result;
-            if (temp < 5000) money = 1130;
-            else {
-                money = (temp - 4000) * 1.137;
-            }
-        }
-        else if (result <= 400) {
-            temp = 20260 + ((result - 200) * 187.9);
-            money = temp * 1.137;
-        }
-        else {
-            temp = 57840 + ((result - 400) * 280.6);
-            money = temp * 1.137;
-        }
-        String tmpgen = String.format("%.0f", generate);
-        String tmpmon = String.format("%.0f", money);
-        textView_fee = findViewById(R.id.textView_fee);
-        //expectFee = findViewById(R.id.expectfee);
-        //expectGen.setText(tmpgen+"kWh");
-        textView_fee.setText(tmpmon+"원");
 
 
 
@@ -459,6 +396,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     textView_angle.setText(value);
                     textView_row.setText(String.valueOf(n));
                     textView_col.setText(String.valueOf(m));
+                    calUserfee();
                     renderingStage = 5;
                 }
                 else if(renderingStage == 5){
@@ -499,6 +437,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(n>1){
                     n--;
                     textView_row.setText(String.valueOf(n));
+                    calUserfee();
                 }
             }
         });
@@ -508,6 +447,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(n<9){
                     n++;
                     textView_row.setText(String.valueOf(n));
+                    calUserfee();
                 }
             }
         });
@@ -517,6 +457,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(n>1){
                     m--;
                     textView_col.setText(String.valueOf(m));
+                    calUserfee();
                 }
             }
         });
@@ -526,6 +467,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(m<9){
                     m++;
                     textView_col.setText(String.valueOf(m));
+                    calUserfee();
                 }
             }
         });
@@ -885,5 +827,75 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     public double getOptimalAzimuth(){
         double latitude = trial.getLatitude();
         return 178.65 + 0.0177*latitude;
+    }
+
+    public void calUserfee( ){
+
+        userfee = user.getElec_fee();
+        panelnum = n*m;
+        Log.d("panelnum", String.valueOf(panelnum));
+        Log.d("userfee", String.valueOf(userfee));
+//        longitude = trial.getLongitude();
+//        latitude = trial.getLatitude();
+        /**
+         * 1.DB에서 사용자의 전기세 받아오기.
+         * 2.위치정보 받아서 DB에서 일사량 가져오기.
+         * 3.면적통해서 개수 받아오기.
+         * **/
+
+        double temp;
+        //유저의 전기세를 바탕으로 사용전력량 계산
+        if (userfee <= 17960) {
+            //printf("태양광 발전을 필요로 하지 않습니다.");
+        }
+        else if (userfee <= 65760) {
+            temp = userfee / 1.137;
+            monthlyuse = ((temp - 20260) / 187.9) + 200;
+        }
+        else {
+            temp = userfee / 1.137;
+            monthlyuse = ((temp - 57840) / 280.6) + 400;
+        }
+        generate = panelinfo*panelnum*radiation; //발전량 계산
+        Log.d("monthlyuse", String.valueOf(monthlyuse));
+        Log.d("generate", String.valueOf(generate));
+        //expectGen.setText(generate);
+
+        //방향
+        //resulta = 100 - 0.1072 * (direction+180) - 0.0112 * (direction+180) * (direction+180);
+        //각도
+        resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
+        //전체효율
+
+        result = (monthlyuse - generate)* (resultb/100);
+        Log.d("result", String.valueOf(resultb));
+        Log.d("result", String.valueOf(result));
+
+        //예상 전기료 계산
+        if (result <= 200) {
+            temp = 910 + 93.3 * result;
+            if (temp < 5000) money = 1130;
+            else {
+                money = (temp - 4000) * 1.137;
+            }
+        }
+        else if (result <= 400) {
+            temp = 20260 + ((result - 200) * 187.9);
+            money = temp * 1.137;
+        }
+        else {
+            temp = 57840 + ((result - 400) * 280.6);
+            money = temp * 1.137;
+        }
+        String tmpgen = String.format("%.0f", generate);
+        String tmpmon = String.format("%.0f", money);
+        textView_fee = findViewById(R.id.textView_fee);
+        //expectFee = findViewById(R.id.expectfee);
+        //expectGen.setText(tmpgen+"kWh");
+
+        String value2 = String.format("%.0f", money);
+        textView_fee.setText(value2 + "원");
+
+        return;
     }
 }
