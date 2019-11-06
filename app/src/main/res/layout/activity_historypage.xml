@@ -18,13 +18,13 @@
             app:srcCompat="@drawable/ic_00_logo" />
 
         <TextView
+            android:id="@+id/trialIDTv"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/nanumgothicbold"
             android:gravity="center"
-            android:text="2019년 11월 4일 오후 11시 46분"
             android:textColor="#003366"
             android:textSize="24sp" />
 

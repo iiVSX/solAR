@@ -183,13 +183,13 @@ public class resultActivity extends AppCompatActivity {
         myRef.child("user_list").child(userID).child(trialID).child("longitude").setValue(trial.getLongitude());
         myRef.child("user_list").child(userID).child(trialID).child("latitude").setValue(trial.getLatitude());
         myRef.child("user_list").child(userID).child(trialID).child("area_type").setValue(trial.getArea_type());
-       /* myRef.child("user_list").child(userID).child(trialID).child("area_height").setValue(trial.getArea_height());
+        myRef.child("user_list").child(userID).child(trialID).child("area_height").setValue(trial.getArea_height());
         myRef.child("user_list").child(userID).child(trialID).child("area_width").setValue(trial.getArea_width());
         myRef.child("user_list").child(userID).child(trialID).child("angle").setValue(trial.getAngle());
         myRef.child("user_list").child(userID).child(trialID).child("azimuth").setValue(trial.getAzimuth());
         myRef.child("user_list").child(userID).child(trialID).child("img_url").setValue(trial.getCaptureUrl());
-        myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());*/
-
+        myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());
+        myRef.child("user_list").child(userID).child(trialID).child("expect_fee").setValue(expectFee);
     }
 
 }

@@ -3,11 +3,13 @@ package edu.skku.curvRoof.solAR.Activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -27,6 +29,8 @@ import android.widget.Toast;
 import com.curvsurf.fsweb.FindSurfaceRequester;
 import com.curvsurf.fsweb.RequestForm;
 import com.curvsurf.fsweb.ResponseForm;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -34,7 +38,13 @@ import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
@@ -50,7 +60,6 @@ import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
 import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
-import edu.skku.curvRoof.solAR.Utils.VectorCal;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -101,7 +110,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private float[] ray = null;
     private int holedPoint = 0;
     Frame frame;
-    LineRender lineRenderer = new LineRender();
     private float[] pop;
 
     //Cube
@@ -145,7 +153,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
     //tmp
 
-
+    private StorageReference mRef;
     private User user;
     private Trial trial;
     private LinearLayout dashboard;
@@ -319,8 +327,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 direction --;
-                String value = String.format("%.0f", direction);
-                textView_dir.setText(value);
+                textView_dir.setText(String.valueOf(direction));
             }
         });
 
@@ -381,8 +388,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         //계산
         userfee = user.getElec_fee();
         Log.d("adfasdfasdf", String.valueOf(userfee));
-//        longitude = trial.getLongitude();
-//        latitude = trial.getLatitude();
+        longitude = trial.getLongitude();
+        latitude = trial.getLatitude();
         /**
          * 1.DB에서 사용자의 전기세 받아오기.
          * 2.위치정보 받아서 DB에서 일사량 가져오기.
@@ -437,6 +444,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             @Override
             public void onClick(View v) {
                 if(renderingStage == 4){
+                    renderingStage = 5;
                     backBtn.setVisibility(View.VISIBLE);
                     dashboard.setVisibility(View.VISIBLE);
 
@@ -453,7 +461,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else if(renderingStage == 5){
                     // next activity(result_activity)
-                    glSurfaceView.onPause();
                     Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
                     trial.setAngle(angle);
                     trial.setAzimuth(direction);
@@ -463,6 +470,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     trial.setArea_height(area_width);
                     user.setElec_fee(userfee);
                     user.setExpect_fee(money);
+                    captureView(glSurfaceView);
                     intentmypage.putExtra("user", user);
                     intentmypage.putExtra("trial", trial);
                     startActivity(intentmypage);
@@ -559,7 +567,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             backgroundRenderer.createOnGlThread(this);
             pointCloudRenderer.createGlThread(this);
             planeRenderer.createGlThread(this);
-            lineRenderer.createGlThread(this);
             cube = new Cube(this, glSurfaceView);
 
         }catch (IOException e){
@@ -784,5 +791,48 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         return out;
     }
 
+    public void captureView(View View) {
+        String CAPTURE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/solAR";
+        View.buildDrawingCache();
+        Bitmap captureView = View.getDrawingCache();
+        mRef = FirebaseStorage.getInstance().getReference();
+        FileOutputStream fos;
 
+        File path = new File(CAPTURE_PATH);
+        if(!path.isDirectory()){
+            path.mkdirs();
+        }
+        String filePath = CAPTURE_PATH+"/"+trial.getTrialID()+ ".png";
+
+        try {
+            fos = new FileOutputStream(filePath);
+            captureView.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            Uri file = Uri.fromFile(new File(filePath));
+            mRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                    trial.setCaptureUrl(downloadUrl.toString());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_SHORT);
+                }
+            });
+        } catch (FileNotFoundException e) {
+            Log.d("PLUSULTRA", e.getMessage());
+        }
+    }
+
+    public double getOptimalAngle(){
+        double longitude = trial.getLongitude();
+        return 31.39 + 0.0471*longitude;
+    }
+
+    public double getOptimalAzimuth(){
+        double latitude = trial.getLatitude();
+        return 178.65 + 0.0177*latitude;
+    }
 }
