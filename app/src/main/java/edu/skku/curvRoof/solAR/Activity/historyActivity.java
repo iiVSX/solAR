@@ -55,8 +55,11 @@ public class historyActivity extends AppCompatActivity {
         mRef.child("user_list").child(user.getUserID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot trial : dataSnapshot.getChildren()){
-                    adapter.addItem(trial.getKey(), trial.child("panel_count").getValue().toString(), trial.child("expect_fee").getValue().toString());
+                for(DataSnapshot trial : dataSnapshot.getChildren()) {
+                    if (!trial.getKey().equals("elec_fee")) {
+                        adapter.addItem(trial.getKey(), trial.child("panel_count").getValue().toString(), trial.child("expect_fee").getValue().toString());
+                    }
+                    adapter.notifyDataSetChanged();
                 }
             }
 

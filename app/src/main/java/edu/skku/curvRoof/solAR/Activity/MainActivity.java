@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Object temp = null;
                     if((temp = dataSnapshot.child("user_list").child(userID).child("elec_fee").getValue()) != null){
                         temp2 = (Long)temp;
+                        user.setElec_fee(temp2);
                         elecFeeTv.setText("등록 전기요금은 " + temp.toString() + "원 입니다.");
                     }
                 }

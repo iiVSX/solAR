@@ -41,7 +41,7 @@ public class historyPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historypage);
 
-        panelNumTv = (TextView)findViewById(R.id.panelnumText);
+        panelNumTv = (TextView)findViewById(R.id.panelText);
         roofAreaTv = (TextView)findViewById(R.id.roofText);
         panelRangeTv = (TextView)findViewById(R.id.useroofText);
         expectElecTv = (TextView)findViewById(R.id.elecText);
@@ -57,7 +57,8 @@ public class historyPageActivity extends AppCompatActivity {
         mRef.child("user_list").child(user.getUserID()).child(trialID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                panelNumTv.setText(dataSnapshot.child("panel_count").getValue().toString());
+                String panelStr = dataSnapshot.child("panel_count").getValue().toString();
+                panelNumTv.setText(panelStr);
                 String area = dataSnapshot.child("area_width").getValue().toString()+"*"+dataSnapshot.child("area_height").getValue().toString();
                 roofAreaTv.setText(area);
                 expectElecTv.setText(dataSnapshot.child("expect_gen").getValue().toString());
