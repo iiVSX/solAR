@@ -1,9 +1,12 @@
 package edu.skku.curvRoof.solAR.Model;
 
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.google.ar.core.Camera;
 import com.google.ar.core.Pose;
+
+import edu.skku.curvRoof.solAR.Utils.VectorCal;
 
 public class Plane {
     private float[] ll,lr,ul,ur;
@@ -19,6 +22,7 @@ public class Plane {
         this.lr = lr;
         this.ul = ul;
         this.ur = ur;
+
 
         planeVertex = new float[] {
                 ul[0], ul[1], ul[2],
@@ -104,6 +108,13 @@ public class Plane {
         this.normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
         this.normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
         this.normal[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+
+        float scala = (float)Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] *normal[2]);
+
+        this.normal[0] /= scala;
+        this.normal[1] /= scala;
+        this.normal[2] /= scala;
+
     }
 
     public boolean checkNormal(Camera camera){
@@ -203,6 +214,102 @@ public class Plane {
         pointOnRay[2] = ray[2] + (ray[5]*u);
 
         return pointOnRay;
+    }
+
+    public float[] getPanelPivot(){
+        float[] pivot = {0,0,0};
+        float[] y = {0,1,0};
+        if(VectorCal.inner(normal,y) == 1){
+            pivot[0] = (ll[0]+lr[0])/2;
+            pivot[1] = (ll[1]+lr[1])/2;
+            pivot[2] = (ll[2]+lr[2])/2;
+
+            return pivot;
+        }
+        else{
+            float[] mid = new float[3];
+            mid[0] = (ll[0] + lr[0] + ur[0] + ul[0])/4;
+            mid[1] = (ll[1] + lr[1] + ur[1] + ul[1])/4;
+            mid[2] = (ll[2] + lr[2] + ur[2] + ul[2])/4;
+
+            if(ll[1] < mid[1]){
+                pivot[0] += ll[0];
+                pivot[1] += ll[1];
+                pivot[2] += ll[2];
+            }
+            if(lr[1] < mid[1]){
+                pivot[0] += lr[0];
+                pivot[1] += lr[1];
+                pivot[2] += lr[2];
+            }
+            if(ul[1] < mid[1]){
+                pivot[0] += ul[0];
+                pivot[1] += ul[1];
+                pivot[2] += ul[2];
+            }
+            if(ur[1] < mid[1]){
+                pivot[0] += ur[0];
+                pivot[1] += ur[1];
+                pivot[2] += ur[2];
+            }
+
+            pivot[0] /= 2.0f;
+            pivot[1] /= 2.0f;
+            pivot[2] /= 2.0f;
+
+
+            return pivot;
+        }
+    }
+
+    public float getAngle(){
+        float angle = 0;
+        float[] ydir = new float[]{0,1,0};
+
+        angle = normal[0]*ydir[0] + normal[1]*ydir[1] + normal[2]*ydir[2];  // 내적
+
+        angle = (float)Math.acos((double)angle);
+
+        angle = (float)Math.toDegrees(angle);
+
+        return angle;
+    }
+
+    public float getDir(){
+        boolean flag = false;
+        float angle = 0;
+        float[] zdir = {0,0,1};
+        float[] xdir = {1,0,0};
+        float[] ydir = {0,1,0};
+        float[] dir = {lr[0] - ll[0], 0, lr[2]-ll[2]};
+        dir[0] /= VectorCal.vectorSize(dir);
+        dir[2] /= VectorCal.vectorSize(dir);
+        if(VectorCal.inner(normal, ydir) == 1.0f){
+            angle = dir[0] * xdir[0] + dir[1] * xdir[1] + dir[2] * xdir[2];  // 내적
+            angle = (float)Math.acos((double)angle);
+            angle = (float)Math.toDegrees(angle);
+
+            if(dir[0] * zdir[0] + dir[1] * zdir[1] + dir[2] * zdir[2] > 0){
+                angle = -angle;
+            }
+
+            Log.d("dir", dir[0] * zdir[0] + dir[1] * zdir[1] + dir[2] * zdir[2] + " ");
+
+            return angle;
+        }
+        else{
+            float[] proNormal = {normal[0], 0, normal[2]};
+            VectorCal.normalize(proNormal);
+
+            angle = proNormal[0] * xdir[0] + proNormal[2] * xdir[2];  // 내적
+            angle = (float)Math.asin((double)angle);
+            angle = (float)Math.toDegrees(angle);
+
+            //Log.d("dir", dir[0] * xdir[0] + dir[1] * xdir[1] + dir[2] * xdir[2] + " ");
+            Log.d("dir", angle + " ");
+            return angle;
+        }
+
     }
 
 }

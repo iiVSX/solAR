@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.io.IOException;
@@ -16,8 +17,8 @@ import java.nio.ShortBuffer;
 
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Utils.ShaderUtil;
-
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
+
 
 public class Cube {
     private final FloatBuffer textureBuffer;
@@ -31,6 +32,8 @@ public class Cube {
     private static final String FRAGMENT_SHADER_NAME = "cube.frag";
     private final int vertexCount = vertices.length/COORDDS_PER_VERTEX;
     private int mProgram;
+    private final int MAX_ROW = 10;
+    private final int MAX_COL = 10;
 
     private int mPositionHandle;
     private int mMVPMatrixHandle;
@@ -40,6 +43,8 @@ public class Cube {
     private FloatBuffer vertexBuffer;
     private ShortBuffer drawListBuffer;
     private FloatBuffer colorBuffer;
+
+    public float[][][] MDS = new float[10][10][16];
 
     private static float[] vertices = {
             -(0.05f*1.67f),0.0f, (float) (0.05*1.0),
@@ -148,15 +153,18 @@ public class Cube {
         drawListBuffer.put(indices);
         drawListBuffer.position(0);
 
-
-
-
         ByteBuffer tbb = ByteBuffer.allocateDirect(textures.length * 4);
         tbb.order(ByteOrder.nativeOrder());
         textureBuffer = tbb.asFloatBuffer();
         textureBuffer.put(textures);
         textureBuffer.position(0);
 
+        for(int i = 0 ; i<MAX_ROW;i++){
+            for(int j = 0; j<MAX_ROW; j++){
+                Matrix.setIdentityM(MDS[j][i],0);
+                Matrix.translateM(MDS[j][i], 0, (0.1f*1.67f) * (i+0.5f), 0, -(0.1f*1.0f) * (j+0.5f));
+            }
+        }
 
         try{
             int vertexShader = ShaderUtil.loadGLShader(TAG, context, GLES20.GL_VERTEX_SHADER,VERTEX_SHADER_NAME );
@@ -222,7 +230,6 @@ public class Cube {
 
     public void draw(float[] mvpMatrix,int i){
 
-        Log.d("rrr", "RRR");
         GLES20.glUseProgram(mProgram);
 
         // vertex 설정
@@ -269,9 +276,6 @@ public class Cube {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle5);
         }
         GLES20.glUniform1i(mTextureUniformHandle,i);
-
-
-        Log.d("HHH", "QQQ");
         // mvpMatrix 설정
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle,1,false, mvpMatrix,0);
         GLES20.glEnableVertexAttribArray(mMVPMatrixHandle);

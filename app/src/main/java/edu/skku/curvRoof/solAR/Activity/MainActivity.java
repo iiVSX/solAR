@@ -82,7 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
-                        user.setElec_fee(temp2);
+                        if(temp2 != null){
+                            user.setElec_fee(temp2);
+                        }
                         intent.putExtra("user", user);
                         startActivity(intent);
                         break;
