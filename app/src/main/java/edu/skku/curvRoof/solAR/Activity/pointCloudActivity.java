@@ -118,8 +118,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     float change[] = null;
     float[]pNormal = {0,1,0,0};
     int pHold = 0;  // 0 : 아무것도 없음, 1 : control Point 잡음, 2 : 패널 이동
-    double direction ;
-    double angle ;
+    double direction = 180;
+    double angle = 33 ;
     int m,n;
 
     //blue btn
@@ -149,7 +149,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private double result; // 월평균 사용량 - 예상 발전량
     private double generate; //예상 발전량
     private double longitude, latitude;
-    private double resultb;
+    private double resulta ;
+    private double resultb ;
+    private double resultab;
     //////////////
     //private Button gotoResult;
     private TextView textView_fee;
@@ -175,8 +177,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
-        direction = getOptimalAzimuth();
-        angle = getOptimalAngle();
+       // direction = getOptimalAzimuth();
+        //angle = getOptimalAngle();
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -241,7 +243,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     recordBtn.setVisibility(View.GONE);
                     nextBtn.setVisibility(View.VISIBLE);
                     String value = String.format("%.0f", direction);
-                    textView_dir.setText(value);
+                    //textView_dir.setText(value);
                     textView_angle.setText(String.valueOf(angle));
 
                 }
@@ -317,7 +319,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction --;
                 String value = String.format("%.0f", direction);
-                textView_dir.setText(value);
+                //textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -328,7 +330,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
-                textView_dir.setText(value);
+                //textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -391,7 +393,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     n = (int)(VectorCal.vectorSize(heightV)/(1.0f * 1.0f));
                     m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
                     String value = String.format("%.0f", direction);
-                    textView_dir.setText(value);
+                    //textView_dir.setText(value);
                     value = String.format("%.0f", angle);
                     textView_angle.setText(value);
                     textView_row.setText(String.valueOf(n));
@@ -453,7 +455,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         btn_col_n.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(n>1){
+                if(m>1){
                     m--;
                     textView_col.setText(String.valueOf(m));
                     calUserfee();
@@ -861,13 +863,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         //expectGen.setText(generate);
 
         //방향
-        //resulta = 100 - 0.1072 * (direction+180) - 0.0112 * (direction+180) * (direction+180);
+        resulta = 100 - 0.1072 * direction - 0.0112 * direction * direction;
         //각도
         resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
         //전체효율
-
-        result = (monthlyuse - generate)* (resultb/100);
-        Log.d("result", String.valueOf(resultb));
+        resultab = resulta*resultb/100;
+        generate = generate*resultab/100;
+        result = monthlyuse - generate;
+        Log.d("resultab", String.valueOf(resultab));
         Log.d("result", String.valueOf(result));
 
         //예상 전기료 계산
@@ -887,7 +890,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             money = temp * 1.137;
         }
         String tmpgen = String.format("%.0f", generate);
-        String tmpmon = String.format("%.0f", money);
+        //String tmpmon = String.format("%.0f", money);
         textView_fee = findViewById(R.id.textView_fee);
         //expectFee = findViewById(R.id.expectfee);
         //expectGen.setText(tmpgen+"kWh");
