@@ -6,6 +6,16 @@ import java.util.ArrayList;
 public class User implements Serializable {
     String tel;
     String userID;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    String email;
     double elec_fee;
     double expect_fee;
     ArrayList<Trial> trialList;
