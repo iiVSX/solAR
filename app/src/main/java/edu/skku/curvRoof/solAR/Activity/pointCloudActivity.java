@@ -87,8 +87,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private int mViewportWidth = -1;
     private int mViewportHeight = -1;
 
-    private final int PERMISSION_REQUEST_CODE = 0;
-
     //mvpMatrix
     private float[] viewMatrix = new float[16];
     private float[] projMatrix = new float[16];
@@ -107,8 +105,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     // 5 : not found(Toast alarmed)
 
     Handler mHandler = null; // handler for GPS tracker to toast on MainActivity
-
-    private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     private static final String REQUEST_URL = "http://developers.curvsurf.com/FindSurface/plane"; // Plane searching server address
     private planeFinder myPlaneFinder;
@@ -413,8 +409,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
                     String value = String.format("%.0f", direction);
                     //textView_dir.setText(value);
-                    value = String.format("%.0f", angle);
-                    textView_angle.setText(value);
                     textView_row.setText(String.valueOf(n));
                     textView_col.setText(String.valueOf(m));
                     calUserfee();
@@ -426,6 +420,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     else{
                         angle = myPlane.getAngle();
                     }
+                    value = String.format("%.0f", angle);
+                    textView_angle.setText(value);
+
                     renderingStage = 5;
                 }
                 else if(renderingStage == 5){
@@ -502,21 +499,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        for(String permission : permissions){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
-                if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    intent.setData(Uri.fromParts("package", this.getPackageName(), null));
-                    startActivity(intent);
-                }
-                finish();
-            }
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         finish();
@@ -534,12 +516,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     @Override
     protected void onResume() {
         super.onResume();
-
-        for(String permission : REQUIRED_PERMISSSIONS){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSSIONS, PERMISSION_REQUEST_CODE);
-            }
-        }
 
         if(session == null){
             try{
