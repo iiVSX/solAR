@@ -44,6 +44,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     final DatabaseReference myRef = database.getReference();
 
+
+    //뒤로가기 종료 버튼
+    // 마지막으로 뒤로가기 버튼을 눌렀던 시간 저장
+    private long backKeyPressedTime = 0;
+    // 첫 번째 뒤로가기 버튼을 누를때 표시
+    private Toast toast;
+
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
     private final int PERMISSION_REQUEST_CODE = 0;
 
@@ -59,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         user = new User();
+
 
         Intent fromIntent = getIntent();
         email = fromIntent.getStringExtra("ID");
@@ -98,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         if(temp2 != null){
                             user.setElec_fee(temp2);
                         }
@@ -108,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.askFab:
                     case R.id.askBtn:
                         Intent intentlist = new Intent(MainActivity.this, companyListActivity.class);
+                        intentlist.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         intentlist.putExtra("user", user);
                         startActivity(intentlist);
                         break;
@@ -115,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.historyFab:
                     case R.id.historyBtn:
                         Intent intentmypage = new Intent(MainActivity.this, historyActivity.class);
+                        intentmypage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         intentmypage.putExtra("user", user);
                         startActivity(intentmypage);
                         break;
@@ -208,5 +219,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 기존 뒤로가기 버튼의 기능을 막기위해 주석처리 또는 삭제
+        // super.onBackPressed();
+
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간에 2초를 더해 현재시간과 비교 후
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간이 2초가 지났으면 Toast Show
+        // 2000 milliseconds = 2 seconds
+        if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+            backKeyPressedTime = System.currentTimeMillis();
+            toast = Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간에 2초를 더해 현재시간과 비교 후
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간이 2초가 지나지 않았으면 종료
+        // 현재 표시된 Toast 취소
+        if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+            finish();
+            toast.cancel();
+        }
     }
 }

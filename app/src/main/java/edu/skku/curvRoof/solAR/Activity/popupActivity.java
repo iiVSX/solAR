@@ -30,14 +30,15 @@ public class popupActivity extends Activity {
     //Yes 버튼 클릭시 반응
     public void mOnYes(View v){
         yesBtn.setBackgroundColor(Color.GRAY);
-        Intent intent = new Intent();
+        Intent intent = new Intent(popupActivity.this,loginActivity.class);
         setResult(RESULT_OK, intent);
-
+        startActivity(intent);
         finish();
     }
     //No 버튼 클릭시 반응
     public void mOnNo(View view) {
         noBtn.setBackgroundColor(Color.GRAY);
+        finish();
     }
 
     @Override

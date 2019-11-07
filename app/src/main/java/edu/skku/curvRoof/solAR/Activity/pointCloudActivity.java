@@ -334,7 +334,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction --;
                 String value = String.format("%.0f", direction);
-                //textView_dir.setText(value);
+                textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -345,7 +345,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
-                //textView_dir.setText(value);
+                textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -408,7 +408,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     n = (int)(VectorCal.vectorSize(heightV)/(1.0f * 1.0f));
                     m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
                     String value = String.format("%.0f", direction);
-                    //textView_dir.setText(value);
+                    textView_dir.setText(value);
                     textView_row.setText(String.valueOf(n));
                     textView_col.setText(String.valueOf(m));
                     calUserfee();

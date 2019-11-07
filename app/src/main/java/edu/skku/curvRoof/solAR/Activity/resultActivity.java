@@ -142,8 +142,10 @@ public class resultActivity extends AppCompatActivity {
 
         YAxis leftAxis = barChart.getAxisLeft();
         leftAxis.setAxisMinimum(0.0f);
+        leftAxis.setAxisMaximum((float)(monthlyfee > expectfee ? monthlyfee : expectfee) + 10000.0f);
         YAxis rightAxis = barChart.getAxisRight();
         rightAxis.setAxisMinimum(0.0f);
+        rightAxis.setAxisMaximum((float)(monthlyfee > expectfee ? monthlyfee : expectfee) + 10000.0f);
 
         XAxis xAxis = barChart.getXAxis();
 
