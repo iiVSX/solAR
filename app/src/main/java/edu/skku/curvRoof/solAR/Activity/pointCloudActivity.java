@@ -179,6 +179,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private User user;
     private Trial trial;
     private LinearLayout dashboard;
+    static private Bitmap footprint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -809,67 +810,28 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         int width = view.getWidth();
         int height = view.getHeight();
 
-        ByteBuffer bb = ByteBuffer.allocateDirect(width*height*4);
-        bb.order(ByteOrder.nativeOrder());
+        int screenshotSize = width *height;
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(screenshotSize*4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        GLES20.glReadPixels(0,0,width,height,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,byteBuffer);
+        int pixelsBuffer[] = new int[screenshotSize];
+        byteBuffer.asIntBuffer().get(pixelsBuffer);
+        byteBuffer = null;
 
-        GLES20.glReadPixels(0,0,width,height,GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
-        int idata[] = new int[width*height];
-        bb.asIntBuffer();
+        footprint = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        footprint.setPixels(pixelsBuffer,screenshotSize-width,-width,0,0,width,height);
+        pixelsBuffer = null;
 
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        bitmap.setPixels(idata, height*width-width, -width, 0,0, width, height);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 200,120, true);
+        short sBuffer[] = new short[screenshotSize];
+        ShortBuffer sb = ShortBuffer.wrap(sBuffer);
+        footprint.copyPixelsToBuffer(sb);
 
-        short sdata[] = new short[height*width];
-        ShortBuffer sbuf = ShortBuffer.wrap(sdata);
-        bitmap.copyPixelsToBuffer(sbuf);
-        for (int i = 0; i < height*width; ++i) {
-// BGR-565 to RGB-565
-            short v = sdata[i];
-            sdata[i] = (short) (((v & 0x1f) << 11) | (v & 0x7e0) | ((v & 0xf800) >> 11));
+        for(int i = 0;i<screenshotSize;++i){
+            short v = sBuffer[i];
+            sBuffer[i] = (short)(((v&0x1f)<<11)|(v&0x7e0)|((v&0xf800)>>11));
         }
-        sbuf.rewind();
-        bitmap.copyPixelsFromBuffer(sbuf);
-
-        mRef = FirebaseStorage.getInstance().getReference();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-        byte[] data = out.toByteArray();
-
-        final StorageReference storeRef = mRef.child(trial.getTrialID()+".jpg");
-
-        try {
-            UploadTask uploadTask = storeRef.putBytes(data);
-            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-
-                    // Continue with the task to get the download URL
-                    return storeRef.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
-                        Toast.makeText(getApplicationContext(), "이미지 저장 중입니다.", Toast.LENGTH_LONG);
-                        Uri downloadUri = task.getResult();
-                        trial.setCaptureUrl(downloadUri.toString());
-                        intentmypage.putExtra("user", user);
-                        intentmypage.putExtra("trial", trial);
-                        startActivity(intentmypage);
-                    } else {
-                        // Handle failures
-                        // ...
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Log.d("PLUSULTRA", e.getMessage());
-        }
+        sb.rewind();
+        footprint.copyPixelsFromBuffer(sb);
     }
 
     public double getOptimalAngle(){
@@ -951,5 +913,29 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         textView_fee.setText(value2 + "원");
 
         return;
+    }
+    public void getScreenshot(){
+        int screenshotSize = mViewportWidth *mViewportHeight;
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(screenshotSize*4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        GLES20.glReadPixels(0,0,mViewportWidth,mViewportHeight,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,byteBuffer);
+        int pixelsBuffer[] = new int[screenshotSize];
+        byteBuffer.asIntBuffer().get(pixelsBuffer);
+        byteBuffer = null;
+
+        footprint = Bitmap.createBitmap(mViewportWidth,mViewportHeight,Bitmap.Config.RGB_565);
+        footprint.setPixels(pixelsBuffer,screenshotSize-mViewportWidth,-mViewportWidth,0,0,mViewportWidth,mViewportHeight);
+        pixelsBuffer = null;
+
+        short sBuffer[] = new short[screenshotSize];
+        ShortBuffer sb = ShortBuffer.wrap(sBuffer);
+        footprint.copyPixelsToBuffer(sb);
+
+        for(int i = 0;i<screenshotSize;++i){
+            short v = sBuffer[i];
+            sBuffer[i] = (short)(((v&0x1f)<<11)|(v&0x7e0)|((v&0xf800)>>11));
+        }
+        sb.rewind();
+        footprint.copyPixelsFromBuffer(sb);
     }
 }
