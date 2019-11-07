@@ -61,9 +61,10 @@ public class historyListViewAdapter extends BaseAdapter {
 
         return convertView;
     }
-    public void addItem(String t, String p, String m){
+    public void addItem(String in, String t, String p, String m){
         historyListViewItem item=new historyListViewItem();
 
+        item.setInfo(in);
         item.setTime(t);
         item.setPanelnum(p);
         item.setMoney(m);

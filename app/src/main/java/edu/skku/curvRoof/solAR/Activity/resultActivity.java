@@ -31,6 +31,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import edu.skku.curvRoof.solAR.Model.Trial;
 import edu.skku.curvRoof.solAR.Model.User;
@@ -54,6 +56,12 @@ public class resultActivity extends AppCompatActivity {
 
     private User user;
     private Trial trial;
+
+    private long now = System.currentTimeMillis();
+    Date date = new Date(now);
+
+    SimpleDateFormat myform = new SimpleDateFormat("yyyy/MM/dd HH시 mm분");
+    String myNow = myform.format(date);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +199,7 @@ public class resultActivity extends AppCompatActivity {
         String userID = user.getUserID();
         String trialID = trial.getTrialID();
 
+        myRef.child("user_list").child(userID).child(trialID).child("now_time").setValue(myNow);
         myRef.child("user_list").child(userID).child(trialID).child("longitude").setValue(trial.getLongitude());
         myRef.child("user_list").child(userID).child(trialID).child("latitude").setValue(trial.getLatitude());
         myRef.child("user_list").child(userID).child(trialID).child("area_type").setValue(trial.getArea_type());
@@ -202,6 +211,7 @@ public class resultActivity extends AppCompatActivity {
         myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());
         myRef.child("user_list").child(userID).child(trialID).child("expect_fee").setValue(expectfee);
         myRef.child("user_list").child(userID).child(trialID).child("expect_gen").setValue(trial.getElec_gen());
+
     }
 
 }
