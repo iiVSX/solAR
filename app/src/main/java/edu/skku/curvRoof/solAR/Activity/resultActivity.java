@@ -120,6 +120,7 @@ public class resultActivity extends AppCompatActivity {
         val.add(new BarEntry(1, (float)expectfee));
 
 
+
         //String tmpdown = String.format("%.0f",down);
         //BarChart.setCenterText("전기세 절감율은 약"+ tmpdown + "%입니다.");
 
@@ -137,7 +138,10 @@ public class resultActivity extends AppCompatActivity {
         barChart.setDoubleTapToZoomEnabled(false);
 
         YAxis leftAxis = barChart.getAxisLeft();
+        leftAxis.setAxisMinimum(0.0f);
         YAxis rightAxis = barChart.getAxisRight();
+        rightAxis.setAxisMinimum(0.0f);
+
         XAxis xAxis = barChart.getXAxis();
 
         //xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
