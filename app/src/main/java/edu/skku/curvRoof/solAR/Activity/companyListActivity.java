@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,6 +56,8 @@ public class companyListActivity extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.companyListView);
         listview.setAdapter(adapter);
 
+        getCompanyList();
+
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -61,8 +71,6 @@ public class companyListActivity extends AppCompatActivity {
                 String rgnName = item.getRegionName();
                 String companyTel = item.getCompanyTel();
 
-                companyTel = companyTel.replaceAll("-", "");
-
                 Log.d("iiVSX", companyTel);
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "전화걸기 권한을 설정해주세요", Toast.LENGTH_SHORT);
@@ -72,110 +80,35 @@ public class companyListActivity extends AppCompatActivity {
             }
         });
 
-        phpConnection conn = new phpConnection();
-        conn.execute("http://"+IP_ADDRESS+"/get_company.php","");
     }
+    public void getCompanyList() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mRef = database.getReference();
 
-    private class phpConnection extends AsyncTask<String, Void, String>{
+        mRef.child("company_list").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot com : dataSnapshot.getChildren()){
+                    Company company = new Company();
+                    company.setTel(com.child("tel").getValue().toString());
+                    company.setEmail(com.child("email").getValue().toString());
+                    company.setCompany_name(com.getKey());
+                    company.setCityNm(com.child("address").getValue().toString());
 
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String serverURL = strings[0];
-            String postParameters = strings[1];
-
-            try{
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoInput(true);
-                httpURLConnection.connect();
-
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                outputStream.write(postParameters.getBytes("UTF-8"));
-                outputStream.flush();
-                outputStream.close();
-
-                int responseCode = httpURLConnection.getResponseCode();
-                Log.d("responseCode", String.valueOf(responseCode));
-
-                InputStream inputStream;
-                if(responseCode == HttpURLConnection.HTTP_OK){
-                    inputStream = httpURLConnection.getInputStream();
-                }else{
-                    inputStream = httpURLConnection.getErrorStream();
+                    companyList.add(company);
                 }
 
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while((line = bufferedReader.readLine())!=null){
-                    sb.append(line);
+                for(Company com : companyList){
+                    adapter.addItem(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_19_panel), com.getCompany_name(), com.getEmail(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_12_gpsrecept), com.getCityNm(), com.getTel());
                 }
-
-                bufferedReader.close();
-                return sb.toString().trim();
-            }catch(Exception e){
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if(s == null){
-                return;
-            }
-            else{
-                jsonString = s;
-                jsonParser();
-            }
-            super.onPostExecute(s);
-        }
-    }
-    public void jsonParser(){
-        try{
-            JSONObject jsonObject = new JSONObject(jsonString);
-            JSONArray jsonArray = jsonObject.getJSONArray("company_list");
-
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject company = jsonArray.getJSONObject(i);
-                int id = company.getInt("comid");
-                String name = company.getString("comname");
-                double latitude = company.getDouble("latitude");
-                double longitude = company.getDouble("longitude");
-                String cityNm = company.getString("cityNm");
-                int buildCnt = company.getInt("buildcnt");
-                String email = company.getString("email");
-                String tel = company.getString("tel");
-
-                Company com = new Company();
-                com.setId(id);
-                com.setCompany_name(name);
-                com.setLatitude(latitude);
-                com.setLongitude(longitude);
-                com.setCityNm(cityNm);
-                com.setBuildcnt(buildCnt);
-                com.setEmail(email);
-                com.setTel(tel);
-
-                companyList.add(com);
+                adapter.notifyDataSetChanged();
             }
 
-            for(Company com : companyList){
-                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_19_panel), com.getCompany_name(), "100000", ContextCompat.getDrawable(this,R.drawable.ic_12_gpsrecept), com.getCityNm(), com.getTel());
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
-            adapter.notifyDataSetChanged();
-        }catch (Exception e){
-            Log.d("PLUSULTRA", e.getMessage());
-        }
+        });
     }
 }
 
