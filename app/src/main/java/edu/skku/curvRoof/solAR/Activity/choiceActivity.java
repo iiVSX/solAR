@@ -27,6 +27,7 @@ public class choiceActivity extends AppCompatActivity {
     private double longitude, latitude;
     private Trial trial;
     private String userID;
+    private boolean mode; // 0:지붕, 1:옥
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +60,12 @@ public class choiceActivity extends AppCompatActivity {
         roof_button.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
+                mode = false;
                 intent.putExtra("user",user);
                 if(user.getUserID() != null){
                     trial = createTrial(longitude,latitude,0);
                     intent.putExtra("trial", trial);
+                    intent.putExtra("roopTopMode",mode);
                 }
                 startActivity(intent);
 
@@ -72,10 +75,12 @@ public class choiceActivity extends AppCompatActivity {
         top_button.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
+                mode = true;
                 intent.putExtra("user",user);
                 if(user.getUserID() != null){
                     trial = createTrial(longitude,latitude,1);
                     intent.putExtra("trial", trial);
+                    intent.putExtra("roopTopMode",mode);
                 }
                 startActivity(intent);
             }

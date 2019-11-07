@@ -129,6 +129,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     double direction = 180;
     double angle = 33 ;
     int m,n;
+    boolean roofTopmode = true;
+
 
     //blue btn
     private TextView textView_dir;
@@ -183,11 +185,18 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_point_cloud_land);
 
+        roofTopmode = getIntent().getBooleanExtra("roopTopMode", true);
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
         direction = getOptimalAzimuth();
-        angle = getOptimalAngle();
+        Log.d("modeR",roofTopmode+" ");
+        if(roofTopmode){
+            angle = getOptimalAngle();
+        }
+        else{
+            angle = 33;
+        }
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -408,14 +417,22 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     textView_row.setText(String.valueOf(n));
                     textView_col.setText(String.valueOf(m));
                     calUserfee();
+
+
+                    if(roofTopmode){
+                        angle = getOptimalAngle();
+                    }
+                    else{
+                        angle = myPlane.getAngle();
+                    }
                     renderingStage = 5;
                 }
                 else if(renderingStage == 5){
                     // next activity(result_activity)
                     trial.setAngle(angle);
                     trial.setAzimuth(direction);
-                    area_width = m * (0.1 * 1.67);
-                    area_height = n * (0.1 * 1.0f);
+                    area_width = m * (1.0 * 1.67);
+                    area_height = n * (1.0 * 1.0f);
                     trial.setPanel_count((int)panelnum);
                     trial.setArea_height(area_height);
                     trial.setArea_height(area_width);
