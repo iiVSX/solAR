@@ -1,11 +1,14 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +36,8 @@ public class historyPageActivity extends AppCompatActivity {
     private DatabaseReference mRef = database.getReference();
     private StorageReference sRef = FirebaseStorage.getInstance().getReference();
     private String img_url;
+
+    Button companyListBtn;
     TextView panelNumTv, roofAreaTv, panelRangeTv, expectElecTv, expectFeeTv, trialIDTv;
     ImageView trialImg;
 
@@ -48,6 +53,7 @@ public class historyPageActivity extends AppCompatActivity {
         expectFeeTv = (TextView)findViewById(R.id.elecfeeText);
         trialIDTv = (TextView)findViewById(R.id.trialIDTv);
         trialImg = (ImageView)findViewById(R.id.resultImage);
+        companyListBtn = (Button)findViewById(R.id.companyListBtn);
 
         user = (User)getIntent().getSerializableExtra("user");
         trialID = getIntent().getStringExtra("trialID");
@@ -83,6 +89,14 @@ public class historyPageActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        companyListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent companyListIntent = new Intent(getApplicationContext(), companyListActivity.class);
+                startActivity(companyListIntent);
             }
         });
     }
