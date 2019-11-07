@@ -103,8 +103,11 @@ public class resultActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent popupintent=new Intent(resultActivity.this,popupActivity.class);
+                startActivityForResult(popupintent,1);
                 saveInfo();
                 Toast.makeText(getApplicationContext(), "Saved Complete", Toast.LENGTH_SHORT);
+
             }
         });
         setBarChart();
