@@ -29,8 +29,11 @@ import android.widget.Toast;
 import com.curvsurf.fsweb.FindSurfaceRequester;
 import com.curvsurf.fsweb.RequestForm;
 import com.curvsurf.fsweb.ResponseForm;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -42,11 +45,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -165,6 +173,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     //tmp
 
     private StorageReference mRef;
+    private boolean captureEnabled = false;
     private User user;
     private Trial trial;
     private LinearLayout dashboard;
@@ -177,8 +186,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
-       // direction = getOptimalAzimuth();
-        //angle = getOptimalAngle();
+        direction = getOptimalAzimuth();
+        angle = getOptimalAngle();
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -403,7 +412,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
                 else if(renderingStage == 5){
                     // next activity(result_activity)
-                    Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
                     trial.setAngle(angle);
                     trial.setAzimuth(direction);
                     area_width = m * (0.1 * 1.67);
@@ -415,10 +423,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     user.setExpect_fee(money);
                     trial.setElec_gen(generate);
                     captureView(glSurfaceView);
-                    intentmypage.putExtra("user", user);
-                    intentmypage.putExtra("trial", trial);
-                    startActivity(intentmypage);
-                    finish();
                 }
             }
         });
@@ -586,7 +590,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             int displayRotation = getWindowManager().getDefaultDisplay().getRotation();
             session.setDisplayGeometry(displayRotation, mViewportWidth, mViewportHeight);
         }
-
         try{
             // 항상 카메라 화면 렌더링
             session.setCameraTextureName(backgroundRenderer.getTextureId());
@@ -785,37 +788,69 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         return out;
     }
 
-    public void captureView(View View) {
-        String CAPTURE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/solAR";
-        View.buildDrawingCache();
-        Bitmap captureView = View.getDrawingCache();
-        mRef = FirebaseStorage.getInstance().getReference();
-        FileOutputStream fos;
+    public void captureView(View view) {
+        int width = view.getWidth();
+        int height = view.getHeight();
 
-        File path = new File(CAPTURE_PATH);
-        if(!path.isDirectory()){
-            path.mkdirs();
+        ByteBuffer bb = ByteBuffer.allocateDirect(width*height*4);
+        bb.order(ByteOrder.nativeOrder());
+
+        GLES20.glReadPixels(0,0,width,height,GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
+        int idata[] = new int[width*height];
+        bb.asIntBuffer();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        bitmap.setPixels(idata, height*width-width, -width, 0,0, width, height);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 200,120, true);
+
+        short sdata[] = new short[height*width];
+        ShortBuffer sbuf = ShortBuffer.wrap(sdata);
+        bitmap.copyPixelsToBuffer(sbuf);
+        for (int i = 0; i < height*width; ++i) {
+// BGR-565 to RGB-565
+            short v = sdata[i];
+            sdata[i] = (short) (((v & 0x1f) << 11) | (v & 0x7e0) | ((v & 0xf800) >> 11));
         }
-        String filePath = CAPTURE_PATH+"/"+trial.getTrialID()+ ".png";
+        sbuf.rewind();
+        bitmap.copyPixelsFromBuffer(sbuf);
+
+        mRef = FirebaseStorage.getInstance().getReference();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        byte[] data = out.toByteArray();
+
+        final StorageReference storeRef = mRef.child(trial.getTrialID()+".jpg");
 
         try {
-            fos = new FileOutputStream(filePath);
-            captureView.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            UploadTask uploadTask = storeRef.putBytes(data);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
 
-            Uri file = Uri.fromFile(new File(filePath));
-            mRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
-                    trial.setCaptureUrl(downloadUrl.toString());
+                    // Continue with the task to get the download URL
+                    return storeRef.getDownloadUrl();
                 }
-            }).addOnFailureListener(new OnFailureListener() {
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_SHORT);
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Intent intentmypage = new Intent(pointCloudActivity.this, resultActivity.class);
+                        Toast.makeText(getApplicationContext(), "이미지 저장 중입니다.", Toast.LENGTH_LONG);
+                        Uri downloadUri = task.getResult();
+                        trial.setCaptureUrl(downloadUri.toString());
+                        intentmypage.putExtra("user", user);
+                        intentmypage.putExtra("trial", trial);
+                        startActivity(intentmypage);
+                    } else {
+                        // Handle failures
+                        // ...
+                    }
                 }
             });
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             Log.d("PLUSULTRA", e.getMessage());
         }
     }
