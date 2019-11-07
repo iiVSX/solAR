@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/nanumgothic"
-            android:text="결과를 저장하고 메인 화면으로 갑니다" />
+            android:text="결과를 저장하고\n메인 화면으로 갑니다" />
     </LinearLayout>
 
     <View
@@ -54,7 +54,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:gravity="center">
 
         <Button
@@ -62,25 +62,25 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="YES"
+            android:background="#00FF0000"
             android:fontFamily="@font/nanumgothicbold"
-            android:textColor="#003366"
-            android:textSize="15sp"
+            android:gravity="center"
             android:onClick="mOnYes"
-            android:background="#00FF0000"/>
+            android:text="YES"
+            android:textColor="#003366"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/noBtn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="NO"
+            android:background="#00FF0000"
             android:fontFamily="@font/nanumgothicbold"
-            android:textSize="15sp"
+            android:gravity="center"
             android:onClick="mOnNo"
-            android:background="#00FF0000"/>
+            android:text="NO"
+            android:textSize="15sp" />
     </LinearLayout>
 
 </LinearLayout>
