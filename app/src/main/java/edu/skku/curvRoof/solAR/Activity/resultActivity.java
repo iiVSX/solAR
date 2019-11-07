@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,11 +59,14 @@ public class resultActivity extends AppCompatActivity {
     private User user;
     private Trial trial;
 
+
     private long now = System.currentTimeMillis();
     Date date = new Date(now);
 
     SimpleDateFormat myform = new SimpleDateFormat("yyyy/MM/dd HH시 mm분");
     String myNow = myform.format(date);
+
+    private Animation fab_open;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,7 @@ public class resultActivity extends AppCompatActivity {
         //세로본능
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        fab_open= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
 
         Intent i = getIntent();
 
@@ -102,7 +108,7 @@ public class resultActivity extends AppCompatActivity {
             Intent intent = new Intent(resultActivity.this, companyListActivity.class);
             @Override
             public void onClick(View v) {
-
+                companyListFab.startAnimation(fab_open);
                 startActivity(intent);
 
             }
