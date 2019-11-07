@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        user = new User();
+        checkUser();
         fab_open= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
 
         for(String permission : REQUIRED_PERMISSSIONS){
@@ -69,9 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSSIONS, PERMISSION_REQUEST_CODE);
             }
         }
-
-        user = new User();
-
 
         Intent fromIntent = getIntent();
         email = fromIntent.getStringExtra("ID");
@@ -95,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         elecFeeTv = (TextView)findViewById(R.id.elecfee);
 
         elecFee = findViewById(R.id.elecfee);
-
-        checkUser();
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
