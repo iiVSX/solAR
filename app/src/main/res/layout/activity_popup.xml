@@ -63,10 +63,12 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Yes"
-            android:fontFamily="@font/nanumgothic"
+            android:text="YES"
+            android:fontFamily="@font/nanumgothicbold"
             android:textColor="#003366"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:onClick="mOnYes"
+            android:background="#00FF0000"/>
 
         <Button
             android:id="@+id/noBtn"
@@ -74,9 +76,11 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="No"
-            android:fontFamily="@font/nanumgothic"
-            android:textSize="15sp"/>
+            android:text="NO"
+            android:fontFamily="@font/nanumgothicbold"
+            android:textSize="15sp"
+            android:onClick="mOnNo"
+            android:background="#00FF0000"/>
     </LinearLayout>
 
 </LinearLayout>
