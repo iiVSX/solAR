@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class historyPageActivity extends AppCompatActivity {
     private StorageReference sRef = FirebaseStorage.getInstance().getReference();
     private String img_url;
 
-    Button companyListBtn;
+    FloatingActionButton companyListBtn;
     TextView panelNumTv, roofAreaTv, panelRangeTv, expectElecTv, expectFeeTv, trialIDTv;
     ImageView trialImg;
 
@@ -53,7 +54,7 @@ public class historyPageActivity extends AppCompatActivity {
         expectFeeTv = (TextView)findViewById(R.id.elecfeeText);
         trialIDTv = (TextView)findViewById(R.id.trialIDTv);
         trialImg = (ImageView)findViewById(R.id.resultImage);
-        companyListBtn = (Button)findViewById(R.id.companyListBtn);
+        companyListBtn = (FloatingActionButton) findViewById(R.id.companyListBtn);
 
         user = (User)getIntent().getSerializableExtra("user");
         trialID = getIntent().getStringExtra("trialID");

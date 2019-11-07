@@ -69,6 +69,7 @@ public class choiceActivity extends AppCompatActivity {
                 }
                 if(trial != null){
                     startActivity(intent);
+                    finish();
                 }
 
 
@@ -87,6 +88,7 @@ public class choiceActivity extends AppCompatActivity {
                 }
                 if(trial != null){
                     startActivity(intent);
+                    finish();
                 }
 
             }

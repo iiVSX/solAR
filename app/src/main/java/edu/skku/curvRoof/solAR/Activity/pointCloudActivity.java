@@ -831,6 +831,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                         intentmypage.putExtra("user", user);
                         intentmypage.putExtra("trial", trial);
                         startActivity(intentmypage);
+                        finish();
                     } else {
                         // Handle failures
                         // ...
