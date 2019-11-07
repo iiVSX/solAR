@@ -22,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.historyPageActivity"></activity>
+        <activity android:name=".Activity.popupActivity"></activity>
+        <activity android:name=".Activity.historyPageActivity" />
         <activity android:name=".Utils.historyListViewItem" />
         <activity android:name=".Utils.historyListViewAdapter" />
         <activity android:name=".Activity.historyActivity" />
