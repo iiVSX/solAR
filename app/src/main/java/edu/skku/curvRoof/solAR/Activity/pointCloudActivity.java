@@ -659,7 +659,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                     float[] dirMatrix = new float[16];
                     Matrix.setIdentityM(dirMatrix, 0);
-                    Matrix.rotateM(dirMatrix,0, (float)direction, 0,1,0);
+                    Matrix.rotateM(dirMatrix,0, ((float)direction+180)%360, 0,1,0);
 
                     float[] mvpMatrix = new float[16];
                     planeRenderer.draw(vpMatrix);
