@@ -48,8 +48,8 @@ public class renderingActivity extends AppCompatActivity {
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
-        Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, receiptActivity.calculateSplashActivity.class);
+        //startActivity(intent);
 
         //결과화면으로
         gotoResult = (Button)findViewById(R.id.gotoresult);

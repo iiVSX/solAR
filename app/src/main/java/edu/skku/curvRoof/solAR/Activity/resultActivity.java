@@ -1,5 +1,6 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import edu.skku.curvRoof.solAR.R;
 
 public class resultActivity extends AppCompatActivity {
 
+    public static Context mContext;
 
     private TextView monthlyUse;
     private TextView expectReduce;
@@ -87,7 +89,7 @@ public class resultActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         fab_open= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
-
+        mContext=this;
         Intent i = getIntent();
 
         user = (User)i.getSerializableExtra("user");
@@ -130,8 +132,6 @@ public class resultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent popupintent=new Intent(resultActivity.this,popupActivity.class);
                 startActivityForResult(popupintent,1);
-                saveInfo();
-                Toast.makeText(getApplicationContext(), "Saved Complete", Toast.LENGTH_SHORT);
 
             }
         });

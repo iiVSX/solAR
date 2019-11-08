@@ -32,7 +32,7 @@ public class receiptActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*
     public static class calculateSplashActivity extends AppCompatActivity {
 
         @Override
@@ -52,6 +52,7 @@ public class receiptActivity extends AppCompatActivity {
         }
     }
 
+
     public static class moveSplashActivity extends AppCompatActivity {
 
         @Override
@@ -70,4 +71,5 @@ public class receiptActivity extends AppCompatActivity {
             }, 2000);
         }
     }
+    */
 }
