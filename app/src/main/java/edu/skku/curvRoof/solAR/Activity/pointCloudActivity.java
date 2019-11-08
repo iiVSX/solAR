@@ -108,6 +108,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     double angle = 33 ;
     int m,n;
     boolean roofTopmode = true;
+    boolean CaptureFlag = false;
 
 
     //blue btn
@@ -414,8 +415,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     user.setExpect_fee(money);
                     trial.setElec_gen(generate);
                     //captureView(footprint);
-                    footprint = getScreenshot();
-                    captureView(footprint);
+                    CaptureFlag = true;
                 }
             }
         });
@@ -650,6 +650,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                             cube.draw(mvpMatrix, 3);
                             cube.draw(mvpMatrix, 4);
                             cube.draw(mvpMatrix, 5);
+
+                            if(CaptureFlag == true){
+                                CaptureFlag = false;
+                                footprint = getScreenshot();
+                                captureView(footprint);
+                            }
                         }
                     }
                     break;

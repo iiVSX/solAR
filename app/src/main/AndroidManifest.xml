@@ -22,25 +22,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.popupActivity" android:theme="@android:style/Theme.Dialog" />
-        <activity android:name=".Activity.historyPageActivity" />
+        <activity android:name=".Activity.popupActivity" android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.historyPageActivity"
+            android:launchMode="singleTask"/>
         <activity android:name=".Utils.historyListViewItem" />
         <activity android:name=".Utils.historyListViewAdapter" />
-        <activity android:name=".Activity.historyActivity" />
-        <activity android:name=".Activity.mypageActivity" />
+        <activity android:name=".Activity.historyActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.mypageActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".Activity.receiptActivity$moveSplashActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".Activity.choiceActivity" />
-        <activity android:name=".Activity.companyListActivity" />
-        <activity android:name=".Activity.receiptActivity" />
-        <activity android:name=".Activity.resultActivity" />
-        <activity android:name=".Activity.renderingActivity" />
+        <activity android:name=".Activity.choiceActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.companyListActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.receiptActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.resultActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".Activity.renderingActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".Activity.pointCloudActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:launchMode="singleTask"/>
         <activity android:name=".Activity.loginActivity" />
-        <activity android:name=".Activity.MainActivity" />
+        <activity android:name=".Activity.MainActivity"
+            android:launchMode="singleTask"/>
         <activity android:name=".Activity.startSplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

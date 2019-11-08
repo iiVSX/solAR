@@ -32,6 +32,7 @@ public class popupActivity extends Activity {
         yesBtn.setBackgroundColor(Color.GRAY);
         Intent intent = new Intent(popupActivity.this,loginActivity.class);
         setResult(RESULT_OK, intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
