@@ -54,7 +54,7 @@ public class historyPageActivity extends AppCompatActivity {
         expectFeeTv = (TextView)findViewById(R.id.elecfeeText);
         trialIDTv = (TextView)findViewById(R.id.trialIDTv);
         trialImg = (ImageView)findViewById(R.id.resultImage);
-        companyListBtn = (FloatingActionButton) findViewById(R.id.companyListBtn);
+        companyListBtn = (FloatingActionButton)findViewById(R.id.companyListBtn);
 
         user = (User)getIntent().getSerializableExtra("user");
         trialID = getIntent().getStringExtra("trialID");

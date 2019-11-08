@@ -1,23 +1,16 @@
 package edu.skku.curvRoof.solAR.Activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,8 +24,6 @@ import com.curvsurf.fsweb.RequestForm;
 import com.curvsurf.fsweb.ResponseForm;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
@@ -46,14 +37,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -65,14 +52,9 @@ import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
-import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.VectorCal;
-
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
 
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
@@ -431,7 +413,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     user.setElec_fee(userfee);
                     user.setExpect_fee(money);
                     trial.setElec_gen(generate);
-                    captureView(glSurfaceView);
+                    //captureView(footprint);
                 }
             }
         });
@@ -667,6 +649,9 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                             cube.draw(mvpMatrix, 4);
                             cube.draw(mvpMatrix, 5);
                         }
+
+                        footprint = getScreenshot();
+                        captureView(footprint);
                     }
                     break;
             }
@@ -774,36 +759,40 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         return out;
     }
 
-    public void captureView(View view) {
-        int width = view.getWidth();
-        int height = view.getHeight();
 
-        int screenshotSize = width *height;
+    public Bitmap getScreenshot(){
+        Bitmap bitmap;
+        int screenshotSize = mViewportWidth *mViewportHeight;
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(screenshotSize*4);
         byteBuffer.order(ByteOrder.nativeOrder());
-        GLES20.glReadPixels(0,0,width,height,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,byteBuffer);
+        GLES20.glReadPixels(0,0,mViewportWidth,mViewportHeight,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,byteBuffer);
         int pixelsBuffer[] = new int[screenshotSize];
         byteBuffer.asIntBuffer().get(pixelsBuffer);
         byteBuffer = null;
 
-        footprint = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        footprint.setPixels(pixelsBuffer,screenshotSize-width,-width,0,0,width,height);
+        bitmap = Bitmap.createBitmap(mViewportWidth,mViewportHeight,Bitmap.Config.RGB_565);
+        bitmap.setPixels(pixelsBuffer,screenshotSize-mViewportWidth,-mViewportWidth,0,0,mViewportWidth,mViewportHeight);
         pixelsBuffer = null;
 
         short sBuffer[] = new short[screenshotSize];
         ShortBuffer sb = ShortBuffer.wrap(sBuffer);
-        footprint.copyPixelsToBuffer(sb);
+        bitmap.copyPixelsToBuffer(sb);
 
         for(int i = 0;i<screenshotSize;++i){
             short v = sBuffer[i];
             sBuffer[i] = (short)(((v&0x1f)<<11)|(v&0x7e0)|((v&0xf800)>>11));
         }
         sb.rewind();
-        footprint.copyPixelsFromBuffer(sb);
+        bitmap.copyPixelsFromBuffer(sb);
+
+        return bitmap;
+    }
+    public void captureView(Bitmap bitmap) {
+
 
         mRef = FirebaseStorage.getInstance().getReference();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        footprint.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
         byte[] data = out.toByteArray();
 
         final StorageReference storeRef = mRef.child(trial.getTrialID()+".jpg");
