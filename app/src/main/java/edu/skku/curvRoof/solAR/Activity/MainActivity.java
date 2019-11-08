@@ -13,6 +13,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,21 +46,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     final DatabaseReference myRef = database.getReference();
 
+
+    //뒤로가기 종료 버튼
+    // 마지막으로 뒤로가기 버튼을 눌렀던 시간 저장
+    private long backKeyPressedTime = 0;
+    // 첫 번째 뒤로가기 버튼을 누를때 표시
+    private Toast toast;
+
     private String[] REQUIRED_PERMISSSIONS = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
     private final int PERMISSION_REQUEST_CODE = 0;
 
+    private Animation fab_open;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        user = new User();
+        checkUser();
+        fab_open= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
 
         for(String permission : REQUIRED_PERMISSSIONS){
             if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSSIONS, PERMISSION_REQUEST_CODE);
             }
         }
-
-        user = new User();
 
         Intent fromIntent = getIntent();
         email = fromIntent.getStringExtra("ID");
@@ -83,8 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         elecFee = findViewById(R.id.elecfee);
 
-        checkUser();
-
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,12 +102,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //기존 전기요금 등록
                     case R.id.elecFab:
                     case R.id.elecBtn:
+                        elecFab.startAnimation(fab_open);
                         openDialog();
                         break;
                     //설치면적 측정
                     case R.id.measureFab:
                     case R.id.measureBtn:
+                        measureFab.startAnimation(fab_open);
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         if(temp2 != null){
                             user.setElec_fee(temp2);
                         }
@@ -107,14 +120,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     case R.id.askFab:
                     case R.id.askBtn:
+                        askFab.startAnimation(fab_open);
                         Intent intentlist = new Intent(MainActivity.this, companyListActivity.class);
+                        intentlist.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         intentlist.putExtra("user", user);
                         startActivity(intentlist);
                         break;
 
                     case R.id.historyFab:
                     case R.id.historyBtn:
+                        historyFab.startAnimation(fab_open);
                         Intent intentmypage = new Intent(MainActivity.this, historyActivity.class);
+                        intentmypage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         intentmypage.putExtra("user", user);
                         startActivity(intentmypage);
                         break;
@@ -208,5 +225,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 기존 뒤로가기 버튼의 기능을 막기위해 주석처리 또는 삭제
+        // super.onBackPressed();
+
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간에 2초를 더해 현재시간과 비교 후
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간이 2초가 지났으면 Toast Show
+        // 2000 milliseconds = 2 seconds
+        if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+            backKeyPressedTime = System.currentTimeMillis();
+            toast = Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간에 2초를 더해 현재시간과 비교 후
+        // 마지막으로 뒤로가기 버튼을 눌렀던 시간이 2초가 지나지 않았으면 종료
+        // 현재 표시된 Toast 취소
+        if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+            finish();
+            toast.cancel();
+        }
     }
 }

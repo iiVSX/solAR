@@ -168,14 +168,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         user = (User)getIntent().getSerializableExtra("user");
         trial = (Trial)getIntent().getSerializableExtra("trial");
 
-        direction = getOptimalAzimuth();
-        Log.d("modeR",roofTopmode+" ");
-        if(roofTopmode){
-            angle = getOptimalAngle();
-        }
-        else{
-            angle = 33;
-        }
 
         glSurfaceView = findViewById(R.id.pointCloud_view);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -316,7 +308,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction --;
                 String value = String.format("%.0f", direction);
-                //textView_dir.setText(value);
+                textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -327,7 +319,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 direction ++;
                 String value = String.format("%.0f", direction);
-                //textView_dir.setText(value);
+                textView_dir.setText(value);
                 calUserfee();
             }
         });
@@ -374,7 +366,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     dashboard.setVisibility(View.VISIBLE);
 
                     change = myPlane.getPanelPivot();
-                    direction = myPlane.getDir();
 
                     float[] widthV = {
                             myPlane.getLl()[0] - myPlane.getLr()[0],
@@ -389,8 +380,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                     n = (int)(VectorCal.vectorSize(heightV)/(1.0f * 1.0f));
                     m= (int)(VectorCal.vectorSize(widthV)/(1.0f * 1.67f));
-                    String value = String.format("%.0f", direction);
-                    //textView_dir.setText(value);
+
                     textView_row.setText(String.valueOf(n));
                     textView_col.setText(String.valueOf(m));
                     calUserfee();
@@ -398,10 +388,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                     if(roofTopmode){
                         angle = getOptimalAngle();
+                        direction = getOptimalAzimuth();
                     }
                     else{
                         angle = myPlane.getAngle();
+                        direction = myPlane.getDir();
                     }
+                    String value = String.format("%.0f", direction);
+                    textView_dir.setText(value);
                     value = String.format("%.0f", angle);
                     textView_angle.setText(value);
 
@@ -473,8 +467,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 }
             }
         });
-
-
 
         myPlaneFinder = new planeFinder();
         mUserRequestedInstall = false;
@@ -828,6 +820,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                         intentmypage.putExtra("user", user);
                         intentmypage.putExtra("trial", trial);
                         startActivity(intentmypage);
+                        finish();
                     } else {
                         // Handle failures
                         // ...
@@ -882,7 +875,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         //expectGen.setText(generate);
 
         //방향
-        resulta = 100 - 0.1072 * direction - 0.0112 * direction * direction;
+        resulta = 100 - 0.1072 * Math.abs(direction-180) - 0.0112 * Math.abs(direction-180) * Math.abs(direction-180);
         //각도
         resultb = 89.796 + 0.6227 * angle - 0.0095 * angle * angle;
         //전체효율

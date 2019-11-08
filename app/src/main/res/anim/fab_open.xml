@@ -3,8 +3,8 @@
     android:fillAfter="true">
     <scale
         android:duration="300"
-        android:fromXScale="0.0"
-        android:fromYScale="0.0"
+        android:fromXScale="0.8"
+        android:fromYScale="0.8"
         android:interpolator="@android:anim/linear_interpolator"
         android:pivotX="0%"
         android:pivotY="0%"

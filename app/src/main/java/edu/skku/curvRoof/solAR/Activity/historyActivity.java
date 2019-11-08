@@ -1,5 +1,6 @@
 package edu.skku.curvRoof.solAR.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +31,7 @@ public class historyActivity extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference mRef = database.getReference();
     private User user;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,7 @@ public class historyActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 historyListViewItem item = (historyListViewItem)parent.getItemAtPosition(position);
                 Intent historyIntent=new Intent(historyActivity.this,historyPageActivity.class);
-                historyIntent.putExtra("trialID", item.getTime());
+                historyIntent.putExtra("trialID", item.getInfo());
                 historyIntent.putExtra("user", user);
                 startActivity(historyIntent);
 
@@ -57,7 +60,7 @@ public class historyActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot trial : dataSnapshot.getChildren()) {
                     if (!trial.getKey().equals("elec_fee")) {
-                        adapter.addItem(trial.getKey(), trial.child("panel_count").getValue().toString(), trial.child("expect_fee").getValue().toString());
+                        adapter.addItem(trial.getKey(), trial.child("now_time").getValue().toString(), trial.child("panel_count").getValue().toString(), trial.child("expect_fee").getValue().toString());
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -68,5 +71,12 @@ public class historyActivity extends AppCompatActivity {
 
             }
         });
+
+
+    }
+    @Override
+    public void onBackPressed(){
+        finish();
+        super.onBackPressed();
     }
 }

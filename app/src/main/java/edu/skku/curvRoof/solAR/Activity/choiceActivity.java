@@ -67,7 +67,11 @@ public class choiceActivity extends AppCompatActivity {
                     intent.putExtra("trial", trial);
                     intent.putExtra("roopTopMode",mode);
                 }
-                startActivity(intent);
+                if(trial != null){
+                    startActivity(intent);
+                    finish();
+                }
+
 
             }
         });
@@ -82,7 +86,11 @@ public class choiceActivity extends AppCompatActivity {
                     intent.putExtra("trial", trial);
                     intent.putExtra("roopTopMode",mode);
                 }
-                startActivity(intent);
+                if(trial != null){
+                    startActivity(intent);
+                    finish();
+                }
+
             }
         });
     }

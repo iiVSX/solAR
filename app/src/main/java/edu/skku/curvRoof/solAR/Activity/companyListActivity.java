@@ -99,7 +99,7 @@ public class companyListActivity extends AppCompatActivity {
                 }
 
                 for(Company com : companyList){
-                    adapter.addItem(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_19_panel), com.getCompany_name(), com.getEmail(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_12_gpsrecept), com.getCityNm(), com.getTel());
+                    adapter.addItem(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_19_panel), com.getCompany_name(), com.getTel(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_12_gpsrecept), com.getCityNm(), com.getTel());
                 }
                 adapter.notifyDataSetChanged();
             }

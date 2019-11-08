@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +33,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import edu.skku.curvRoof.solAR.Model.Trial;
 import edu.skku.curvRoof.solAR.Model.User;
@@ -55,6 +59,15 @@ public class resultActivity extends AppCompatActivity {
     private User user;
     private Trial trial;
 
+
+    private long now = System.currentTimeMillis();
+    Date date = new Date(now);
+
+    SimpleDateFormat myform = new SimpleDateFormat("yyyy/MM/dd HH시 mm분");
+    String myNow = myform.format(date);
+
+    private Animation fab_open;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +75,7 @@ public class resultActivity extends AppCompatActivity {
         //세로본능
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        fab_open= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
 
         Intent i = getIntent();
 
@@ -94,7 +108,7 @@ public class resultActivity extends AppCompatActivity {
             Intent intent = new Intent(resultActivity.this, companyListActivity.class);
             @Override
             public void onClick(View v) {
-
+                companyListFab.startAnimation(fab_open);
                 startActivity(intent);
 
             }
@@ -142,8 +156,10 @@ public class resultActivity extends AppCompatActivity {
 
         YAxis leftAxis = barChart.getAxisLeft();
         leftAxis.setAxisMinimum(0.0f);
+        leftAxis.setAxisMaximum((float)(monthlyfee > expectfee ? monthlyfee : expectfee) + 10000.0f);
         YAxis rightAxis = barChart.getAxisRight();
         rightAxis.setAxisMinimum(0.0f);
+        rightAxis.setAxisMaximum((float)(monthlyfee > expectfee ? monthlyfee : expectfee) + 10000.0f);
 
         XAxis xAxis = barChart.getXAxis();
 
@@ -189,6 +205,7 @@ public class resultActivity extends AppCompatActivity {
         String userID = user.getUserID();
         String trialID = trial.getTrialID();
 
+        myRef.child("user_list").child(userID).child(trialID).child("now_time").setValue(myNow);
         myRef.child("user_list").child(userID).child(trialID).child("longitude").setValue(trial.getLongitude());
         myRef.child("user_list").child(userID).child(trialID).child("latitude").setValue(trial.getLatitude());
         myRef.child("user_list").child(userID).child(trialID).child("area_type").setValue(trial.getArea_type());
@@ -200,6 +217,7 @@ public class resultActivity extends AppCompatActivity {
         myRef.child("user_list").child(userID).child(trialID).child("panel_count").setValue(trial.getPanel_count());
         myRef.child("user_list").child(userID).child(trialID).child("expect_fee").setValue(expectfee);
         myRef.child("user_list").child(userID).child(trialID).child("expect_gen").setValue(trial.getElec_gen());
+
     }
 
 }
