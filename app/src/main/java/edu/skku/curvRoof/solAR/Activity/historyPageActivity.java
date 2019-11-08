@@ -12,8 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +37,8 @@ public class historyPageActivity extends AppCompatActivity {
     private String trialID;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference mRef = database.getReference();
-    private StorageReference sRef = FirebaseStorage.getInstance().getReference();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference sRef = storage.getReference();
     private String img_url;
 
     FloatingActionButton companyListBtn;
@@ -71,16 +74,24 @@ public class historyPageActivity extends AppCompatActivity {
                 img_url = dataSnapshot.child("img_url").getValue().toString();
                 trialIDTv.setText(dataSnapshot.child("now_time").getValue().toString());
                 try{
-                    final File file = File.createTempFile("images", "jpg");
-                    sRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            String filePath = file.getPath();
-                            Bitmap image = BitmapFactory.decodeFile(filePath);
-                            trialImg.setImageBitmap(image);
-                        }
-                    });
-                }catch(IOException e){
+                    if(img_url != null){
+                        StorageReference imgRef = storage.getReferenceFromUrl(img_url);
+                        final long MAX_BYTES = 1024*1024*8;
+                        imgRef.getBytes(MAX_BYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                trialImg.setImageBitmap(bitmap);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "이미지 다운로드에 실패하였습니다.", Toast.LENGTH_SHORT);
+                            }
+                        });
+                    }
+
+                }catch(Exception e){
                     Log.d("PLUSULTRA", e.getMessage());
                 }
 
