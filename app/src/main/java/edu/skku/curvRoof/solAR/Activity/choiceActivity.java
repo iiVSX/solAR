@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,7 +35,7 @@ public class choiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
         final Intent intent =new Intent(this, pointCloudActivity.class);
-
+        Toast.makeText(this, "북쪽을 바라본 상태에서 타입을 눌러주세요",Toast.LENGTH_SHORT).show();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
 
