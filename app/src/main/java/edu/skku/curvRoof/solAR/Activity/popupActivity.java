@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
+
 
 import edu.skku.curvRoof.solAR.R;
 
@@ -32,6 +34,8 @@ public class popupActivity extends Activity {
         yesBtn.setBackgroundColor(Color.GRAY);
         Intent intent = new Intent(popupActivity.this,loginActivity.class);
         setResult(RESULT_OK, intent);
+        ((resultActivity)resultActivity.mContext).saveInfo();
+        Toast.makeText(getApplicationContext(), "Saved Complete", Toast.LENGTH_SHORT);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
