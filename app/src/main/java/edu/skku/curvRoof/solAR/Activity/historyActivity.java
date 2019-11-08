@@ -55,7 +55,7 @@ public class historyActivity extends AppCompatActivity {
             }
         });
 
-        mRef.child("user_list").child(user.getUserID()).addValueEventListener(new ValueEventListener() {
+        mRef.child("user_list").child(user.getUserID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot trial : dataSnapshot.getChildren()) {
@@ -71,7 +71,6 @@ public class historyActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
     @Override

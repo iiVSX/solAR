@@ -59,9 +59,7 @@ public class historyPageActivity extends AppCompatActivity {
         user = (User)getIntent().getSerializableExtra("user");
         trialID = getIntent().getStringExtra("trialID");
 
-        trialIDTv.setText(trialID);
-
-        mRef.child("user_list").child(user.getUserID()).child(trialID).addValueEventListener(new ValueEventListener() {
+        mRef.child("user_list").child(user.getUserID()).child(trialID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String panelStr = dataSnapshot.child("panel_count").getValue().toString();
@@ -71,6 +69,7 @@ public class historyPageActivity extends AppCompatActivity {
                 expectElecTv.setText(dataSnapshot.child("expect_gen").getValue().toString());
                 expectFeeTv.setText(dataSnapshot.child("expect_fee").getValue().toString());
                 img_url = dataSnapshot.child("img_url").getValue().toString();
+                trialIDTv.setText(dataSnapshot.child("now_time").getValue().toString());
                 try{
                     final File file = File.createTempFile("images", "jpg");
                     sRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
