@@ -416,8 +416,13 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     trial.setElec_gen(generate);
                     //captureView(footprint);
                     CaptureFlag = true;
+                    Intent intent = new Intent(getApplicationContext(), resultSplashActivity.class);
+                    startActivity(intent);
                 }
+
+
             }
+
         });
         ////
 

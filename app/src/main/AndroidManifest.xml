@@ -60,6 +60,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".Activity.resultSplashActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
             android:name=".Activity.receiptActivity$calculateSplashActivity"
             android:screenOrientation="landscape" />
 

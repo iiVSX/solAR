@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //기존 전기요금 등록 텍뷰
     private TextView elecFee;
     private Long temp2;
-
+    Object temp = null;
     private double elec_fee;
     private String email, userID;
     private User user;
@@ -109,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.measureFab:
                     case R.id.measureBtn:
                         measureFab.startAnimation(fab_open);
+
+                        if( user.getElec_fee() == 0 ){
+                            toast = Toast.makeText(getApplicationContext(), "월 평균 전기세를 입력해주세요.", Toast.LENGTH_SHORT);
+                            toast.show();
+                            break;
+                        }
                         Intent intent = new Intent(MainActivity.this, choiceActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                         if(temp2 != null){
@@ -209,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     myRef.child("user_id").child(userID).setValue(email);
                 }
                 else{
-                    Object temp = null;
+
                     if((temp = dataSnapshot.child("user_list").child(userID).child("elec_fee").getValue()) != null){
                         temp2 = (Long)temp;
                         user.setElec_fee(temp2);
