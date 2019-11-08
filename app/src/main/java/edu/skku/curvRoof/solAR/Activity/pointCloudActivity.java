@@ -414,6 +414,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     user.setExpect_fee(money);
                     trial.setElec_gen(generate);
                     //captureView(footprint);
+                    footprint = getScreenshot();
+                    captureView(footprint);
                 }
             }
         });
@@ -649,9 +651,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                             cube.draw(mvpMatrix, 4);
                             cube.draw(mvpMatrix, 5);
                         }
-
-                        footprint = getScreenshot();
-                        captureView(footprint);
                     }
                     break;
             }
