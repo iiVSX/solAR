@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -141,6 +142,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private Button btn_col_n;
     private Button btn_col_p;
 
+    //rec information
+    private TextView recMsg;
+    private LinearLayout recLayout;
+
 
 
     // ------------------ from rendering activity ------------------------- //
@@ -197,6 +202,10 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         // dashboard
         dashboard = findViewById(R.id.dashboard);
 
+        recLayout = findViewById(R.id.recMsgLayout);
+        recMsg = findViewById(R.id.recMsg_textView);
+
+
         backBtn = (Button)findViewById(R.id.BackBtn);
         backBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -205,11 +214,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     renderingStage = 4;
                     backBtn.setVisibility(View.INVISIBLE);
                     dashboard.setVisibility(View.INVISIBLE);
+                    recLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        Toast.makeText(getApplicationContext(), "오른쪽의 흰색 버튼을 눌러 촬영을 시작하세요", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "오른쪽의 빨간 버튼을 눌러 촬영을 시작하세요", Toast.LENGTH_SHORT).show();
 
         //
         recordBtn = (Button)findViewById(R.id.recordBtn);
@@ -219,12 +229,14 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 if(renderingStage == 1){
                     renderingStage = 0;
                     pointCloudRenderer.filterHashMap();
-                    Toast.makeText(getApplicationContext(), "인식하려는 면적을 터치하세요", Toast.LENGTH_SHORT).show();
+                    recMsg.setText("인식하려는 평면을 터치 해주세요");
+                    recordBtn.setVisibility(View.GONE);
                     renderingStage = 2;
                 }
                 else if(renderingStage == 0){
                     renderingStage = 1;
-                    Toast.makeText(getApplicationContext(), "움직이면서 면적을 촬영하세요", Toast.LENGTH_SHORT).show();
+                    recordBtn.setForeground(getApplicationContext().getDrawable(R.drawable.ic_recstop));
+                    recMsg.setText("움직이면서 평면을 촬영해주세요");
                 }
 
             }
@@ -252,9 +264,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     String value = String.format("%.0f", direction);
                     //textView_dir.setText(value);
                     textView_angle.setText(String.valueOf(angle));
-
+                    recMsg.setText("네 꼭지점을 끌어서 지붕또는 옥상의 크기에 맞추세요");
                 }
-
                 else if(renderingStage == 4){
                     // obj 움직이기
                     if(myPlane != null){            // 1:ll, 2:lr, 3:ur, 4:ul
@@ -380,6 +391,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             public void onClick(View v) {
                 if(renderingStage == 4){
                     renderingStage = 5;
+                    recLayout.setVisibility(View.GONE);
                     backBtn.setVisibility(View.VISIBLE);
                     dashboard.setVisibility(View.VISIBLE);
 
