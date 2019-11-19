@@ -15,7 +15,7 @@
         android:ems="10"
         android:fontFamily="@font/nanumgothiclight"
         android:gravity="center"
-        android:hint="전기세를 입력해주세요."
+        android:hint="전기요금을 입력해주세요."
         android:inputType="number"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"

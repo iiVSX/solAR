@@ -25,7 +25,7 @@ public class ElecfeeDialog extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.dialog_elecfee, null);
 
         builder.setView(view)
-                .setTitle("평균 전기세 입력")
+                .setTitle("평균 전기요금 입력")
                 .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
