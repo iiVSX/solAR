@@ -619,8 +619,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
 
             switch (renderingStage){
+                case 0:
+                    pointCloudRenderer.update(frame.acquirePointCloud(),false);
+                    pointCloudRenderer.draw_intial(vpMatrix);
+                    break;
                 case 1: // recording point Cloud
-                    pointCloudRenderer.update(frame.acquirePointCloud());
+                    pointCloudRenderer.update(frame.acquirePointCloud(),true);
                     pointCloudRenderer.draw(vpMatrix);
                     break;
 

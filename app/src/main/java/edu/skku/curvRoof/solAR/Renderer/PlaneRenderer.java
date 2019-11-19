@@ -37,7 +37,7 @@ public class PlaneRenderer {
             0.0f, 0.0f, 1.0f, 0.5f,
             0.0f, 0.0f, 1.0f, 0.5f,
             0.0f, 0.0f, 1.0f, 0.5f,
-            0,0f, 0.0f, 1.0f, 0.5f
+            0.0f, 0.0f, 1.0f, 0.5f
     };
 
     public void bufferUpdate(Plane plane){
@@ -83,20 +83,25 @@ public class PlaneRenderer {
     public void draw(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
 
-        GLES20.glVertexAttribPointer(mPosition, 3, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, vertexBuffer);
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+        GLES20.glEnable(GLES20.GL_ALPHA_BITS);
+
+
         GLES20.glEnableVertexAttribArray(mPosition);
+        GLES20.glVertexAttribPointer(mPosition, 3, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, vertexBuffer);
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
-        GLES20.glVertexAttribPointer(mColor_u, 4, GLES20.GL_FLOAT, false, 16, colorBuffer);
         GLES20.glEnableVertexAttribArray(mColor_u);
+        GLES20.glVertexAttribPointer(mColor_u, 4, GLES20.GL_FLOAT, false, 16, colorBuffer);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
         GLES20.glDisableVertexAttribArray(mPosition);
         GLES20.glEnableVertexAttribArray(mColor_u);
-        GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
+        GLES20.glDisable(GLES20.GL_ALPHA_BITS);
 
     }
 }

@@ -107,7 +107,8 @@ public class PointCloudRenderer {
         filteredPointHashMap = new HashMap<>();
     }
 
-    public void update(PointCloud cloud) {
+    public void update(PointCloud cloud, boolean recording) {   //  recording - false : point들을 표시는 하지만 해쉬에 저장하지는 않음
+                                                                //              true : point들을 표시하면서 해쉬에 저장
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo);
 
         //get point cloud's vertexes and their IDs and store in buffers
@@ -128,18 +129,38 @@ public class PointCloudRenderer {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
         //store point cloud vertexes in hash map
-        for (int i = 0; i < pointCloud.remaining() / 4; i++) {
-            Point temp = new Point(pointCloud.get(i * 4), pointCloud.get(i * 4 + 1), pointCloud.get(i * 4 + 2), pointCloud.get(i * 4 + 3));
+        if(recording){
+            for (int i = 0; i < pointCloud.remaining() / 4; i++) {
+                Point temp = new Point(pointCloud.get(i * 4), pointCloud.get(i * 4 + 1), pointCloud.get(i * 4 + 2), pointCloud.get(i * 4 + 3));
 
-            //if hash map's IDth element doesn't exist, create array list
-            if (!fullPointHashMap.containsKey(pointIdBuffer.get(i))) {
-                ArrayList<Point> list = new ArrayList<>();
-                list.add(temp);
-                fullPointHashMap.put(pointIdBuffer.get(i), list);
-            } else {
-                fullPointHashMap.get(pointIdBuffer.get(i)).add(temp);
+                //if hash map's IDth element doesn't exist, create array list
+                if (!fullPointHashMap.containsKey(pointIdBuffer.get(i))) {
+                    ArrayList<Point> list = new ArrayList<>();
+                    list.add(temp);
+                    fullPointHashMap.put(pointIdBuffer.get(i), list);
+                } else {
+                    fullPointHashMap.get(pointIdBuffer.get(i)).add(temp);
+                }
             }
         }
+    }
+
+    public void draw_intial(float[] vpMatrix){
+        GLES20.glUseProgram(mProgram);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo);
+        GLES20.glEnableVertexAttribArray(mPosition);
+        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, 0);
+
+        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
+
+        GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1i(bUseSolidColor,1);
+        GLES20.glUniform4f(mColor_u, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, pointCloud.remaining() / 4);
+
+        GLES20.glDisableVertexAttribArray(mPosition);
+
     }
 
     public void draw(float[] vpMatrix) {
@@ -154,18 +175,18 @@ public class PointCloudRenderer {
 
             if (conf <= 0.33f) {
                 color[i - 3] = 1.0f - conf;
-                color[i - 2] = conf;
-                color[i - 1] = conf;
+                color[i - 2] = 0.0f;
+                color[i - 1] = 0.0f;
                 color[i] = 1.0f;
             } else if (conf <= 0.66f) {
-                color[i - 3] = conf;
+                color[i - 3] = 0.0f;
                 color[i - 2] = 1.0f - conf;
-                color[i - 1] = conf;
+                color[i - 1] = 0.0f;
                 color[i] = 1.0f;
             } else {
-                color[i - 3] = conf;
-                color[i - 2] = conf;
-                color[i - 1] = 1.0f - conf;
+                color[i - 3] = 0.0f;
+                color[i - 2] = 0.0f;
+                color[i - 1] = conf;
                 color[i] = 1.0f;
             }
         }
