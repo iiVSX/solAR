@@ -1,12 +1,11 @@
 package edu.skku.curvRoof.solAR.Model;
 
-import android.opengl.Matrix;
 import android.util.Log;
 
 import com.google.ar.core.Camera;
 import com.google.ar.core.Pose;
 
-import edu.skku.curvRoof.solAR.Utils.VectorCal;
+import static edu.skku.curvRoof.solAR.Utils.VectorCal.*;
 
 public class Plane {
     private float[] ll,lr,ul,ur;
@@ -14,6 +13,7 @@ public class Plane {
     private float[] normal = new float[3];
 
     private float[] planeVertex;
+    public float[][] gridPoints = new float[16][3];
 
     public Plane(float[] ll, float[] lr, float[] ur, float[] ul, Camera camera){           //Plane 사용전 항상 checkNormal 을 해주세요
 
@@ -37,8 +37,31 @@ public class Plane {
         pivot[0] = ll[0];
         pivot[1] = ll[1];
         pivot[2] = ll[2];
-    }
 
+        setGridPoints();
+    }
+    private void setGridPoints(){
+        /////////////////////////////////////////////// grid point set
+        gridPoints[0] = this.ll;
+        gridPoints[1] = IDP(this.ll,this.lr,1,3);
+        gridPoints[2] = IDP(this.ll,this.lr,2,2);
+        gridPoints[3] = IDP(this.ll,this.lr,3,1);
+
+        gridPoints[4] = this.lr;
+        gridPoints[5] = IDP(this.lr,this.ur,1,3);
+        gridPoints[6] = IDP(this.lr,this.ur,2,2);
+        gridPoints[7] = IDP(this.lr,this.ur,3,1);
+
+        gridPoints[8] = this.ur;
+        gridPoints[9] = IDP(this.ur,this.ul,1,3);
+        gridPoints[10] = IDP(this.ur,this.ul,2,2);
+        gridPoints[11] = IDP(this.ur,this.ul,3,1);
+
+        gridPoints[12] = this.ul;
+        gridPoints[13] = IDP(this.ul,this.ll,1,3);
+        gridPoints[14] = IDP(this.ul,this.ll,2,2);
+        gridPoints[15] = IDP(this.ul,this.ll,3,1);
+    }
     public float[] getLl() {
         return ll;
     }
@@ -63,6 +86,7 @@ public class Plane {
                 lr[0], lr[1], lr[2],
                 ur[0], ur[1], ur[2],
         };
+        setGridPoints();
     }
     public void setLr(float[] lr) {
         this.lr = lr;
@@ -72,6 +96,7 @@ public class Plane {
                 lr[0], lr[1], lr[2],
                 ur[0], ur[1], ur[2],
         };
+        setGridPoints();
     }
     public void setUl(float[] ul) {
         this.ul = ul;
@@ -81,6 +106,7 @@ public class Plane {
                 lr[0], lr[1], lr[2],
                 ur[0], ur[1], ur[2],
         };
+        setGridPoints();
     }
     public void setUr(float[] ur) {
         this.ur = ur;
@@ -90,6 +116,7 @@ public class Plane {
                 lr[0], lr[1], lr[2],
                 ur[0], ur[1], ur[2],
         };
+        setGridPoints();
     }
 
     protected void calNormal(){
@@ -219,7 +246,7 @@ public class Plane {
     public float[] getPanelPivot(){
         float[] pivot = {0,0,0};
         float[] y = {0,1,0};
-        if(VectorCal.inner(normal,y) == 1){
+        if(inner(normal,y) == 1){
             pivot[0] = (ll[0]+lr[0])/2;
             pivot[1] = (ll[1]+lr[1])/2;
             pivot[2] = (ll[2]+lr[2])/2;
@@ -282,9 +309,9 @@ public class Plane {
         float[] xdir = {1,0,0};
         float[] ydir = {0,1,0};
         float[] dir = {lr[0] - ll[0], 0, lr[2]-ll[2]};
-        dir[0] /= VectorCal.vectorSize(dir);
-        dir[2] /= VectorCal.vectorSize(dir);
-        if(VectorCal.inner(normal, ydir) == 1.0f){
+        dir[0] /= vectorSize(dir);
+        dir[2] /= vectorSize(dir);
+        if(inner(normal, ydir) == 1.0f){
             angle = dir[0] * xdir[0] + dir[1] * xdir[1] + dir[2] * xdir[2];  // 내적
             angle = (float)Math.acos((double)angle);
             angle = (float)Math.toDegrees(angle);
@@ -299,7 +326,7 @@ public class Plane {
         }
         else{
             float[] proNormal = {normal[0], 0, normal[2]};
-            VectorCal.normalize(proNormal);
+            normalize(proNormal);
 
             angle = proNormal[0] * xdir[0] + proNormal[2] * xdir[2];  // 내적
             angle = (float)Math.asin((double)angle);

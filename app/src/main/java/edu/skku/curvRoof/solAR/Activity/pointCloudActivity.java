@@ -57,6 +57,7 @@ import edu.skku.curvRoof.solAR.Model.User;
 import edu.skku.curvRoof.solAR.R;
 import edu.skku.curvRoof.solAR.Model.Plane;
 import edu.skku.curvRoof.solAR.Renderer.BackgroundRenderer;
+import edu.skku.curvRoof.solAR.Renderer.LineRender;
 import edu.skku.curvRoof.solAR.Renderer.PlaneRenderer;
 import edu.skku.curvRoof.solAR.Renderer.PointCloudRenderer;
 import edu.skku.curvRoof.solAR.Utils.VectorCal;
@@ -64,6 +65,7 @@ import edu.skku.curvRoof.solAR.Utils.VectorCal;
 public class pointCloudActivity extends AppCompatActivity implements GLSurfaceView.Renderer,SensorEventListener {
     private final PointCloudRenderer pointCloudRenderer = new PointCloudRenderer();
     private final BackgroundRenderer backgroundRenderer = new BackgroundRenderer();
+    private final LineRender gridRenderer = new LineRender();
 
     private GLSurfaceView glSurfaceView = null;
     private Session session;
@@ -579,6 +581,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             pointCloudRenderer.createGlThread(this);
             planeRenderer.createGlThread(this);
             cube = new Cube(this, glSurfaceView);
+            gridRenderer.createGlThread(this);
 
         }catch (IOException e){
             e.getMessage();
@@ -650,6 +653,30 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                     }
                     else{
                         planeRenderer.draw(vpMatrix);
+
+                        // grid
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[0],myPlane.gridPoints[4]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[4],myPlane.gridPoints[8]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[8],myPlane.gridPoints[12]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[12],myPlane.gridPoints[0]);
+                        gridRenderer.draw(vpMatrix);
+
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[1],myPlane.gridPoints[11]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[2],myPlane.gridPoints[10]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[3],myPlane.gridPoints[9]);
+                        gridRenderer.draw(vpMatrix);
+
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[5],myPlane.gridPoints[15]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[6],myPlane.gridPoints[14]);
+                        gridRenderer.draw(vpMatrix);
+                        gridRenderer.bufferUpdate(myPlane.gridPoints[7],myPlane.gridPoints[13]);
+                        gridRenderer.draw(vpMatrix);
                     }
                     break;
 
@@ -679,7 +706,29 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
 
                     float[] mvpMatrix = new float[16];
                     planeRenderer.draw(vpMatrix);
-                    //pointCloudRenderer.draw_origin(vpMatrix);
+
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[0],myPlane.gridPoints[4]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[4],myPlane.gridPoints[8]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[8],myPlane.gridPoints[12]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[12],myPlane.gridPoints[0]);
+                    gridRenderer.draw(vpMatrix);
+
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[1],myPlane.gridPoints[11]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[2],myPlane.gridPoints[10]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[3],myPlane.gridPoints[9]);
+                    gridRenderer.draw(vpMatrix);
+
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[5],myPlane.gridPoints[15]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[6],myPlane.gridPoints[14]);
+                    gridRenderer.draw(vpMatrix);
+                    gridRenderer.bufferUpdate(myPlane.gridPoints[7],myPlane.gridPoints[13]);
+                    gridRenderer.draw(vpMatrix);
                     for(int i = 0;i<n;i++){
                         for(int j = 0;j<m;j++){
                             float[] model = new float[16];

@@ -27,4 +27,15 @@ public class VectorCal {
         a[1] /= VectorCal.vectorSize(a);
         a[2] /= VectorCal.vectorSize(a);
     }
+
+    static public float[] IDP(float[] a, float[] b, int m, int n){  // 내분점 : internally dividing point
+        float[] idp = new float[]{0,0,0};
+        int mn = m+n;
+
+        idp[0] = (m*b[0] + n*a[0]) / mn;
+        idp[1] = (m*b[1] + n*a[1]) / mn;
+        idp[2] = (m*b[2] + n*a[2]) / mn;
+
+        return idp;
+    }
 }

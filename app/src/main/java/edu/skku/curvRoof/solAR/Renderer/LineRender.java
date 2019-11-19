@@ -28,7 +28,7 @@ public class LineRender {
     private FloatBuffer vertexBuffer;
 
     private float[] Vertex = new float[6];
-    private float[] color = {0.0f, 0.0f, 1.0f, 1.0f};
+    private float[] color = {1.0f, 1.0f, 1.0f, 1.0f};
 
     public void bufferUpdate(float[] p1, float[] p2){
         Vertex[0] = p1[0];
@@ -86,6 +86,7 @@ public class LineRender {
         GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
         GLES20.glUniform4fv(mColor_u, 1, color, 0);
+        GLES20.glLineWidth(5.0f);
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, 2);
 
         GLES20.glDisableVertexAttribArray(mPosition);
