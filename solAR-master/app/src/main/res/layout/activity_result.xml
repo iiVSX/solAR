@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="#FFFFFF"
+            app:srcCompat="@drawable/ic_00_logo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="설치후 예상효과"
+            android:fontFamily="@font/nanumgothicbold"
+            android:textSize="24sp"
+            android:textColor="#003366"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:foreground="@drawable/ic_20_elecylw"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/nanumgothicbold"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="10dp"
+                    android:text="예상 전기 요금"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/expectFee"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/nanumgothic"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:text="23000원"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/reduceAmt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/nanumgothic"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:text="50% 감소"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="end">
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/nanumgothic"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:text="기존 전기 요금"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/monthlyUse"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:gravity="center_vertical"
+                    android:fontFamily="@font/nanumgothic"
+                    android:text="46000원"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="end">
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/nanumgothic"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:text="감소된 전기 요금"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/expectReduce"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:gravity="center_vertical"
+                    android:fontFamily="@font/nanumgothic"
+                    android:text="23000원"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="362dp"
+            android:orientation="vertical">
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/companyListFab"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:foreground="@drawable/ic_03_next"
+                android:text="업체 선정"
+                app:backgroundTint="#00FFFFFF" />
+
+            <TextView
+                android:layout_width="250dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/nanumgothicbold"
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:text="설치 업체 확인하기"
+                android:textColor="#003366"
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/save_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="#00FF0000"
+                android:foreground="@drawable/ic_25_completed2"
+                android:text="Save" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
