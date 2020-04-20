@@ -105,7 +105,7 @@ public class ARCore_PlaneRenderer {
   private final float[] modelMatrix = new float[16];
   private final float[] modelViewMatrix = new float[16];
   private final float[] modelViewProjectionMatrix = new float[16];
-  private final float[] planeColor = new float[] {1f, 1f, 1f, 1f};
+  private final float[] planeColor = new float[] {0f, 0f, 1f, 1f};
   private final float[] planeAngleUvMatrix =
       new float[4]; // 2x2 rotation matrix applied to uv coords.
 

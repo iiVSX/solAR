@@ -7,6 +7,7 @@ import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
+import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
@@ -15,11 +16,13 @@ import com.google.ar.core.exceptions.CameraNotAvailableException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -44,6 +47,8 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
     private Button recordBtn;
     private TextView recMsg;
 
+    private List<HitResult> hitResults;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -59,6 +64,21 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
         glSurfaceView.setEGLConfigChooser(8,8,8,8,16,0);
         glSurfaceView.setRenderer(this);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float tx = event.getX();
+                float ty = event.getY();
+                if(hasTrackingPlane()){
+                    hitResults = frame.hitTest(tx, tx);
+                    for(HitResult hitResult : hitResults){
+                        Log.d("HITHIT", hitResult.getHitPose().toString());
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -115,7 +135,7 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
         GLES20.glDisable(GLES20.GL_CULL_FACE);
         try{
             backgroundRenderer.createOnGlThread(this);
-            planeRenderer.createOnGlThread(this, "model/trigrid.png");
+            planeRenderer.createOnGlThread(this, "model/msquare.png");
         }catch (IOException e){
             e.getMessage();
         }
@@ -157,6 +177,7 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
 
             if(hasTrackingPlane()){
                 recMsg.setText("패널을 설치하려는 곳을 터치 해주세요");
+
             }
             else{
                 recMsg.setText("평면을 찾는 중입니다");
