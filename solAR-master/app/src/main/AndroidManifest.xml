@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="edu.skku.curvRoof.solAR">
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -48,7 +49,8 @@
         <activity
             android:name=".Activity.pointCloudActivity"
             android:screenOrientation="landscape"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".Activity.loginActivity" />
         <activity android:name=".Activity.MainActivity"
             android:launchMode="singleTask"/>
@@ -65,7 +67,13 @@
         </activity>
         <activity
             android:name=".Activity.receiptActivity$calculateSplashActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name=".Activity.pointCloud_ARCorePlaneActivity"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
 
         <meta-data
             android:name="com.google.ar.core"

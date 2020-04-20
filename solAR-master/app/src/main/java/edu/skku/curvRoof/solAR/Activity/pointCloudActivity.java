@@ -891,7 +891,6 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
         out[0] = frame.getCamera().getPose().tx();
         out[1] = frame.getCamera().getPose().ty();
         out[2] = frame.getCamera().getPose().tz();
-        //Log.d("Ray", out[0] + " " + out[1] + " " + out[2] + " " + out[3] + " " + out[4] + " " + out[5] + " ");
 
         return out;
     }

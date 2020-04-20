@@ -35,6 +35,7 @@ public class choiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
         final Intent intent =new Intent(this, pointCloudActivity.class);
+        final Intent intentARCore = new Intent(this, pointCloud_ARCorePlaneActivity.class);
         Toast.makeText(this, "북쪽을 바라본 상태에서 타입을 눌러주세요",Toast.LENGTH_SHORT).show();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -81,14 +82,14 @@ public class choiceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mode = true;
-                intent.putExtra("user",user);
+                intentARCore.putExtra("user",user);
                 if(user.getUserID() != null){
                     trial = createTrial(longitude,latitude,1);
-                    intent.putExtra("trial", trial);
-                    intent.putExtra("roopTopMode",mode);
+                    intentARCore.putExtra("trial", trial);
+                    intentARCore.putExtra("roopTopMode",mode);
                 }
                 if(trial != null){
-                    startActivity(intent);
+                    startActivity(intentARCore);
                     finish();
                 }
 
