@@ -361,6 +361,10 @@ public class ARCore_PlaneRenderer {
 
     for (SortablePlane sortedPlane : sortedPlanes) {
       Plane plane = sortedPlane.plane;
+
+      // 땅바닥만 그리기
+      if(plane.getType() != Plane.Type.HORIZONTAL_UPWARD_FACING) continue;
+
       float[] planeMatrix = new float[16];
       plane.getCenterPose().toMatrix(planeMatrix, 0); // modelMatrix
 

@@ -432,6 +432,27 @@ public class PointCloudRenderer {
         GLES20.glDisableVertexAttribArray(mPosition);
     }
 
+    public void draw_APoint(float[] vpMatrix, float[] point){
+        GLES20.glUseProgram(mProgram);
+        GLES20.glEnableVertexAttribArray(mPosition);
+
+        ByteBuffer bb = ByteBuffer.allocateDirect(COORDS_PER_VERTEX * FLOAT_SIZE);
+        bb.order(ByteOrder.nativeOrder());
+        FloatBuffer vertexBuffer = bb.asFloatBuffer();
+        vertexBuffer.put(point);
+        vertexBuffer.position(0);
+
+        GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, vertexBuffer);
+        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
+        GLES20.glUniform1f(mSize, 30.0f);
+        GLES20.glUniform1i(bUseSolidColor,1);
+
+        GLES20.glUniform4f(mColor_u, 1.0f, 0.0f, 0.0f, 1.0f);
+
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, vertexBuffer.remaining()/4);
+        GLES20.glDisableVertexAttribArray(mPosition);
+    }
+
     public FloatBuffer getFiltered_pointCloud(){
         return filtered_pointCloud;
     }
