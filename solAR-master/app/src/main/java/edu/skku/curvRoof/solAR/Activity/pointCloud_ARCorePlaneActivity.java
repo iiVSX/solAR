@@ -64,6 +64,7 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
     private ArrayList<Point> TestPoints = new ArrayList<>();
     private PointCloudRenderer hitRenderer = new PointCloudRenderer();
     private BlockingQueue<MotionEvent> touchTap = new ArrayBlockingQueue<>(16);
+    private long preTimestamp = 0;
 
     //Panel Rendering
     private Cube cube;
@@ -261,9 +262,9 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
 
     private void tapHandle(){
         MotionEvent tap = touchTap.poll();
-
+        if(tap != null && preTimestamp == tap.getEventTime()) return;
         if(hasTrackingPlane() && tap != null){
-            hitResults = frame.hitTest(tap.getX(), tap.getY());
+            hitResults = frame.hitTest(tap);
             for(HitResult hitResult : hitResults){
                 Trackable trackable = hitResult.getTrackable();
                 if ((trackable instanceof Plane
@@ -273,6 +274,7 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
                         && ((com.google.ar.core.Point) trackable).getOrientationMode()
                         == com.google.ar.core.Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
                     Log.d("HITHIT", hitResult.getHitPose().toString());
+                    Log.d("PlanePlane", String.format("%d", session.getAllTrackables(Plane.class).size()));
                     if (TestPoints.size() >= 20) {
                         TestPoints.remove(0);
                     }
@@ -282,6 +284,7 @@ public class pointCloud_ARCorePlaneActivity extends AppCompatActivity implements
                             hitResult.getHitPose().tz(),
                             1.0f);
                     TestPoints.add(hitPoint);
+                    preTimestamp = tap.getEventTime();
                 }
             }
         }
