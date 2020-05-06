@@ -59,7 +59,7 @@ public class PointCloudRenderer {
 
     //hash Map for storing vertexes by ID
     private HashMap<Integer, ArrayList<Point>> fullPointHashMap;
-    private HashMap<Integer, Point> filteredPointHashMap;
+    public HashMap<Integer, Point> filteredPointHashMap;
 
     //Gathered PointCloud Buffer
     private FloatBuffer gathered_pointcloud_buffer;
@@ -145,7 +145,7 @@ public class PointCloudRenderer {
         }
     }
 
-    public void draw_intial(float[] vpMatrix){
+    public void draw_initial(float[] vpMatrix){
         GLES20.glUseProgram(mProgram);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo);
         GLES20.glEnableVertexAttribArray(mPosition);
@@ -153,7 +153,7 @@ public class PointCloudRenderer {
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
 
-        GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1f(mSize, 10.0f);
         GLES20.glUniform1i(bUseSolidColor,1);
         GLES20.glUniform4f(mColor_u, 1.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -166,6 +166,7 @@ public class PointCloudRenderer {
     public void draw(float[] vpMatrix) {
         GLES20.glUseProgram(mProgram);
 
+        GLES20.glEnableVertexAttribArray(mPosition);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo);
 
         //change color by vertexes' confidence
@@ -198,12 +199,11 @@ public class PointCloudRenderer {
         colorBuffer.put(color);
         colorBuffer.position(0);
 
-        GLES20.glEnableVertexAttribArray(mPosition);
         GLES20.glEnableVertexAttribArray(mColor_a);
 
         GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1f(mSize, 10.0f);
         GLES20.glUniform1i(bUseSolidColor,0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -307,7 +307,7 @@ public class PointCloudRenderer {
         }
 
         // make Floatbuffer with filtered points
-        ByteBuffer bb = ByteBuffer.allocateDirect(listFinalPoints.size() * FLOAT_SIZE);
+        ByteBuffer bb = ByteBuffer.allocateDirect(listFinalPoints.size()*FLOAT_SIZE);
         bb.order(ByteOrder.nativeOrder());
         filtered_pointCloud = bb.asFloatBuffer();
 
@@ -325,10 +325,10 @@ public class PointCloudRenderer {
         GLES20.glUseProgram(mProgram);
 
         GLES20.glEnableVertexAttribArray(mPosition);
-
         GLES20.glVertexAttribPointer(mPosition, FLOAT_SIZE, GLES20.GL_FLOAT, false, COORDS_PER_VERTEX * FLOAT_SIZE, filtered_pointCloud);
+
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glUniform1f(mSize, 15.0f);
+        GLES20.glUniform1f(mSize, 10.0f);
         GLES20.glUniform1i(bUseSolidColor,1);
 
         GLES20.glUniform4f(mColor_u, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -458,6 +458,18 @@ public class PointCloudRenderer {
     }
 
     public int getSeedPoint(){
+
+        Log.d("seedPointIDX", String.format("%d", seedPointID));
+        for(int i = 0; i<filtered_pointCloud.remaining()/4;i++){
+            if(seedPoint[0]==filtered_pointCloud.get(i*4) &&
+            seedPoint[1] == filtered_pointCloud.get(i*4+1)&&
+            seedPoint[2] == filtered_pointCloud.get(i*4+2)) seedPointID = i;
+        }
+        Log.d("seedPointIDX", String.format("%d", seedPointID));
         return seedPointID;
+    }
+
+    public float[] getSeedArr(){
+        return new float[]{seedPoint[0], seedPoint[1], seedPoint[2],1.0f};
     }
 }

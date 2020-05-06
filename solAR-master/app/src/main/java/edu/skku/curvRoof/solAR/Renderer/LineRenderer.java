@@ -30,6 +30,10 @@ public class LineRenderer{
     private float[] Vertex = new float[6];
     private float[] color = {1.0f, 1.0f, 1.0f, 1.0f};
 
+    // 원그리기
+    private float[] circleVertex = new float[3*360];
+    private FloatBuffer circleVBuffer;
+
     public void bufferUpdate(float[] p1, float[] p2){
         Vertex[0] = p1[0];
         Vertex[1] = p1[1];
@@ -58,6 +62,19 @@ public class LineRenderer{
 //        colorBuffer.position(0);
     }
 
+    public void setCircleVertex(float rad){
+        for(int i = 0; i<360; i++){
+            circleVertex[i*3] = rad * (float)Math.cos(2*Math.PI * i/360);
+            circleVertex[i*3 + 1] = rad *(float)Math.sin(2*Math.PI * i/360);
+            circleVertex[i*3 + 2] = -1.0f;
+        }
+        ByteBuffer bb = ByteBuffer.allocateDirect(circleVertex.length * FLOAT_SIZE);
+        bb.order(ByteOrder.nativeOrder());
+        circleVBuffer = bb.asFloatBuffer();
+        circleVBuffer.put(circleVertex);
+        circleVBuffer.position(0);
+    }
+
     public void createGlThread(Context context) throws IOException {
 
         vertexShader = ShaderUtil.loadGLShader("Line", context, GLES20.GL_VERTEX_SHADER, VERTEX_SHADER_NAME);
@@ -83,7 +100,6 @@ public class LineRenderer{
         GLES20.glEnableVertexAttribArray(mPosition);
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, vpMatrix, 0);
-        GLES20.glEnableVertexAttribArray(uMVPMatrixHandle);
 
         GLES20.glUniform4fv(mColor_u, 1, color, 0);
         GLES20.glLineWidth(5.0f);
@@ -91,5 +107,20 @@ public class LineRenderer{
 
         GLES20.glDisableVertexAttribArray(mPosition);
 
+    }
+
+    public void draw_circle(float[] projMatrix){
+        GLES20.glUseProgram(mProgram);
+
+        GLES20.glVertexAttribPointer(mPosition, 3, GLES20.GL_FLOAT, false, 3*4,circleVBuffer);
+        GLES20.glEnableVertexAttribArray(mPosition);
+
+        GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, projMatrix, 0);
+
+        GLES20.glUniform4fv(mColor_u, 1, color, 0);
+        GLES20.glLineWidth(5.0f);
+        GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 360);
+
+        GLES20.glDisableVertexAttribArray(mPosition);
     }
 }

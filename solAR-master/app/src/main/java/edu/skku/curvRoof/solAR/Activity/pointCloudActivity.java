@@ -173,6 +173,12 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
     private LinearLayout dashboard;
     private Bitmap footprint;
 
+    // ----------------- ROI circle -------------------
+    private LineRenderer circleRenderer = new LineRenderer();
+    private float circleRadius = 0.25f;
+    private float z_dis;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -243,7 +249,19 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 ray = screenPointToWorldRay(tx, ty, frame);
 
                 if(renderingStage == 2){
-                    renderingStage = 3;
+                    //renderingStage = 3;
+
+                    pointCloudRenderer.pickPoint(frame.getCamera());
+
+                    float[] view_seed = pointCloudRenderer.getSeedArr();
+                    frame.getCamera().getViewMatrix(viewMatrix,0);
+                    Matrix.multiplyMV(view_seed, 0, viewMatrix, 0, view_seed,0);
+                    z_dis = -view_seed[2];
+
+                    Log.d("ROIZ", String.format("%.2f", z_dis * circleRadius));
+
+                    renderingStage = 4;
+
                     if(myPlaneFinder != null){
                         if(myPlaneFinder.getStatus() == AsyncTask.Status.FINISHED || myPlaneFinder.getStatus() == AsyncTask.Status.RUNNING){
                             myPlaneFinder.cancel(true);
@@ -565,7 +583,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 session.configure(config);
 
             }catch (Exception e){
-                Log.d("PLUSULTRA", e.getMessage());
+                Log.d("ULTRA", e.getMessage());
                 return;
             }
         }
@@ -593,6 +611,8 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             planeRenderer.createGlThread(this);
             cube = new Cube(this, glSurfaceView);
             gridRenderer.createGlThread(this);
+            circleRenderer.createGlThread(this);
+            circleRenderer.setCircleVertex(circleRadius);
 
         }catch (IOException e){
             e.getMessage();
@@ -629,43 +649,101 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 // Fixed Work -> ARCore
                 camera.getViewMatrix(viewMatrix, 0);
                 camera.getProjectionMatrix(projMatrix, 0, 0.1f, 100.0f);
-            }
-            Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
 
-            switch (renderingStage){
-                case 0:
-                    pointCloudRenderer.update(frame.acquirePointCloud(),false);
-                    pointCloudRenderer.draw_intial(vpMatrix);
-                    break;
-                case 1: // recording point Cloud
-                    pointCloudRenderer.update(frame.acquirePointCloud(),true);
-                    pointCloudRenderer.draw(vpMatrix);
-                    break;
+                circleRenderer.draw_circle(projMatrix);
+                Matrix.multiplyMM(vpMatrix, 0, projMatrix,0,viewMatrix,0);
 
-                case 2: // rendering recorded point cloud
-                    if(pointCloudRenderer.getFiltered_pointCloud() != null){
-                        pointCloudRenderer.draw_final(vpMatrix);
-                    }
+                Log.d("Matrix", "start");
+                for(int i = 0; i<16; i+=4){
+                    Log.d("Matrix", String.format("%.5f %.5f %.5f %.5f", viewMatrix[i],viewMatrix[i+1],viewMatrix[i+2],viewMatrix[i+3]));
+                }
 
-                    break;
+                switch (renderingStage){
+                    case 0:
+                        pointCloudRenderer.update(frame.acquirePointCloud(),false);
+                        pointCloudRenderer.draw_initial(vpMatrix);
+                        break;
+                    case 1: // recording point Cloud
+                        pointCloudRenderer.update(frame.acquirePointCloud(),true);
+                        pointCloudRenderer.draw(vpMatrix);
+                        break;
 
-                case 3: // pickPoint
-                    pointCloudRenderer.pickPoint(camera);
-                    renderingStage = 4;
-                    break;
-
-                case 4: // plane이 정상적으로 뽑혔으면 PlaneRenderer, 그게 아니면 PointCloud에서 seed point draw
-                    if(normalValid == false){
-                        pointCloudRenderer.draw_seedPoint(vpMatrix);
-                        if(myPlane != null){
-                            planeRenderer.bufferUpdate(myPlane);
-                            normalValid = true;
+                    case 2: // rendering recorded point cloud
+                        if(pointCloudRenderer.getFiltered_pointCloud() != null){
+                            pointCloudRenderer.draw_final(vpMatrix);
                         }
-                    }
-                    else{
+
+                        break;
+
+                    case 3: // pickPoint
+//                    pointCloudRenderer.pickPoint(camera);
+//                    renderingStage = 4;
+                        break;
+
+                    case 4: // plane이 정상적으로 뽑혔으면 PlaneRenderer, 그게 아니면 PointCloud에서 seed point draw
+                        if(normalValid == false){
+                            pointCloudRenderer.draw_seedPoint(vpMatrix);
+                            if(myPlane != null){
+                                planeRenderer.bufferUpdate(myPlane);
+                                normalValid = true;
+                            }
+                        }
+                        else{
+                            planeRenderer.draw(vpMatrix);
+
+                            // grid
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[0],myPlane.gridPoints[4]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[4],myPlane.gridPoints[8]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[8],myPlane.gridPoints[12]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[12],myPlane.gridPoints[0]);
+                            gridRenderer.draw(vpMatrix);
+
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[1],myPlane.gridPoints[11]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[2],myPlane.gridPoints[10]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[3],myPlane.gridPoints[9]);
+                            gridRenderer.draw(vpMatrix);
+
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[5],myPlane.gridPoints[15]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[6],myPlane.gridPoints[14]);
+                            gridRenderer.draw(vpMatrix);
+                            gridRenderer.bufferUpdate(myPlane.gridPoints[7],myPlane.gridPoints[13]);
+                            gridRenderer.draw(vpMatrix);
+                        }
+                        break;
+
+                    case 5:         // cube 렌더링
+
+                        float[] originMatrix = new float[16];
+                        Matrix.setIdentityM(originMatrix,0);
+//                    float[] h = {
+//                            myPlane.getLl()[0] - myPlane.getUl()[0],
+//                            myPlane.getLl()[1] - myPlane.getUl()[1],
+//                            myPlane.getLl()[2] - myPlane.getUl()[2],
+//                    };
+//                    float pHeight = VectorCal.vectorSize(h);
+                        Matrix.translateM(originMatrix, 0, -(1.0f * 1.67f)*m*0.5f, 0, 0);
+
+                        float[] rotateMatrix = new float[16];
+                        Matrix.setIdentityM(rotateMatrix, 0);
+                        Matrix.rotateM(rotateMatrix,0, (float)angle, 1,0,0);
+
+                        float[] transMatrix = new float[16];
+                        Matrix.setIdentityM(transMatrix, 0);
+                        Matrix.translateM(transMatrix,0,change[0], change[1], change[2]);
+
+                        float[] dirMatrix = new float[16];
+                        Matrix.setIdentityM(dirMatrix, 0);
+                        Matrix.rotateM(dirMatrix,0, ((float)direction+180)%360, 0,1,0);
+
+                        float[] mvpMatrix = new float[16];
                         planeRenderer.draw(vpMatrix);
 
-                        // grid
                         gridRenderer.bufferUpdate(myPlane.gridPoints[0],myPlane.gridPoints[4]);
                         gridRenderer.draw(vpMatrix);
                         gridRenderer.bufferUpdate(myPlane.gridPoints[4],myPlane.gridPoints[8]);
@@ -688,84 +766,33 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                         gridRenderer.draw(vpMatrix);
                         gridRenderer.bufferUpdate(myPlane.gridPoints[7],myPlane.gridPoints[13]);
                         gridRenderer.draw(vpMatrix);
-                    }
-                    break;
+                        for(int i = 0;i<n;i++){
+                            for(int j = 0;j<m;j++){
+                                float[] model = new float[16];
 
-                case 5:         // cube 렌더링
-
-                    float[] originMatrix = new float[16];
-                    Matrix.setIdentityM(originMatrix,0);
-//                    float[] h = {
-//                            myPlane.getLl()[0] - myPlane.getUl()[0],
-//                            myPlane.getLl()[1] - myPlane.getUl()[1],
-//                            myPlane.getLl()[2] - myPlane.getUl()[2],
-//                    };
-//                    float pHeight = VectorCal.vectorSize(h);
-                    Matrix.translateM(originMatrix, 0, -(1.0f * 1.67f)*m*0.5f, 0, 0);
-
-                    float[] rotateMatrix = new float[16];
-                    Matrix.setIdentityM(rotateMatrix, 0);
-                    Matrix.rotateM(rotateMatrix,0, (float)angle, 1,0,0);
-
-                    float[] transMatrix = new float[16];
-                    Matrix.setIdentityM(transMatrix, 0);
-                    Matrix.translateM(transMatrix,0,change[0], change[1], change[2]);
-
-                    float[] dirMatrix = new float[16];
-                    Matrix.setIdentityM(dirMatrix, 0);
-                    Matrix.rotateM(dirMatrix,0, ((float)direction+180)%360, 0,1,0);
-
-                    float[] mvpMatrix = new float[16];
-                    planeRenderer.draw(vpMatrix);
-
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[0],myPlane.gridPoints[4]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[4],myPlane.gridPoints[8]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[8],myPlane.gridPoints[12]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[12],myPlane.gridPoints[0]);
-                    gridRenderer.draw(vpMatrix);
-
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[1],myPlane.gridPoints[11]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[2],myPlane.gridPoints[10]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[3],myPlane.gridPoints[9]);
-                    gridRenderer.draw(vpMatrix);
-
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[5],myPlane.gridPoints[15]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[6],myPlane.gridPoints[14]);
-                    gridRenderer.draw(vpMatrix);
-                    gridRenderer.bufferUpdate(myPlane.gridPoints[7],myPlane.gridPoints[13]);
-                    gridRenderer.draw(vpMatrix);
-                    for(int i = 0;i<n;i++){
-                        for(int j = 0;j<m;j++){
-                            float[] model = new float[16];
-
-                            Matrix.multiplyMM(model, 0, cube.MDS[i][j],0, originMatrix, 0);
-                            Matrix.multiplyMM(mvpMatrix, 0, dirMatrix, 0, rotateMatrix, 0);
-                            Matrix.multiplyMM(mvpMatrix, 0, transMatrix, 0, mvpMatrix, 0);
-                            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, model, 0);
-                            Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mvpMatrix, 0);
+                                Matrix.multiplyMM(model, 0, cube.MDS[i][j],0, originMatrix, 0);
+                                Matrix.multiplyMM(mvpMatrix, 0, dirMatrix, 0, rotateMatrix, 0);
+                                Matrix.multiplyMM(mvpMatrix, 0, transMatrix, 0, mvpMatrix, 0);
+                                Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, model, 0);
+                                Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mvpMatrix, 0);
 
 
-                            cube.draw(mvpMatrix, 0);
-                            cube.draw(mvpMatrix, 1);
-                            cube.draw(mvpMatrix, 2);
-                            cube.draw(mvpMatrix, 3);
-                            cube.draw(mvpMatrix, 4);
-                            cube.draw(mvpMatrix, 5);
+                                cube.draw(mvpMatrix, 0);
+                                cube.draw(mvpMatrix, 1);
+                                cube.draw(mvpMatrix, 2);
+                                cube.draw(mvpMatrix, 3);
+                                cube.draw(mvpMatrix, 4);
+                                cube.draw(mvpMatrix, 5);
 
-                            if(CaptureFlag == true){
-                                CaptureFlag = false;
-                                footprint = getScreenshot();
-                                captureView(footprint);
+                                if(CaptureFlag == true){
+                                    CaptureFlag = false;
+                                    footprint = getScreenshot();
+                                    captureView(footprint);
+                                }
                             }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
 
         }catch(CameraNotAvailableException e){
@@ -807,11 +834,11 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
             // Ready Request Form
             RequestForm rf = new RequestForm();
 
-            rf.setPointBufferDescription(points.capacity() / 3, 0, 0); //pointcount, pointstride, pointoffset
-            rf.setPointDataDescription(0.02f, 0.05f); //accuracy, meanDistance
-            rf.setTargetROI(pointCloudRenderer.getSeedPoint(), 0.1f);//seedIndex,touchRadius
-            rf.setAlgorithmParameter(RequestForm.SearchLevel.RADICAL, RequestForm.SearchLevel.NORMAL);//LatExt, RadExp
-
+            rf.setPointBufferDescription(points.capacity()/4, 16, 0); //pointcount, pointstride, pointoffset
+            rf.setPointDataDescription(0.05f, 0.05f); //accuracy, meanDistance
+            rf.setTargetROI(pointCloudRenderer.getSeedPoint(), Math.max(z_dis * circleRadius, 0.1f));//seedIndex,touchRadius
+            rf.setAlgorithmParameter(RequestForm.SearchLevel.NORMAL, RequestForm.SearchLevel.NORMAL);//LatExt, RadExp
+            Log.d("PointsBuffer", points.toString());
             FindSurfaceRequester fsr = new FindSurfaceRequester(REQUEST_URL, true);
             requestStatus = 1;
             // Request Find Surface
@@ -852,6 +879,7 @@ public class pointCloudActivity extends AppCompatActivity implements GLSurfaceVi
                 float[] ur = {seed[0]+0.3f,seed[1],seed[2]-0.3f};
                 float[] ul = {seed[0]-0.3f,seed[1],seed[2]-0.3f};
                 myPlane = new Plane(ll,lr,ur,ul,frame.getCamera());
+                Toast.makeText(getApplicationContext(), "추출 실패" + String.format(" ROI: %.2f", circleRadius * z_dis),Toast.LENGTH_SHORT).show();
             }
         }
     }
